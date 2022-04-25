@@ -102,6 +102,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// Converts the current <see cref="CompilationInfo"/> to its string representation and adds it to the given <see cref="SourceProductionContext"/>
         /// </summary>
         /// <param name="context">The <see cref="SourceProductionContext"/> where the <see cref="SourceProductionContext.AddSource(string, string)"/> method is called on</param>
+        /// <param name="language">The <see cref="Language"/> that is used to generate the source code</param>
         /// <returns>Returns the current <see cref="CompilationInfo"/> to enable use of fluent syntax</returns>
         public CompilationInfo AddToSourceProductionContext(SourceProductionContext context, Language language)
         {
