@@ -19,6 +19,7 @@
 						<ModulePaths>
 							<Exclude>
 								<ModulePath>.*\.[Tt]ests\.dll$</ModulePath>
+								<ModulePath>.*\.[Bb]enchmarks\.dll$</ModulePath>
 							</Exclude>
 						</ModulePaths>
 					</CodeCoverage>

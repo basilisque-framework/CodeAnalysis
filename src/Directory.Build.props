@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<RootNamespace>Basilisque.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
-		<AssemblyName>Basilisque.$(MSBuildProjectName)</AssemblyName>
+		<AssemblyName Condition="$(MSBuildProjectName.EndsWith('.Benchmarks'))!='true'">Basilisque.$(MSBuildProjectName)</AssemblyName>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>disable</ImplicitUsings>
 	</PropertyGroup>
@@ -35,7 +35,7 @@
 	</PropertyGroup>
 
 	<!-- XML documentation -->
-	<PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))!='true'">
+	<PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests'))!='true' AND $(MSBuildProjectName.EndsWith('.Benchmarks'))!='true'">
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 
