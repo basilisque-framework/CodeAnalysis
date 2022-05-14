@@ -8,6 +8,10 @@
         /// <summary>
         /// C#
         /// </summary>
-        CSharp
+        CSharp,
+        /// <summary>
+        /// Visual Basic.NET
+        /// </summary>
+        VisualBasic
     }
 }

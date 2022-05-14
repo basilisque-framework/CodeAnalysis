@@ -7,8 +7,11 @@ namespace Basilisque.CodeAnalysis.Syntax
     /// </summary>
     public class ClassInfo : SyntaxNode
     {
+        private System.Reflection.AssemblyName _constructingAssemblyName;
         private string _className;
         private string? _baseClass;
+        private string? _generatedCodeToolName;
+        private string? _generatedCodeToolVersion;
 
         /// <summary>
         /// The name of the class
@@ -53,6 +56,43 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// Defines if the generated source contains attributes to mark it as generated code
+        /// </summary>
+        public bool AddGeneratedCodeAttributes { get; set; } = false;
+
+        /// <summary>
+        /// The name of the tool that generated the source.
+        /// (used for the <see cref="System.CodeDom.Compiler.GeneratedCodeAttribute"/>)
+        /// </summary>
+        public string? GeneratedCodeToolName
+        {
+            get
+            {
+                return _generatedCodeToolName;
+            }
+            set
+            {
+                _generatedCodeToolName = value;
+            }
+        }
+
+        /// <summary>
+        /// The version of the tool that generated the source.
+        /// (used for the <see cref="System.CodeDom.Compiler.GeneratedCodeAttribute"/>)
+        /// </summary>
+        public string? GeneratedCodeToolVersion
+        {
+            get
+            {
+                return _generatedCodeToolVersion;
+            }
+            set
+            {
+                _generatedCodeToolVersion = value;
+            }
+        }
+
+        /// <summary>
         /// A list of interfaces that this class implements
         /// </summary>
         public IList<string> ImplementedInterfaces { get; } = new List<string>();
@@ -63,13 +103,48 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <param name="className" example="MyClass">The name of the class</param>
         /// <param name="accessModifier" example="AccessModifier.Public">The access modifier that specifies the accessibility of the class</param>
         /// <exception cref="ArgumentNullException">Throws an <see cref="ArgumentNullException"/> when the className parameter is null or an empty string</exception>
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public ClassInfo(string className, AccessModifier accessModifier)
+            : this(className, accessModifier, null, null, System.Reflection.Assembly.GetCallingAssembly().GetName())
+        { }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="ClassInfo"/>
+        /// </summary>
+        /// <param name="className" example="MyClass">The name of the class</param>
+        /// <param name="accessModifier" example="AccessModifier.Public">The access modifier that specifies the accessibility of the class</param>
+        /// <param name="generatedCodeToolName">The name of the tool that generated the source. (used for the <see cref="System.CodeDom.Compiler.GeneratedCodeAttribute"/>)</param>
+        /// <param name="generatedCodeToolVersion">The version of the tool that generated the source. (used for the <see cref="System.CodeDom.Compiler.GeneratedCodeAttribute"/>)</param>
+        /// <exception cref="ArgumentNullException">Throws an <see cref="ArgumentNullException"/> when the className parameter is null or an empty string</exception>
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public ClassInfo(
+            string className,
+            AccessModifier accessModifier,
+            string generatedCodeToolName,
+            string generatedCodeToolVersion
+            )
+            : this(className, accessModifier, generatedCodeToolName, generatedCodeToolVersion, System.Reflection.Assembly.GetCallingAssembly().GetName())
+        { }
+
+        internal ClassInfo(
+            string className,
+            AccessModifier accessModifier,
+            string? generatedCodeToolName,
+            string? generatedCodeToolVersion,
+            System.Reflection.AssemblyName constructingAssemblyName
+            )
         {
             if (string.IsNullOrWhiteSpace(className))
                 throw new ArgumentNullException(nameof(className));
 
             _className = className;
             AccessModifier = accessModifier;
+            _generatedCodeToolName = generatedCodeToolName;
+            _generatedCodeToolVersion = generatedCodeToolVersion;
+            _constructingAssemblyName = constructingAssemblyName;
+
+            if (!string.IsNullOrWhiteSpace(generatedCodeToolName) && !string.IsNullOrWhiteSpace(generatedCodeToolVersion))
+                AddGeneratedCodeAttributes = true;
         }
 
         /// <summary>
@@ -86,6 +161,22 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <param name="indent">A string containing the indentation characters for the current class (a string containing the <see cref="SyntaxNode.IndentationCharacter"/> times the <see cref="SyntaxNode.IndentationCharacterCountPerLevel"/>)</param>
         protected override void ToCSharpString(StringBuilder sb, int indentCnt, int childIndentCnt, string indent)
         {
+            if (AddGeneratedCodeAttributes)
+            {
+                var generatedCodeToolName = GeneratedCodeToolName ?? _constructingAssemblyName.Name;
+                var generatedCodeToolVersion = GeneratedCodeToolVersion ?? _constructingAssemblyName.Version.ToString();
+
+                sb.Append(indent);
+                sb.AppendLine("// <auto-generated />");
+                sb.AppendLine(indent);
+                sb.Append(indent);
+                sb.AppendLine($@"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""{generatedCodeToolName}"", ""{generatedCodeToolVersion}"")]");
+                sb.Append(indent);
+                sb.AppendLine(@"[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
+                sb.Append(indent);
+                sb.AppendLine(@"[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
+            }
+
             appendClassWithName(sb, indent);
 
             bool hasGenericTypeConstraints = appendGenericTypes(sb);

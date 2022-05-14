@@ -61,6 +61,8 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             switch (language)
             {
+                case Language.VisualBasic:
+                    throw new NotSupportedException("Visual Basic is not supported by this generator.");
                 case Language.CSharp:
                 default:
                     ToCSharpString(stringBuilder, indentationCount, childindentationCount, indentation);
