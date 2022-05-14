@@ -45,6 +45,19 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         }
 
         [DataTestMethod]
+        [DataRow(true, DisplayName = "nullable context enabled")]
+        [DataRow(false, DisplayName = "nullable context disabled")]
+        public void NoNamespace_NoClass_IsEmpty_WithNullableContext(bool enableNullableContext)
+        {
+            var compilationInfo = new CompilationInfo("MyCompilation1", targetNamespace: null);
+            compilationInfo.EnableNullableContext = enableNullableContext;
+
+            var str = compilationInfo.ToString();
+
+            Assert.AreEqual(string.Empty, str);
+        }
+
+        [DataTestMethod]
         [DataRow(null, null, DisplayName = "ns: null - codeGenAttr: <default>")]
         [DataRow(null, true, DisplayName = "ns: null - codeGenAttr: true")]
         [DataRow(null, false, DisplayName = "ns: null - codeGenAttr: false")]
@@ -59,6 +72,8 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             var compilationInfo = new CompilationInfo("MyCompilation1", targetNamespace: ns)
                 .AddNewClassInfo("MyClass1", AccessModifier.Public, ci => { });
 
+            compilationInfo.EnableNullableContext = false;
+
             if (codeGenAttrEnabled.HasValue)
                 compilationInfo.AddGeneratedCodeAttributes = codeGenAttrEnabled.Value;
 
@@ -70,6 +85,36 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 }", str);
         }
 
+        [DataTestMethod]
+        [DataRow(null, DisplayName = "nullable context <default> (enabled)")]
+        [DataRow(true, DisplayName = "nullable context enabled")]
+        [DataRow(false, DisplayName = "nullable context disabled")]
+        public void NoNamespace_1Class_NullableContext_CorrectString(bool? enableNullableContext)
+        {
+            var compilationInfo = new CompilationInfo("MyCompilation1", targetNamespace: null)
+                .AddNewClassInfo("MyClass1", AccessModifier.Public, ci => { });
+
+            if (enableNullableContext.HasValue)
+                compilationInfo.EnableNullableContext = enableNullableContext.Value;
+
+            compilationInfo.AddGeneratedCodeAttributes = false;
+
+            var str = compilationInfo.ToString();
+
+            var expectedResult = @"public class MyClass1
+{
+}";
+
+            if (!enableNullableContext.HasValue || (enableNullableContext.HasValue && enableNullableContext.Value))
+                expectedResult = @"#nullable enable
+
+" + expectedResult + @"
+
+#nullable restore";
+
+            Assert.AreEqual(expectedResult, str);
+        }
+
         [TestMethod]
         [DataRow(true, DisplayName = "codeGenAttr: true")]
         [DataRow(false, DisplayName = "codeGenAttr: false")]
@@ -79,6 +124,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
                 .AddNewClassInfo("MyClass1", AccessModifier.Public, ci => { })
                 .AddNewClassInfo("MyClass2", AccessModifier.Public, ci => { });
 
+            compilationInfo.EnableNullableContext = false;
             compilationInfo.AddGeneratedCodeAttributes = codeGenAttrEnabled;
 
             var str = compilationInfo.ToString();
@@ -101,6 +147,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1");
 
+            compilationInfo.EnableNullableContext = false;
             compilationInfo.AddGeneratedCodeAttributes = codeGenAttrEnabled;
 
             var str = compilationInfo.ToString();
@@ -112,6 +159,35 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 }", str);
         }
 
+        [DataTestMethod]
+        [DataRow(null, DisplayName = "nullable context <default> (enabled)")]
+        [DataRow(true, DisplayName = "nullable context enabled")]
+        [DataRow(false, DisplayName = "nullable context disabled")]
+        public void WithNamespace_NoClass_NullableContext_CorrectString(bool? enableNullableContext)
+        {
+            var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1");
+
+            if (enableNullableContext.HasValue)
+                compilationInfo.EnableNullableContext = enableNullableContext.Value;
+
+            compilationInfo.AddGeneratedCodeAttributes = false;
+
+            var str = compilationInfo.ToString();
+
+            var expectedResult = @"namespace MyNamespace1
+{
+}";
+
+            if (!enableNullableContext.HasValue || (enableNullableContext.HasValue && enableNullableContext.Value))
+                expectedResult = @"#nullable enable
+
+" + expectedResult + @"
+
+#nullable restore";
+
+            Assert.AreEqual(expectedResult, str);
+        }
+
         [TestMethod]
         [DataRow(true, DisplayName = "codeGenAttr: true")]
         [DataRow(false, DisplayName = "codeGenAttr: false")]
@@ -120,6 +196,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1")
                 .AddNewClassInfo("MyClass1", AccessModifier.Public, ci => { });
 
+            compilationInfo.EnableNullableContext = false;
             compilationInfo.AddGeneratedCodeAttributes = codeGenAttrEnabled;
 
             var str = compilationInfo.ToString();
@@ -143,6 +220,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
                 .AddNewClassInfo("MyClass1", AccessModifier.Public, ci => { })
                 .AddNewClassInfo("MyClass2", ci => { });
 
+            compilationInfo.EnableNullableContext = false;
             compilationInfo.AddGeneratedCodeAttributes = codeGenAttrEnabled;
 
             var str = compilationInfo.ToString();
@@ -245,6 +323,8 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
                 .AddNewClassInfo("MyClass1", AccessModifier.ProtectedInternal, ci => { })
                 .AddNewClassInfo("MyClass2", ci => { ci.AddGeneratedCodeAttributes = true; });
 
+            compilationInfo.EnableNullableContext = false;
+
             var str = compilationInfo.ToString();
 
             Assert.AreEqual(_codeGenerationAttributeString + @"namespace MyNamespace1
@@ -264,6 +344,8 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1", "MyGenToolName", "MyGenToolVersion1");
 
+            compilationInfo.EnableNullableContext = false;
+
             var str = compilationInfo.ToString();
 
             Assert.AreEqual(C_CODEGENERATION_ATTRIBUTE_STRING.Replace("<GeneratorName>", "MyGenToolName").Replace("<GeneratorVersion>", "MyGenToolVersion1") + @"namespace MyNamespace1
@@ -275,6 +357,8 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         public void CodeGenerationAttribute_ToolNameAndVersion_CanBeSpecifiedWithConstructor_ForInnerClass()
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", null, "MyGenToolName", "MyGenToolVersion1");
+
+            compilationInfo.EnableNullableContext = false;
 
             compilationInfo.AddNewClassInfo("MyClass1", ci => { });
 

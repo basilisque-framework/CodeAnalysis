@@ -87,6 +87,12 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// Defines if a nullable context is explicitly enabled for the generated code.
+        /// (When set to true, the generated code is enclosed in #nullable enable/restore)
+        /// </summary>
+        public bool EnableNullableContext { get; set; } = true;
+
+        /// <summary>
         /// A list of classes that are contained in the given <see cref="TargetNamespace"/>
         /// </summary>
         public List<ClassInfo> Classes { get; } = new List<ClassInfo>();
@@ -225,12 +231,16 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <param name="indent">A string containing the indentation characters for the current <see cref="CompilationInfo"/> (a string containing the <see cref="SyntaxNode.IndentationCharacter"/> times the <see cref="SyntaxNode.IndentationCharacterCountPerLevel"/>)</param>
         protected override void ToCSharpString(StringBuilder sb, int indentCnt, int childIndentCnt, string indent)
         {
-            ///// <summary>Code for a [GeneratedCode] attribute to put on the top-level generated members.</summary>
-            //private static readonly string s_generatedCodeAttribute = $"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(\"{typeof(RegexGenerator).Assembly.GetName().Name}\", \"{typeof(RegexGenerator).Assembly.GetName().Version}\")]";
-
-            //"#nullable enable"
-
             var hasNamespace = !string.IsNullOrWhiteSpace(_targetNamespace);
+            var hasClasses = Classes.Any();
+
+            var hasAnythingToGenerate = hasNamespace || hasClasses;
+
+            if (hasAnythingToGenerate && EnableNullableContext)
+            {
+                sb.AppendLine("#nullable enable");
+                sb.AppendLine();
+            }
 
             if (hasNamespace && AddGeneratedCodeAttributes)
             {
@@ -273,6 +283,14 @@ namespace Basilisque.CodeAnalysis.Syntax
                 if (addEmptyLineForNextClass)
                     sb.AppendLine();
                 sb.Append("}");
+            }
+
+
+            if (hasAnythingToGenerate && EnableNullableContext)
+            {
+                sb.AppendLine();
+                sb.AppendLine();
+                sb.Append("#nullable restore");
             }
         }
     }
