@@ -297,5 +297,19 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             classInfo.GeneratedCodeToolVersion = "MyToolVersion2";
             Assert.AreEqual("MyToolVersion2", classInfo.GeneratedCodeToolVersion);
         }
+
+        [TestMethod]
+        public void PartialClass_CorrectString()
+        {
+            var classInfo = new ClassInfo("TestClass1", AccessModifier.PrivateProtected);
+            classInfo.AddGeneratedCodeAttributes = false;
+            classInfo.IsPartial = true;
+
+            var classStr = classInfo.ToString();
+
+            Assert.AreEqual(@"private protected partial class TestClass1
+{
+}", classStr);
+        }
     }
 }

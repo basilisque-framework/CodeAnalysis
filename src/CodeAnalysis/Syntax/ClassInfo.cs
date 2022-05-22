@@ -56,6 +56,11 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// Defines if the generated class is a partial class or not
+        /// </summary>
+        public bool IsPartial { get; set; } = false;
+
+        /// <summary>
         /// Defines if the generated source contains attributes to mark it as generated code
         /// </summary>
         public bool AddGeneratedCodeAttributes { get; set; } = true;
@@ -196,6 +201,10 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             sb.Append(indent);
             sb.Append(AccessModifier.ToKeywordString());
+
+            if (IsPartial)
+                sb.Append(" partial");
+
             sb.Append(" class ");
             sb.Append(ClassName);
         }
