@@ -37,10 +37,10 @@
         /// <typeparam name="TSource">The type of the <see cref="IncrementalValueProvider{TSource}"/> that provides the input values</typeparam>
         /// <param name="incrementalGeneratorInitializationContext">The <see cref="IncrementalGeneratorInitializationContext"/> where the output is registered on</param>
         /// <param name="source">The <see cref="IncrementalValueProvider{TSource}"/> that provides the input values</param>
-        /// <param name="action">The <see cref="Action{SourceProductionContext, TSource, Language, CompilationInfoFactory}"/> that is invoked for every value in the value provider</param>
+        /// <param name="action">The <see cref="Action{SourceProductionContext, TSource, RegistrationOptions}"/> that is invoked for every value in the value provider</param>
         public static void RegisterCompilationInfoOutput<TSource>(this IncrementalGeneratorInitializationContext incrementalGeneratorInitializationContext,
             IncrementalValueProvider<TSource> source,
-            Action<SourceProductionContext, TSource, Language, CompilationInfoFactory> action)
+            Action<SourceProductionContext, TSource, RegistrationOptions> action)
         {
             var callingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName();
 
@@ -53,16 +53,9 @@
                 TSource src = opt.Left;
                 (Language language, NullableContextOptions nullableContextOptions) = opt.Right;
 
-                CompilationInfoFactory compilationInfoFactoryFunc = (string compilationName, string? targetNamespace) =>
-                {
-                    var compilationInfo = new CompilationInfo(compilationName, targetNamespace, null, null, callingAssembly);
+                var registrationOptions = new RegistrationOptions(language, nullableContextOptions, callingAssembly);
 
-                    compilationInfo.EnableNullableContext = nullableContextOptions.AnnotationsEnabled();
-
-                    return compilationInfo;
-                };
-
-                action(spc, src, language, compilationInfoFactoryFunc);
+                action(spc, src, registrationOptions);
             });
         }
 
@@ -72,10 +65,10 @@
         /// <typeparam name="TSource">The type of the <see cref="IncrementalValuesProvider{TSource}"/> that provides the input values</typeparam>
         /// <param name="incrementalGeneratorInitializationContext">The <see cref="IncrementalGeneratorInitializationContext"/> where the output is registered on</param>
         /// <param name="source">The <see cref="IncrementalValuesProvider{TSource}"/> that provides the input values</param>
-        /// <param name="action">The <see cref="Action{SourceProductionContext, TSource, Language, CompilationInfoFactory}"/> that is invoked for every value in the value provider</param>
+        /// <param name="action">The <see cref="Action{SourceProductionContext, TSource, RegistrationOptions}"/> that is invoked for every value in the value provider</param>
         public static void RegisterCompilationInfoOutput<TSource>(this IncrementalGeneratorInitializationContext incrementalGeneratorInitializationContext,
             IncrementalValuesProvider<TSource> source,
-            Action<SourceProductionContext, TSource, Language, CompilationInfoFactory> action)
+            Action<SourceProductionContext, TSource, RegistrationOptions> action)
         {
             var callingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName();
 
@@ -88,16 +81,9 @@
                 TSource src = opt.Left;
                 (Language language, NullableContextOptions nullableContextOptions) = opt.Right;
 
-                CompilationInfoFactory compilationInfoFactoryFunc = (string compilationName, string? targetNamespace) =>
-                {
-                    var compilationInfo = new CompilationInfo(compilationName, targetNamespace, null, null, callingAssembly);
+                var registrationOptions = new RegistrationOptions(language, nullableContextOptions, callingAssembly);
 
-                    compilationInfo.EnableNullableContext = nullableContextOptions.AnnotationsEnabled();
-
-                    return compilationInfo;
-                };
-
-                action(spc, src, language, compilationInfoFactoryFunc);
+                action(spc, src, registrationOptions);
             });
         }
 
@@ -108,10 +94,10 @@
         /// <typeparam name="TSource">The type of the <see cref="IncrementalValueProvider{TSource}"/> that provides the input values</typeparam>
         /// <param name="incrementalGeneratorInitializationContext">The <see cref="IncrementalGeneratorInitializationContext"/> where the output is registered on</param>
         /// <param name="source">The <see cref="IncrementalValueProvider{TSource}"/> that provides the input values</param>
-        /// <param name="action">The <see cref="Action{SourceProductionContext, TSource, Language, CompilationInfoFactory}"/> that is invoked for every value in the value provider</param>
+        /// <param name="action">The <see cref="Action{SourceProductionContext, TSource, RegistrationOptions}"/> that is invoked for every value in the value provider</param>
         public static void RegisterImplementationCompilationInfoOutput<TSource>(this IncrementalGeneratorInitializationContext incrementalGeneratorInitializationContext,
             IncrementalValueProvider<TSource> source,
-            Action<SourceProductionContext, TSource, Language, CompilationInfoFactory> action)
+            Action<SourceProductionContext, TSource, RegistrationOptions> action)
         {
             var callingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName();
 
@@ -119,21 +105,14 @@
 
             var combinedSource = source.Combine(optionsProvider);
 
-            incrementalGeneratorInitializationContext.RegisterSourceOutput(combinedSource, (spc, opt) =>
+            incrementalGeneratorInitializationContext.RegisterImplementationSourceOutput(combinedSource, (spc, opt) =>
             {
                 TSource src = opt.Left;
                 (Language language, NullableContextOptions nullableContextOptions) = opt.Right;
 
-                CompilationInfoFactory compilationInfoFactoryFunc = (string compilationName, string? targetNamespace) =>
-                {
-                    var compilationInfo = new CompilationInfo(compilationName, targetNamespace, null, null, callingAssembly);
+                var registrationOptions = new RegistrationOptions(language, nullableContextOptions, callingAssembly);
 
-                    compilationInfo.EnableNullableContext = nullableContextOptions.AnnotationsEnabled();
-
-                    return compilationInfo;
-                };
-
-                action(spc, src, language, compilationInfoFactoryFunc);
+                action(spc, src, registrationOptions);
             });
         }
 
@@ -144,10 +123,10 @@
         /// <typeparam name="TSource">The type of the <see cref="IncrementalValuesProvider{TSource}"/> that provides the input values</typeparam>
         /// <param name="incrementalGeneratorInitializationContext">The <see cref="IncrementalGeneratorInitializationContext"/> where the output is registered on</param>
         /// <param name="source">The <see cref="IncrementalValuesProvider{TSource}"/> that provides the input values</param>
-        /// <param name="action">The <see cref="Action{SourceProductionContext, TSource, Language, CompilationInfoFactory}"/> that is invoked for every value in the value provider</param>
+        /// <param name="action">The <see cref="Action{SourceProductionContext, TSource, RegistrationOptions}"/> that is invoked for every value in the value provider</param>
         public static void RegisterImplementationCompilationInfoOutput<TSource>(this IncrementalGeneratorInitializationContext incrementalGeneratorInitializationContext,
             IncrementalValuesProvider<TSource> source,
-            Action<SourceProductionContext, TSource, Language, CompilationInfoFactory> action)
+            Action<SourceProductionContext, TSource, RegistrationOptions> action)
         {
             var callingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName();
 
@@ -155,21 +134,14 @@
 
             var combinedSource = source.Combine(optionsProvider);
 
-            incrementalGeneratorInitializationContext.RegisterSourceOutput(combinedSource, (spc, opt) =>
+            incrementalGeneratorInitializationContext.RegisterImplementationSourceOutput(combinedSource, (spc, opt) =>
             {
                 TSource src = opt.Left;
                 (Language language, NullableContextOptions nullableContextOptions) = opt.Right;
 
-                CompilationInfoFactory compilationInfoFactoryFunc = (string compilationName, string? targetNamespace) =>
-                {
-                    var compilationInfo = new CompilationInfo(compilationName, targetNamespace, null, null, callingAssembly);
+                var registrationOptions = new RegistrationOptions(language, nullableContextOptions, callingAssembly);
 
-                    compilationInfo.EnableNullableContext = nullableContextOptions.AnnotationsEnabled();
-
-                    return compilationInfo;
-                };
-
-                action(spc, src, language, compilationInfoFactoryFunc);
+                action(spc, src, registrationOptions);
             });
         }
 
