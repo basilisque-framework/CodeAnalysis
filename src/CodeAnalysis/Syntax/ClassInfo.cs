@@ -16,7 +16,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <summary>
         /// The name of the class
         /// </summary>
-        /// <exception cref="ArgumentNullException">Settings the <see cref="ClassName"/> to null or to an empty string throws an <see cref="ArgumentNullException"/></exception>
+        /// <exception cref="ArgumentNullException">Setting the <see cref="ClassName"/> to null or to an empty string throws an <see cref="ArgumentNullException"/></exception>
         /// <example>MyClass</example>
         public string ClassName
         {
