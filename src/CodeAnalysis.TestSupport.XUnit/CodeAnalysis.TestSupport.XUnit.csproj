@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<ItemGroup>
+		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.1.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.XUnit" Version="1.1.1" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\CodeAnalysis.TestSupport\CodeAnalysis.TestSupport.csproj" />
+	</ItemGroup>
+</Project>
