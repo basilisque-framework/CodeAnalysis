@@ -11,6 +11,11 @@
         public Language Language { get; }
 
         /// <summary>
+        /// The version of the <see cref="Language"/> that is used for the current compilation
+        /// </summary>
+        public Microsoft.CodeAnalysis.CSharp.LanguageVersion LanguageVersion { get; }
+
+        /// <summary>
         /// The <see cref="Microsoft.CodeAnalysis.NullableContextOptions"/> of the current compilation
         /// </summary>
         public NullableContextOptions NullableContextOptions { get; }
@@ -24,11 +29,13 @@
         /// Creates new <see cref="RegistrationOptions"/>
         /// </summary>
         /// <param name="language">The language of the current compilation</param>
+        /// <param name="languageVersion">The version of the <paramref name="language"/> that is used for the current compilation</param>
         /// <param name="nullableContextOptions">The <see cref="Microsoft.CodeAnalysis.NullableContextOptions"/> of the current compilation</param>
         /// <param name="callingAssembly">The <see cref="System.Reflection.AssemblyName"/> of the assembly that is calling the register method</param>
-        internal RegistrationOptions(Language language, NullableContextOptions nullableContextOptions, System.Reflection.AssemblyName callingAssembly)
+        internal RegistrationOptions(Language language, Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion, NullableContextOptions nullableContextOptions, System.Reflection.AssemblyName callingAssembly)
         {
             Language = language;
+            LanguageVersion = languageVersion;
             NullableContextOptions = nullableContextOptions;
             CallingAssembly = callingAssembly;
         }

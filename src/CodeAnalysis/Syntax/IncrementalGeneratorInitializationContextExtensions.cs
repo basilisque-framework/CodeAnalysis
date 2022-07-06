@@ -11,7 +11,7 @@
         /// <param name="context">The <see cref="IncrementalGeneratorInitializationContext"/> that is used to create the <see cref="IncrementalValueProvider{TValue}"/></param>
         /// <returns>A <see cref="IncrementalValueProvider{TValue}"/> containing a <see cref="Tuple{Language, NullableContextOptions}"/></returns>
         /// <exception cref="System.NotSupportedException">Throws <see cref="System.NotSupportedException"/> when the compilation uses a language that is not supported by <see cref="Language"/></exception>
-        private static IncrementalValueProvider<(Language Language, NullableContextOptions NullableContextOptions)> GetCompilationInfoOptionsProvider(this IncrementalGeneratorInitializationContext context)
+        private static IncrementalValueProvider<((NullableContextOptions NullableContextOptions, Language Language) CompilationOptions, Microsoft.CodeAnalysis.CSharp.LanguageVersion LanguageVersion)> getCompilationInfoValuesProvider(this IncrementalGeneratorInitializationContext context)
         {
             var compilationOptionsProvider = context.CompilationProvider.Select(static (cmp, ct) => (cmp.Options.Language, cmp.Options.NullableContextOptions));
 
@@ -25,10 +25,14 @@
                 else
                     throw new System.NotSupportedException($"The language '{cmp.Language}' is not supported by this generator.");
 
-                return (l, cmp.NullableContextOptions);
+                return (cmp.NullableContextOptions, l);
             });
 
-            return selectedOptionsProvider;
+            var languageVersionProvider = context.ParseOptionsProvider.Select((po, ct) => ((Microsoft.CodeAnalysis.CSharp.CSharpParseOptions)po).LanguageVersion);
+
+            var combinedProvider = selectedOptionsProvider.Combine(languageVersionProvider);
+
+            return combinedProvider;
         }
 
         /// <summary>
@@ -44,16 +48,16 @@
         {
             var callingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName();
 
-            var optionsProvider = GetCompilationInfoOptionsProvider(incrementalGeneratorInitializationContext);
+            var compilationInfoValuesProvider = getCompilationInfoValuesProvider(incrementalGeneratorInitializationContext);
 
-            var combinedSource = source.Combine(optionsProvider);
+            var combinedSource = source.Combine(compilationInfoValuesProvider);
 
             incrementalGeneratorInitializationContext.RegisterSourceOutput(combinedSource, (spc, opt) =>
             {
                 TSource src = opt.Left;
-                (Language language, NullableContextOptions nullableContextOptions) = opt.Right;
+                ((NullableContextOptions nullableContextOptions, Language language), Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion) = opt.Right;
 
-                var registrationOptions = new RegistrationOptions(language, nullableContextOptions, callingAssembly);
+                var registrationOptions = new RegistrationOptions(language, languageVersion, nullableContextOptions, callingAssembly);
 
                 action(spc, src, registrationOptions);
             });
@@ -72,16 +76,16 @@
         {
             var callingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName();
 
-            var optionsProvider = GetCompilationInfoOptionsProvider(incrementalGeneratorInitializationContext);
+            var compilationInfoValuesProvider = getCompilationInfoValuesProvider(incrementalGeneratorInitializationContext);
 
-            var combinedSource = source.Combine(optionsProvider);
+            var combinedSource = source.Combine(compilationInfoValuesProvider);
 
             incrementalGeneratorInitializationContext.RegisterSourceOutput(combinedSource, (spc, opt) =>
             {
                 TSource src = opt.Left;
-                (Language language, NullableContextOptions nullableContextOptions) = opt.Right;
+                ((NullableContextOptions nullableContextOptions, Language language), Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion) = opt.Right;
 
-                var registrationOptions = new RegistrationOptions(language, nullableContextOptions, callingAssembly);
+                var registrationOptions = new RegistrationOptions(language, languageVersion, nullableContextOptions, callingAssembly);
 
                 action(spc, src, registrationOptions);
             });
@@ -101,16 +105,16 @@
         {
             var callingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName();
 
-            var optionsProvider = GetCompilationInfoOptionsProvider(incrementalGeneratorInitializationContext);
+            var compilationInfoValuesProvider = getCompilationInfoValuesProvider(incrementalGeneratorInitializationContext);
 
-            var combinedSource = source.Combine(optionsProvider);
+            var combinedSource = source.Combine(compilationInfoValuesProvider);
 
             incrementalGeneratorInitializationContext.RegisterImplementationSourceOutput(combinedSource, (spc, opt) =>
             {
                 TSource src = opt.Left;
-                (Language language, NullableContextOptions nullableContextOptions) = opt.Right;
+                ((NullableContextOptions nullableContextOptions, Language language), Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion) = opt.Right;
 
-                var registrationOptions = new RegistrationOptions(language, nullableContextOptions, callingAssembly);
+                var registrationOptions = new RegistrationOptions(language, languageVersion, nullableContextOptions, callingAssembly);
 
                 action(spc, src, registrationOptions);
             });
@@ -130,16 +134,16 @@
         {
             var callingAssembly = System.Reflection.Assembly.GetCallingAssembly().GetName();
 
-            var optionsProvider = GetCompilationInfoOptionsProvider(incrementalGeneratorInitializationContext);
+            var compilationInfoValuesProvider = getCompilationInfoValuesProvider(incrementalGeneratorInitializationContext);
 
-            var combinedSource = source.Combine(optionsProvider);
+            var combinedSource = source.Combine(compilationInfoValuesProvider);
 
             incrementalGeneratorInitializationContext.RegisterImplementationSourceOutput(combinedSource, (spc, opt) =>
             {
                 TSource src = opt.Left;
-                (Language language, NullableContextOptions nullableContextOptions) = opt.Right;
+                ((NullableContextOptions nullableContextOptions, Language language), Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion) = opt.Right;
 
-                var registrationOptions = new RegistrationOptions(language, nullableContextOptions, callingAssembly);
+                var registrationOptions = new RegistrationOptions(language, languageVersion, nullableContextOptions, callingAssembly);
 
                 action(spc, src, registrationOptions);
             });
