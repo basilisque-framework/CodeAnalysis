@@ -248,10 +248,11 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// Appends the current <see cref="CompilationInfo"/> and its children as C# code to the given <see cref="StringBuilder"/>
         /// </summary>
         /// <param name="sb">The <see cref="StringBuilder"/> that the <see cref="CompilationInfo"/> is added to</param>
-        /// <param name="indentCnt">The count of indentation levels the <see cref="CompilationInfo"/> should be indented by</param>
-        /// <param name="childIndentCnt">The count of indentation levels the direct children of this <see cref="CompilationInfo"/> should be indented by</param>
-        /// <param name="indent">A string containing the indentation characters for the current <see cref="CompilationInfo"/> (a string containing the <see cref="SyntaxNode.IndentationCharacter"/> times the <see cref="SyntaxNode.IndentationCharacterCountPerLevel"/>)</param>
-        protected override void ToCSharpString(StringBuilder sb, int indentCnt, int childIndentCnt, string indent)
+        /// <param name="indentLvl">The count of indentation levels the <see cref="CompilationInfo"/> should be indented by</param>
+        /// <param name="childIndentLvl">The count of indentation levels the direct children of this <see cref="CompilationInfo"/> should be indented by</param>
+        /// <param name="indentCharCnt">The count of indentation characters for the current <see cref="CompilationInfo"/> (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the current level)</param>
+        /// <param name="childIndentCharCnt">The count of indentation characters for the direct childre of this <see cref="CompilationInfo"/> (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the direct child level)</param>
+        protected override void ToCSharpString(StringBuilder sb, int indentLvl, int childIndentLvl, int indentCharCnt, int childIndentCharCnt)
         {
             var hasNamespace = !string.IsNullOrWhiteSpace(_targetNamespace);
             var hasClasses = _classes?.Any() == true;
@@ -302,12 +303,12 @@ namespace Basilisque.CodeAnalysis.Syntax
                     if (addEmptyLineForNextClass)
                     {
                         sb.AppendLine();
-                        sb.AppendLine(indent);
+                        AppendIntentationLine(sb, indentCharCnt);
                     }
                     else
                         addEmptyLineForNextClass = true;
 
-                    classInfo.ToString(sb, hasNamespace ? childIndentCnt : indentCnt, Language.CSharp);
+                    classInfo.ToString(sb, hasNamespace ? childIndentLvl : indentLvl, Language.CSharp);
                 }
             }
 

@@ -214,29 +214,28 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// Appends the current class and its children as C# code to the given <see cref="StringBuilder"/>
         /// </summary>
         /// <param name="sb">The <see cref="StringBuilder"/> that the class is added to</param>
-        /// <param name="indentCnt">The count of indentation levels the class should be indented by</param>
-        /// <param name="childIndentCnt">The count of indentation levels the direct children of this class should be indented by</param>
-        /// <param name="indent">A string containing the indentation characters for the current class (a string containing the <see cref="SyntaxNode.IndentationCharacter"/> times the <see cref="SyntaxNode.IndentationCharacterCountPerLevel"/>)</param>
-        protected override void ToCSharpString(StringBuilder sb, int indentCnt, int childIndentCnt, string indent)
+        /// <param name="indentLvl">The count of indentation levels the class should be indented by</param>
+        /// <param name="childIndentLvl">The count of indentation levels the direct children of this class should be indented by</param>
+        /// <param name="indentCharCnt">The count of indentation characters for the current class (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the current level)</param>
+        /// <param name="childIndentCharCnt">The count of indentation characters for the direct childre of this class (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the direct child level)</param>
+        protected override void ToCSharpString(StringBuilder sb, int indentLvl, int childIndentLvl, int indentCharCnt, int childIndentCharCnt)
         {
-            //System.CodeDom.Compiler.IndentedTextWriter itw = new();
-
-            appendXmlDoc(sb, indent);
+            appendXmlDoc(sb, indentCharCnt);
 
             if (AddGeneratedCodeAttributes)
             {
                 var generatedCodeToolName = GeneratedCodeToolName ?? _constructingAssemblyName.Name;
                 var generatedCodeToolVersion = GeneratedCodeToolVersion ?? _constructingAssemblyName.Version.ToString();
 
-                sb.Append(indent);
+                AppendIntentation(sb, indentCharCnt);
                 sb.AppendLine($@"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""{generatedCodeToolName}"", ""{generatedCodeToolVersion}"")]");
-                sb.Append(indent);
+                AppendIntentation(sb, indentCharCnt);
                 sb.AppendLine(@"[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
-                sb.Append(indent);
+                AppendIntentation(sb, indentCharCnt);
                 sb.AppendLine(@"[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
             }
 
-            appendClassWithName(sb, indent);
+            appendClassWithName(sb, indentCharCnt);
 
             bool hasGenericTypeConstraints = appendGenericTypes(sb);
 
@@ -246,9 +245,9 @@ namespace Basilisque.CodeAnalysis.Syntax
             sb.AppendLine();
 
             if (hasGenericTypeConstraints)
-                appendGenericTypeConstraints(sb, childIndentCnt);
+                appendGenericTypeConstraints(sb, childIndentCharCnt);
 
-            sb.Append(indent);
+            AppendIntentation(sb, indentCharCnt);
             sb.AppendLine("{");
 
             //ToDo: add properties, ...
@@ -262,21 +261,18 @@ namespace Basilisque.CodeAnalysis.Syntax
                     if (isFirst)
                         isFirst = false;
                     else
-                    {
-                        sb.Append(IndentationCharacter, childIndentCnt * IndentationCharacterCountPerLevel);
-                        sb.AppendLine();
-                    }
+                        AppendIntentationLine(sb, childIndentCharCnt);
 
-                    method.ToString(sb, childIndentCnt, Language.CSharp);
+                    method.ToString(sb, childIndentLvl, Language.CSharp);
                     sb.AppendLine();
                 }
             }
 
-            sb.Append(indent);
+            AppendIntentation(sb, indentCharCnt);
             sb.Append("}");
         }
 
-        private void appendXmlDoc(StringBuilder sb, string indent)
+        private void appendXmlDoc(StringBuilder sb, int indentCharCnt)
         {
             var hasXmlDoc = !string.IsNullOrWhiteSpace(XmlDocSummary)
                 || _xmlDocAdditionalLines?.Count > 0
@@ -285,12 +281,12 @@ namespace Basilisque.CodeAnalysis.Syntax
             if (!hasXmlDoc)
                 return;
 
-            sb.Append(indent);
+            AppendIntentation(sb, indentCharCnt);
             sb.AppendLine("/// <summary>");
 
             if (string.IsNullOrWhiteSpace(XmlDocSummary))
             {
-                sb.Append(indent);
+                AppendIntentation(sb, indentCharCnt);
                 sb.Append("/// ");
                 sb.AppendLine(ClassName);
             }
@@ -300,13 +296,13 @@ namespace Basilisque.CodeAnalysis.Syntax
 
                 foreach (var line in lines)
                 {
-                    sb.Append(indent);
+                    AppendIntentation(sb, indentCharCnt);
                     sb.Append("/// ");
                     sb.AppendLine(line);
                 }
             }
 
-            sb.Append(indent);
+            AppendIntentation(sb, indentCharCnt);
             sb.AppendLine("/// </summary>");
 
             if (_genericTypes != null)
@@ -315,7 +311,7 @@ namespace Basilisque.CodeAnalysis.Syntax
                 {
                     var gtXmlDoc = gt.Value?.XmlDoc;
 
-                    sb.Append(indent);
+                    AppendIntentation(sb, indentCharCnt);
                     sb.Append("/// <typeparam name=\"");
                     sb.Append(gt.Key);
                     sb.Append("\">");
@@ -331,16 +327,16 @@ namespace Basilisque.CodeAnalysis.Syntax
             {
                 foreach (var line in _xmlDocAdditionalLines)
                 {
-                    sb.Append(indent);
+                    AppendIntentation(sb, indentCharCnt);
                     sb.Append("/// ");
                     sb.AppendLine(line);
                 }
             }
         }
 
-        private void appendClassWithName(StringBuilder sb, string indent)
+        private void appendClassWithName(StringBuilder sb, int indentCharCnt)
         {
-            sb.Append(indent);
+            AppendIntentation(sb, indentCharCnt);
             sb.Append(AccessModifier.ToKeywordString());
 
             if (IsPartial)
@@ -412,10 +408,8 @@ namespace Basilisque.CodeAnalysis.Syntax
             }
         }
 
-        private void appendGenericTypeConstraints(StringBuilder sb, int childIndentCnt)
+        private void appendGenericTypeConstraints(StringBuilder sb, int childIndentCharCnt)
         {
-            var childIndent = GetIndentation(childIndentCnt);
-
             if (_genericTypes == null)
                 return;
 
@@ -423,7 +417,7 @@ namespace Basilisque.CodeAnalysis.Syntax
             {
                 if (genericType.Value?.Constraints?.Count > 0)
                 {
-                    sb.Append(childIndent);
+                    AppendIntentation(sb, childIndentCharCnt);
                     sb.Append("where ");
                     sb.Append(genericType.Key);
                     sb.Append(" : ");

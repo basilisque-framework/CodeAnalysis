@@ -123,17 +123,18 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
-        /// Appends the current method as C# code to the given <see cref="StringBuilder"/>
+        /// Appends the current method and its children as C# code to the given <see cref="StringBuilder"/>
         /// </summary>
         /// <param name="sb">The <see cref="StringBuilder"/> that the method is added to</param>
-        /// <param name="indentCnt">The count of indentation levels the method should be indented by</param>
-        /// <param name="childIndentCnt">The count of indentation levels the method body should be indented by</param>
-        /// <param name="indent">A string containing the indentation characters for the current class (a string containing the <see cref="SyntaxNode.IndentationCharacter"/> times the <see cref="SyntaxNode.IndentationCharacterCountPerLevel"/>)</param>
-        protected override void ToCSharpString(StringBuilder sb, int indentCnt, int childIndentCnt, string indent)
+        /// <param name="indentLvl">The count of indentation levels the method should be indented by</param>
+        /// <param name="childIndentLvl">The count of indentation levels the direct children of this method should be indented by</param>
+        /// <param name="indentCharCnt">The count of indentation characters for the current method (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the current level)</param>
+        /// <param name="childIndentCharCnt">The count of indentation characters for the direct childre of this method (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the direct child level)</param>
+        protected override void ToCSharpString(StringBuilder sb, int indentLvl, int childIndentLvl, int indentCharCnt, int childIndentCharCnt)
         {
-            appendXmlDoc(sb, indent);
+            appendXmlDoc(sb, indentCharCnt);
 
-            sb.Append(indent);
+            AppendIntentation(sb, indentCharCnt);
             sb.Append(AccessModifier.ToKeywordString());
             sb.Append(' ');
 
@@ -152,24 +153,23 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             sb.AppendLine(")");
 
-            sb.Append(indent);
+            AppendIntentation(sb, indentCharCnt);
             sb.AppendLine("{");
 
-            var ci = childIndentCnt * IndentationCharacterCountPerLevel;
             if (_body != null)
             {
                 foreach (var line in _body)
                 {
-                    sb.Append(IndentationCharacter, ci);
+                    AppendIntentation(sb, childIndentCharCnt);
                     sb.AppendLine(line);
                 }
             }
 
-            sb.Append(indent);
+            AppendIntentation(sb, indentCharCnt);
             sb.Append("}");
         }
 
-        private void appendXmlDoc(StringBuilder sb, string indent)
+        private void appendXmlDoc(StringBuilder sb, int indentCharCnt)
         {
             var hasXmlDoc = !string.IsNullOrWhiteSpace(XmlDocSummary)
                 || _xmlDocAdditionalLines?.Count > 0;
@@ -177,12 +177,12 @@ namespace Basilisque.CodeAnalysis.Syntax
             if (!hasXmlDoc)
                 return;
 
-            sb.Append(indent);
+            AppendIntentation(sb, indentCharCnt);
             sb.AppendLine("/// <summary>");
 
             if (string.IsNullOrWhiteSpace(XmlDocSummary))
             {
-                sb.Append(indent);
+                AppendIntentation(sb, indentCharCnt);
                 sb.Append("/// ");
                 sb.AppendLine(Name);
             }
@@ -192,20 +192,20 @@ namespace Basilisque.CodeAnalysis.Syntax
 
                 foreach (var line in lines)
                 {
-                    sb.Append(indent);
+                    AppendIntentation(sb, indentCharCnt);
                     sb.Append("/// ");
                     sb.AppendLine(line);
                 }
             }
 
-            sb.Append(indent);
+            AppendIntentation(sb, indentCharCnt);
             sb.AppendLine("/// </summary>");
 
             if (_xmlDocAdditionalLines != null)
             {
                 foreach (var line in _xmlDocAdditionalLines)
                 {
-                    sb.Append(indent);
+                    AppendIntentation(sb, indentCharCnt);
                     sb.Append("/// ");
                     sb.AppendLine(line);
                 }

@@ -56,13 +56,14 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
-        /// Appends the current <see cref="SyntaxNode"/> and its children as C# code to the given <see cref="StringBuilder"/>
+        /// Appends the current lines of code and its children as C# code to the given <see cref="StringBuilder"/>
         /// </summary>
-        /// <param name="sb">The <see cref="StringBuilder"/> that the <see cref="SyntaxNode"/> is added to</param>
-        /// <param name="indentCnt">The count of indentation levels the <see cref="SyntaxNode"/> should be indented by</param>
-        /// <param name="childIndentCnt">The count of indentation levels the direct children of this <see cref="SyntaxNode"/> should be indented by</param>
-        /// <param name="indent">A string containing the indentation characters for the current <see cref="SyntaxNode"/> (a string containing the <see cref="SyntaxNode.IndentationCharacter"/> times the <see cref="SyntaxNode.IndentationCharacterCountPerLevel"/>)</param>
-        protected override void ToCSharpString(StringBuilder sb, int indentCnt, int childIndentCnt, string indent)
+        /// <param name="sb">The <see cref="StringBuilder"/> that the lines of code are added to</param>
+        /// <param name="indentLvl">The count of indentation levels the lines of code should be indented by</param>
+        /// <param name="childIndentLvl">The count of indentation levels the direct children of this <see cref="SyntaxNode"/> should be indented by</param>
+        /// <param name="indentCharCnt">The count of indentation characters for the current lines of code (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the current level)</param>
+        /// <param name="childIndentCharCnt">The count of indentation characters for the direct childre of this <see cref="SyntaxNode"/> (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the direct child level)</param>
+        protected override void ToCSharpString(StringBuilder sb, int indentLvl, int childIndentLvl, int indentCharCnt, int childIndentCharCnt)
         {
             var isFirstLine = true;
 
@@ -73,7 +74,7 @@ namespace Basilisque.CodeAnalysis.Syntax
                 else
                     sb.AppendLine();
 
-                sb.Append(indent);
+                AppendIntentation(sb, indentCharCnt);
                 sb.Append(line);
             }
         }

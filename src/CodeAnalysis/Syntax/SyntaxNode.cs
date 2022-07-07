@@ -49,20 +49,21 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// Appends the current <see cref="SyntaxNode"/> and its children as code in the specified <see cref="Language"/> to the given <see cref="StringBuilder"/>
         /// </summary>
         /// <param name="stringBuilder">The <see cref="StringBuilder"/> that the <see cref="SyntaxNode"/> is added to</param>
-        /// <param name="indentationCount" example="0">The count of indentation levels for this <see cref="SyntaxNode"/></param>
+        /// <param name="indentationLevel" example="0">The count of indentation levels for this <see cref="SyntaxNode"/></param>
         /// <param name="language">The <see cref="Language"/> that is used to generate the code</param>
         /// <exception cref="ArgumentNullException">Thrown when the given <paramref name="stringBuilder"/> is null</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown when the given <paramref name="indentationCount"/> is less or equal to 0</exception>
-        public void ToString(StringBuilder stringBuilder, int indentationCount, Language language)
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the given <paramref name="indentationLevel"/> is less or equal to 0</exception>
+        public void ToString(StringBuilder stringBuilder, int indentationLevel, Language language)
         {
             if (stringBuilder == null)
                 throw new ArgumentNullException(nameof(stringBuilder));
 
-            if (indentationCount < 0)
-                throw new ArgumentOutOfRangeException(nameof(indentationCount));
+            if (indentationLevel < 0)
+                throw new ArgumentOutOfRangeException(nameof(indentationLevel));
 
-            var childindentationCount = indentationCount + 1;
-            var indentation = GetIndentation(indentationCount);
+            var childindentationLevel = indentationLevel + 1;
+            var indentCharCnt = indentationLevel * IndentationCharacterCountPerLevel;
+            var childIndentCharCnt = childindentationLevel * IndentationCharacterCountPerLevel;
 
             switch (language)
             {
@@ -70,7 +71,7 @@ namespace Basilisque.CodeAnalysis.Syntax
                     throw new NotSupportedException("Visual Basic is not supported by this generator.");
                 case Language.CSharp:
                 default:
-                    ToCSharpString(stringBuilder, indentationCount, childindentationCount, indentation);
+                    ToCSharpString(stringBuilder, indentationLevel, childindentationLevel, indentCharCnt, childIndentCharCnt);
                     break;
             }
         }
@@ -86,12 +87,35 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// Appends the specified number of copies of the <see cref="IndentationCharacter"/> to the provided <see cref="StringBuilder"/>
+        /// </summary>
+        /// <param name="sb">The <see cref="StringBuilder"/> that the characters are added to</param>
+        /// <param name="indentCharCnt">The number of times to append the <see cref="IndentationCharacter"/></param>
+        protected void AppendIntentation(StringBuilder sb, int indentCharCnt)
+        {
+            sb.Append(IndentationCharacter, indentCharCnt);
+        }
+
+        /// <summary>
+        /// Appends the specified number of copies of the <see cref="IndentationCharacter"/> to the provided <see cref="StringBuilder"/> and adds a linebreak at the end
+        /// </summary>
+        /// <param name="sb">The <see cref="StringBuilder"/> that the characters and the linebreak are added to</param>
+        /// <param name="indentCharCnt">The number of times to append the <see cref="IndentationCharacter"/> before the linebreak</param>
+        protected void AppendIntentationLine(StringBuilder sb, int indentCharCnt)
+        {
+            AppendIntentation(sb, indentCharCnt);
+
+            sb.AppendLine();
+        }
+
+        /// <summary>
         /// Appends the current <see cref="SyntaxNode"/> and its children as C# code to the given <see cref="StringBuilder"/>
         /// </summary>
         /// <param name="sb">The <see cref="StringBuilder"/> that the <see cref="SyntaxNode"/> is added to</param>
-        /// <param name="indentCnt">The count of indentation levels the <see cref="SyntaxNode"/> should be indented by</param>
-        /// <param name="childIndentCnt">The count of indentation levels the direct children of this <see cref="SyntaxNode"/> should be indented by</param>
-        /// <param name="indent">A string containing the indentation characters for the current <see cref="SyntaxNode"/> (a string containing the <see cref="SyntaxNode.IndentationCharacter"/> times the <see cref="SyntaxNode.IndentationCharacterCountPerLevel"/>)</param>
-        protected abstract void ToCSharpString(StringBuilder sb, int indentCnt, int childIndentCnt, string indent);
+        /// <param name="indentLvl">The count of indentation levels the <see cref="SyntaxNode"/> should be indented by</param>
+        /// <param name="childIndentLvl">The count of indentation levels the direct children of this <see cref="SyntaxNode"/> should be indented by</param>
+        /// <param name="indentCharCnt">The count of indentation characters for the current <see cref="SyntaxNode"/> (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the current level)</param>
+        /// <param name="childIndentCharCnt">The count of indentation characters for the direct childre of this <see cref="SyntaxNode"/> (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the direct child level)</param>
+        protected abstract void ToCSharpString(StringBuilder sb, int indentLvl, int childIndentLvl, int indentCharCnt, int childIndentCharCnt);
     }
 }
