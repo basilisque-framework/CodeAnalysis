@@ -401,5 +401,78 @@ private class TestClass1<T1, T2>
 {
 }", classStr);
         }
+
+        [TestMethod]
+        public void WithOneMethod()
+        {
+            var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            classInfo.Methods.Add(new MethodInfo(AccessModifier.Public, "void", "MyPublicMethod")
+            {
+                XmlDocSummary = "This is a public method"
+            });
+
+            var classStr = classInfo.ToString();
+
+            Assert.AreEqual(@"public class MyClass
+{
+    /// <summary>
+    /// This is a public method
+    /// </summary>
+    public void MyPublicMethod()
+    {
+    }
+}", classStr);
+        }
+
+        [TestMethod]
+        public void WithTwoMethods()
+        {
+            var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            classInfo.Methods.Add(new MethodInfo(AccessModifier.Public, "void", "MyPublicMethod")
+            {
+                XmlDocSummary = "This is a public method"
+            });
+
+            var methodInfo = new MethodInfo(AccessModifier.Public, "Task<string>", "MySecondMethodAsync")
+            {
+                XmlDocSummary = "This is an async method"
+            };
+
+            methodInfo.Body.Append(@"
+if (true == false)
+    throw new Exception(""This should never occur"");
+
+throw new NotImplementedException();
+");
+
+            classInfo.Methods.Add(methodInfo);
+
+            var classStr = classInfo.ToString();
+
+            Assert.AreEqual(@"public class MyClass
+{
+    /// <summary>
+    /// This is a public method
+    /// </summary>
+    public void MyPublicMethod()
+    {
+    }
+    
+    /// <summary>
+    /// This is an async method
+    /// </summary>
+    public async Task<string> MySecondMethodAsync()
+    {
+        if (true == false)
+            throw new Exception(""This should never occur"");
+        
+        throw new NotImplementedException();
+    }
+}", classStr);
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         private List<string>? _xmlDocAdditionalLines;
         private List<string>? _implementedInterfaces;
         private Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>? _genericTypes;
+        private List<MethodInfo>? _methods;
 
         /// <summary>
         /// The name of the class
@@ -135,6 +136,20 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// A list of <see cref="MethodInfo"/> that this class contains
+        /// </summary>
+        public List<MethodInfo> Methods
+        {
+            get
+            {
+                if (_methods == null)
+                    _methods = new List<MethodInfo>();
+
+                return _methods;
+            }
+        }
+
+        /// <summary>
         /// Creates a new instance of <see cref="ClassInfo"/>
         /// </summary>
         /// <param name="className" example="MyClass">The name of the class</param>
@@ -236,7 +251,26 @@ namespace Basilisque.CodeAnalysis.Syntax
             sb.Append(indent);
             sb.AppendLine("{");
 
-            //ToDo: add methods, properties, ...
+            //ToDo: add properties, ...
+
+            if (_methods != null)
+            {
+                var isFirst = true;
+
+                foreach (var method in _methods)
+                {
+                    if (isFirst)
+                        isFirst = false;
+                    else
+                    {
+                        sb.Append(IndentationCharacter, childIndentCnt * IndentationCharacterCountPerLevel);
+                        sb.AppendLine();
+                    }
+
+                    method.ToString(sb, childIndentCnt, Language.CSharp);
+                    sb.AppendLine();
+                }
+            }
 
             sb.Append(indent);
             sb.Append("}");
