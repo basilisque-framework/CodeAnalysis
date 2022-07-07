@@ -23,6 +23,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         private string? _targetNamespace;
         private string? _generatedCodeToolName;
         private string? _generatedCodeToolVersion;
+        private List<ClassInfo>? _classes;
 
         /// <summary>
         /// The name of the current compilation or rather the 'source output'
@@ -105,7 +106,16 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <summary>
         /// A list of classes that are contained in the given <see cref="TargetNamespace"/>
         /// </summary>
-        public List<ClassInfo> Classes { get; } = new List<ClassInfo>();
+        public List<ClassInfo> Classes
+        {
+            get
+            {
+                if (_classes == null)
+                    _classes = new List<ClassInfo>();
+
+                return _classes;
+            }
+        }
 
         /// <summary>
         /// Creates a new <see cref="CompilationInfo"/> for the specified language
@@ -244,7 +254,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         protected override void ToCSharpString(StringBuilder sb, int indentCnt, int childIndentCnt, string indent)
         {
             var hasNamespace = !string.IsNullOrWhiteSpace(_targetNamespace);
-            var hasClasses = Classes.Any();
+            var hasClasses = _classes?.Any() == true;
 
             var hasAnythingToGenerate = hasNamespace || hasClasses;
 
@@ -285,17 +295,20 @@ namespace Basilisque.CodeAnalysis.Syntax
             }
 
             bool addEmptyLineForNextClass = false;
-            foreach (var classInfo in Classes)
+            if (_classes != null)
             {
-                if (addEmptyLineForNextClass)
+                foreach (var classInfo in _classes)
                 {
-                    sb.AppendLine();
-                    sb.AppendLine(indent);
-                }
-                else
-                    addEmptyLineForNextClass = true;
+                    if (addEmptyLineForNextClass)
+                    {
+                        sb.AppendLine();
+                        sb.AppendLine(indent);
+                    }
+                    else
+                        addEmptyLineForNextClass = true;
 
-                classInfo.ToString(sb, hasNamespace ? childIndentCnt : indentCnt, Language.CSharp);
+                    classInfo.ToString(sb, hasNamespace ? childIndentCnt : indentCnt, Language.CSharp);
+                }
             }
 
             if (hasNamespace)

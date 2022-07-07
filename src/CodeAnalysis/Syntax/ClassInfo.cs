@@ -13,6 +13,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         private string? _generatedCodeToolName;
         private string? _generatedCodeToolVersion;
         private List<string>? _xmlDocAdditionalLines;
+        private List<string>? _implementedInterfaces;
 
         /// <summary>
         /// The name of the class
@@ -121,7 +122,16 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <summary>
         /// A list of interfaces that this class implements
         /// </summary>
-        public IList<string> ImplementedInterfaces { get; } = new List<string>();
+        public IList<string> ImplementedInterfaces
+        {
+            get
+            {
+                if (_implementedInterfaces == null)
+                    _implementedInterfaces = new List<string>();
+
+                return _implementedInterfaces;
+            }
+        }
 
         /// <summary>
         /// Creates a new instance of <see cref="ClassInfo"/>
@@ -335,20 +345,23 @@ namespace Basilisque.CodeAnalysis.Syntax
             }
 
             //append implemented interfaces
-            foreach (var interfaceName in ImplementedInterfaces)
+            if (_implementedInterfaces != null)
             {
-                if (string.IsNullOrWhiteSpace(interfaceName))
-                    continue;
-
-                if (addCommaBeforeNextImplementedInterface)
-                    sb.Append(", ");
-                else
+                foreach (var interfaceName in _implementedInterfaces)
                 {
-                    addCommaBeforeNextImplementedInterface = true;
-                    sb.Append(" : ");
-                }
+                    if (string.IsNullOrWhiteSpace(interfaceName))
+                        continue;
 
-                sb.Append(interfaceName);
+                    if (addCommaBeforeNextImplementedInterface)
+                        sb.Append(", ");
+                    else
+                    {
+                        addCommaBeforeNextImplementedInterface = true;
+                        sb.Append(" : ");
+                    }
+
+                    sb.Append(interfaceName);
+                }
             }
         }
 
