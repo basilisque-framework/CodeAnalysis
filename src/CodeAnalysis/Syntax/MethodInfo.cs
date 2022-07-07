@@ -9,6 +9,7 @@ namespace Basilisque.CodeAnalysis.Syntax
     {
         private string _name;
         private string _returnType = "void";
+        private List<string>? _xmlDocAdditionalLines;
 
         /// <summary>
         /// The access modifier that specifies the accessibility of the method
@@ -65,6 +66,26 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// The text that is used as summary for the XML documentation comment
+        /// </summary>
+        public string? XmlDocSummary { get; set; }
+
+        /// <summary>
+        /// Additional XML documentation lines.
+        /// Full lines including XML tags.
+        /// </summary>
+        public List<string> XmlDocAdditionalLines
+        {
+            get
+            {
+                if (_xmlDocAdditionalLines == null)
+                    _xmlDocAdditionalLines = new List<string>();
+
+                return _xmlDocAdditionalLines;
+            }
+        }
+
+        /// <summary>
         /// Contains the <see cref="CodeLines"/> of the body of the method
         /// </summary>
         public CodeLines Body { get; } = new CodeLines();
@@ -100,6 +121,8 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <param name="indent">A string containing the indentation characters for the current class (a string containing the <see cref="SyntaxNode.IndentationCharacter"/> times the <see cref="SyntaxNode.IndentationCharacterCountPerLevel"/>)</param>
         protected override void ToCSharpString(StringBuilder sb, int indentCnt, int childIndentCnt, string indent)
         {
+            appendXmlDoc(sb, indent);
+
             sb.Append(indent);
             sb.Append(AccessModifier.ToKeywordString());
             sb.Append(' ');
@@ -132,5 +155,49 @@ namespace Basilisque.CodeAnalysis.Syntax
             sb.Append(indent);
             sb.Append("}");
         }
+
+        private void appendXmlDoc(StringBuilder sb, string indent)
+        {
+            var hasXmlDoc = !string.IsNullOrWhiteSpace(XmlDocSummary)
+                || _xmlDocAdditionalLines?.Count > 0;
+
+            if (!hasXmlDoc)
+                return;
+
+            sb.Append(indent);
+            sb.AppendLine("/// <summary>");
+
+            if (string.IsNullOrWhiteSpace(XmlDocSummary))
+            {
+                sb.Append(indent);
+                sb.Append("/// ");
+                sb.AppendLine(Name);
+            }
+            else
+            {
+                var lines = XmlDocSummary!.Split(CodeLines.LineSeparators, StringSplitOptions.None);
+
+                foreach (var line in lines)
+                {
+                    sb.Append(indent);
+                    sb.Append("/// ");
+                    sb.AppendLine(line);
+                }
+            }
+
+            sb.Append(indent);
+            sb.AppendLine("/// </summary>");
+
+            if (_xmlDocAdditionalLines != null)
+            {
+                foreach (var line in _xmlDocAdditionalLines)
+                {
+                    sb.Append(indent);
+                    sb.Append("/// ");
+                    sb.AppendLine(line);
+                }
+            }
+        }
+
     }
 }

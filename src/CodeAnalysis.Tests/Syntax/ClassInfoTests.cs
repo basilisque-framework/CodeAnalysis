@@ -99,7 +99,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
-            classInfo.GenericTypes.Add("T1", new List<string>() { });
+            classInfo.GenericTypes.Add("T1", (new List<string>() { }, null));
 
             var classStr = classInfo.ToString();
 
@@ -115,7 +115,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             classInfo.AddGeneratedCodeAttributes = false;
             classInfo.GenericTypes.Add("T1", null);
             classInfo.GenericTypes.Add("T2", null);
-            classInfo.GenericTypes.Add("T3", new List<string>() { });
+            classInfo.GenericTypes.Add("T3", (new List<string>() { }, null));
 
             var classStr = classInfo.ToString();
 
@@ -161,7 +161,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
-            classInfo.GenericTypes.Add("T1", new List<string>() { "class", "new()" });
+            classInfo.GenericTypes.Add("T1", (new List<string>() { "class", "new()" }, null));
 
             var classStr = classInfo.ToString();
 
@@ -177,8 +177,8 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
             classInfo.GenericTypes.Add("T1", null);
-            classInfo.GenericTypes.Add("T2", new List<string>() { "class" });
-            classInfo.GenericTypes.Add("T3", new List<string>() { });
+            classInfo.GenericTypes.Add("T2", (new List<string>() { "class" }, null));
+            classInfo.GenericTypes.Add("T3", (new List<string>() { }, null));
 
             var classStr = classInfo.ToString();
 
@@ -194,7 +194,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
             classInfo.BaseClass = "MyBaseClass1";
-            classInfo.GenericTypes.Add("T1", new List<string>() { "class", "new()" });
+            classInfo.GenericTypes.Add("T1", (new List<string>() { "class", "new()" }, null));
 
             var classStr = classInfo.ToString();
 
@@ -211,8 +211,8 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             classInfo.AddGeneratedCodeAttributes = false;
             classInfo.BaseClass = "MyBaseClass1";
             classInfo.GenericTypes.Add("T1", null);
-            classInfo.GenericTypes.Add("T2", new List<string>() { "class", "new()" });
-            classInfo.GenericTypes.Add("T3", new List<string>() { "enum" });
+            classInfo.GenericTypes.Add("T2", (new List<string>() { "class", "new()" }, null));
+            classInfo.GenericTypes.Add("T3", (new List<string>() { "enum" }, null));
 
             var classStr = classInfo.ToString();
 
@@ -308,6 +308,96 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             var classStr = classInfo.ToString();
 
             Assert.AreEqual(@"private protected partial class TestClass1
+{
+}", classStr);
+        }
+
+        [TestMethod]
+        public void WithXmlDoc_Summary()
+        {
+            var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            classInfo.XmlDocSummary = @"This is the summary
+Line 2";
+
+            var classStr = classInfo.ToString();
+
+            Assert.AreEqual(@"/// <summary>
+/// This is the summary
+/// Line 2
+/// </summary>
+private class TestClass1
+{
+}", classStr);
+        }
+
+        [TestMethod]
+        public void WithXmlDoc_Generics()
+        {
+            var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            classInfo.GenericTypes.Add("T1", (null, "T1 is cool"));
+
+            var classStr = classInfo.ToString();
+
+            Assert.AreEqual(@"/// <summary>
+/// TestClass1
+/// </summary>
+/// <typeparam name=""T1"">T1 is cool</typeparam>
+private class TestClass1<T1>
+{
+}", classStr);
+        }
+
+        [TestMethod]
+        public void WithXmlDoc_AdditionalLines()
+        {
+            var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            classInfo.XmlDocAdditionalLines.Add("<example>This is the first line</example>");
+            classInfo.XmlDocAdditionalLines.Add("<someTag>This is the second line</someTag>");
+
+            var classStr = classInfo.ToString();
+
+            Assert.AreEqual(@"/// <summary>
+/// TestClass1
+/// </summary>
+/// <example>This is the first line</example>
+/// <someTag>This is the second line</someTag>
+private class TestClass1
+{
+}", classStr);
+        }
+
+        [TestMethod]
+        public void WithXmlDoc_FullDoc()
+        {
+            var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            classInfo.XmlDocAdditionalLines.Add("<example>This is the first line</example>");
+            classInfo.XmlDocAdditionalLines.Add("<someTag>This is the second line</someTag>");
+
+            classInfo.XmlDocSummary = @"This is the summary
+Line 2";
+
+            classInfo.GenericTypes.Add("T1", (null, "T1 is cool"));
+            classInfo.GenericTypes.Add("T2", (null, null));
+
+            var classStr = classInfo.ToString();
+
+            Assert.AreEqual(@"/// <summary>
+/// This is the summary
+/// Line 2
+/// </summary>
+/// <typeparam name=""T1"">T1 is cool</typeparam>
+/// <typeparam name=""T2""></typeparam>
+/// <example>This is the first line</example>
+/// <someTag>This is the second line</someTag>
+private class TestClass1<T1, T2>
 {
 }", classStr);
         }

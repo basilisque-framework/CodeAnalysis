@@ -8,8 +8,13 @@ namespace Basilisque.CodeAnalysis.Syntax
     /// </summary>
     public class CodeLines : SyntaxNode, IEnumerable<string>
     {
-        private static string[] _lineSeparators = new string[] { "\r\n", "\r", "\n" };
         private List<string> _lines = new List<string>();
+
+        /// <summary>
+        /// A list of line separators that can be used to split strings by lines
+        /// </summary>
+        internal static readonly string[] LineSeparators = new string[] { "\r\n", "\r", "\n" };
+
 
         /// <summary>
         /// Gets or sets the line at a specified index
@@ -27,7 +32,7 @@ namespace Basilisque.CodeAnalysis.Syntax
                 if (value == null)
                     throw new ArgumentNullException(nameof(value));
 
-                var lines = value.Split(_lineSeparators, StringSplitOptions.None);
+                var lines = value.Split(LineSeparators, StringSplitOptions.None);
 
                 _lines[index] = lines[0];
 
@@ -88,7 +93,7 @@ namespace Basilisque.CodeAnalysis.Syntax
             if (sourceCode == null)
                 return;
 
-            var lines = sourceCode.Split(_lineSeparators, StringSplitOptions.None);
+            var lines = sourceCode.Split(LineSeparators, StringSplitOptions.None);
 
             var iMax = lines.Length - 1;
             var isMoreThanOneLine = lines.Length > 1;

@@ -12,6 +12,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         private string? _baseClass;
         private string? _generatedCodeToolName;
         private string? _generatedCodeToolVersion;
+        private List<string>? _xmlDocAdditionalLines;
 
         /// <summary>
         /// The name of the class
@@ -59,6 +60,26 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// Defines if the generated class is a partial class or not
         /// </summary>
         public bool IsPartial { get; set; } = false;
+
+        /// <summary>
+        /// The text that is used as summary for the XML documentation comment
+        /// </summary>
+        public string? XmlDocSummary { get; set; }
+
+        /// <summary>
+        /// Additional XML documentation lines.
+        /// Full lines including XML tags.
+        /// </summary>
+        public List<string> XmlDocAdditionalLines
+        {
+            get
+            {
+                if (_xmlDocAdditionalLines == null)
+                    _xmlDocAdditionalLines = new List<string>();
+
+                return _xmlDocAdditionalLines;
+            }
+        }
 
         /// <summary>
         /// Defines if the generated source contains attributes to mark it as generated code
@@ -152,7 +173,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <summary>
         /// A list of generic type arguments of this class and their constraints
         /// </summary>
-        public Dictionary<string, List<string>?> GenericTypes { get; } = new Dictionary<string, List<string>?>();
+        public Dictionary<string, (List<string>? Constraints, string? XmlDoc)?> GenericTypes { get; } = new Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>();
 
         /// <summary>
         /// Appends the current class and its children as C# code to the given <see cref="StringBuilder"/>
@@ -163,6 +184,10 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <param name="indent">A string containing the indentation characters for the current class (a string containing the <see cref="SyntaxNode.IndentationCharacter"/> times the <see cref="SyntaxNode.IndentationCharacterCountPerLevel"/>)</param>
         protected override void ToCSharpString(StringBuilder sb, int indentCnt, int childIndentCnt, string indent)
         {
+            //System.CodeDom.Compiler.IndentedTextWriter itw = new();
+
+            appendXmlDoc(sb, indent);
+
             if (AddGeneratedCodeAttributes)
             {
                 var generatedCodeToolName = GeneratedCodeToolName ?? _constructingAssemblyName.Name;
@@ -197,6 +222,65 @@ namespace Basilisque.CodeAnalysis.Syntax
             sb.Append("}");
         }
 
+        private void appendXmlDoc(StringBuilder sb, string indent)
+        {
+            var hasXmlDoc = !string.IsNullOrWhiteSpace(XmlDocSummary)
+                || _xmlDocAdditionalLines?.Count > 0
+                || GenericTypes.Any(gt => !string.IsNullOrWhiteSpace(gt.Value?.XmlDoc));
+
+            if (!hasXmlDoc)
+                return;
+
+            sb.Append(indent);
+            sb.AppendLine("/// <summary>");
+
+            if (string.IsNullOrWhiteSpace(XmlDocSummary))
+            {
+                sb.Append(indent);
+                sb.Append("/// ");
+                sb.AppendLine(ClassName);
+            }
+            else
+            {
+                var lines = XmlDocSummary!.Split(CodeLines.LineSeparators, StringSplitOptions.None);
+
+                foreach (var line in lines)
+                {
+                    sb.Append(indent);
+                    sb.Append("/// ");
+                    sb.AppendLine(line);
+                }
+            }
+
+            sb.Append(indent);
+            sb.AppendLine("/// </summary>");
+
+            foreach (var gt in GenericTypes)
+            {
+                var gtXmlDoc = gt.Value?.XmlDoc;
+
+                sb.Append(indent);
+                sb.Append("/// <typeparam name=\"");
+                sb.Append(gt.Key);
+                sb.Append("\">");
+
+                if (!string.IsNullOrWhiteSpace(gtXmlDoc))
+                    sb.Append(gtXmlDoc);
+
+                sb.AppendLine("</typeparam>");
+            }
+
+            if (_xmlDocAdditionalLines != null)
+            {
+                foreach (var line in _xmlDocAdditionalLines)
+                {
+                    sb.Append(indent);
+                    sb.Append("/// ");
+                    sb.AppendLine(line);
+                }
+            }
+        }
+
         private void appendClassWithName(StringBuilder sb, string indent)
         {
             sb.Append(indent);
@@ -228,7 +312,7 @@ namespace Basilisque.CodeAnalysis.Syntax
 
                     sb.Append(genericType.Key);
 
-                    if (!hasGenericTypeConstraints && genericType.Value?.Count > 0)
+                    if (!hasGenericTypeConstraints && genericType.Value?.Constraints?.Count > 0)
                         hasGenericTypeConstraints = true;
                 }
 
@@ -274,7 +358,7 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             foreach (var genericType in GenericTypes)
             {
-                if (genericType.Value?.Count > 0)
+                if (genericType.Value?.Constraints?.Count > 0)
                 {
                     sb.Append(childIndent);
                     sb.Append("where ");
@@ -282,7 +366,7 @@ namespace Basilisque.CodeAnalysis.Syntax
                     sb.Append(" : ");
 
                     bool addCommaBeforeNextConstraint = false;
-                    foreach (var constraint in genericType.Value)
+                    foreach (var constraint in genericType.Value?.Constraints!)
                     {
                         if (addCommaBeforeNextConstraint)
                             sb.Append(", ");

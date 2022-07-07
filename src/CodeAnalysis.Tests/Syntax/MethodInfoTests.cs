@@ -122,5 +122,68 @@ if (true)
         doSomething();
 }", src);
         }
+
+        [TestMethod]
+        public void WithXmlDoc_Summary()
+        {
+            var methodInfo = new MethodInfo(AccessModifier.Public, "string", "MyMethod1");
+
+            methodInfo.XmlDocSummary = @"This is the summary for the method
+Line 2";
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"/// <summary>
+/// This is the summary for the method
+/// Line 2
+/// </summary>
+public string MyMethod1()
+{
+}", src);
+        }
+
+        [TestMethod]
+        public void WithXmlDoc_AdditionalLines()
+        {
+            var methodInfo = new MethodInfo(AccessModifier.Public, "string", "MyMethod1");
+
+            methodInfo.XmlDocAdditionalLines.Add("<example>This is the first line</example>");
+            methodInfo.XmlDocAdditionalLines.Add("<someTag>This is the second line</someTag>");
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"/// <summary>
+/// MyMethod1
+/// </summary>
+/// <example>This is the first line</example>
+/// <someTag>This is the second line</someTag>
+public string MyMethod1()
+{
+}", src);
+        }
+
+        [TestMethod]
+        public void WithXmlDoc_FullDoc()
+        {
+            var methodInfo = new MethodInfo(AccessModifier.Public, "string", "MyMethod1");
+
+            methodInfo.XmlDocAdditionalLines.Add("<example>This is the first line</example>");
+            methodInfo.XmlDocAdditionalLines.Add("<someTag>This is the second line</someTag>");
+
+            methodInfo.XmlDocSummary = @"This is the summary for the method
+Line 2";
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"/// <summary>
+/// This is the summary for the method
+/// Line 2
+/// </summary>
+/// <example>This is the first line</example>
+/// <someTag>This is the second line</someTag>
+public string MyMethod1()
+{
+}", src);
+        }
     }
 }
