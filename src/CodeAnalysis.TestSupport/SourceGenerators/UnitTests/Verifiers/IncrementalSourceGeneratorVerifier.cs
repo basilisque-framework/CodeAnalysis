@@ -15,6 +15,9 @@ namespace Basilisque.CodeAnalysis.TestSupport.SourceGenerators.UnitTests.Verifie
         where TSourceGenerator : IIncrementalGenerator, new()
         where TVerifier : IVerifier, new()
     {
+        private Dictionary<string, string>? _globalOptions;
+        private Dictionary<string, ReportDiagnostic>? _diagnosticOptions;
+
         /// <summary>
         /// The target <see cref="LanguageVersion"/> that the source generator should generate code for
         /// </summary>
@@ -23,12 +26,30 @@ namespace Basilisque.CodeAnalysis.TestSupport.SourceGenerators.UnitTests.Verifie
         /// <summary>
         /// The global options that should be provided to the source generator
         /// </summary>
-        public Dictionary<string, string> GlobalOptions { get; } = new Dictionary<string, string>();
+        public Dictionary<string, string> GlobalOptions
+        {
+            get
+            {
+                if (_globalOptions == null)
+                    _globalOptions = new Dictionary<string, string>();
+
+                return _globalOptions;
+            }
+        }
 
         /// <summary>
         /// The diagnostic options that should be added to the compilation
         /// </summary>
-        public Dictionary<string, ReportDiagnostic> DiagnosticOptions { get; } = new Dictionary<string, ReportDiagnostic>();
+        public Dictionary<string, ReportDiagnostic> DiagnosticOptions
+        {
+            get
+            {
+                if (_diagnosticOptions == null)
+                    _diagnosticOptions = new Dictionary<string, ReportDiagnostic>();
+
+                return _diagnosticOptions;
+            }
+        }
 
         /// <summary>
         /// Creates a new <see cref="IncrementalSourceGeneratorVerifier{TSourceGenerator, TVerifier}"/>
@@ -57,7 +78,8 @@ namespace Basilisque.CodeAnalysis.TestSupport.SourceGenerators.UnitTests.Verifie
         {
             var driver = base.CreateGeneratorDriver(project, sourceGenerators);
 
-            driver = driver.WithUpdatedAnalyzerConfigOptions(new Diagnostics.ConfigOptionsProvider(project.AnalyzerOptions.AnalyzerConfigOptionsProvider, GlobalOptions));
+            if (_globalOptions != null)
+                driver = driver.WithUpdatedAnalyzerConfigOptions(new Diagnostics.ConfigOptionsProvider(project.AnalyzerOptions.AnalyzerConfigOptionsProvider, _globalOptions));
 
             return driver;
         }

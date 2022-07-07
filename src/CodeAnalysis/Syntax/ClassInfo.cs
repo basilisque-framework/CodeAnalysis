@@ -14,6 +14,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         private string? _generatedCodeToolVersion;
         private List<string>? _xmlDocAdditionalLines;
         private List<string>? _implementedInterfaces;
+        private Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>? _genericTypes;
 
         /// <summary>
         /// The name of the class
@@ -183,7 +184,16 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <summary>
         /// A list of generic type arguments of this class and their constraints
         /// </summary>
-        public Dictionary<string, (List<string>? Constraints, string? XmlDoc)?> GenericTypes { get; } = new Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>();
+        public Dictionary<string, (List<string>? Constraints, string? XmlDoc)?> GenericTypes
+        {
+            get
+            {
+                if (_genericTypes == null)
+                    _genericTypes = new Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>();
+
+                return _genericTypes;
+            }
+        }
 
         /// <summary>
         /// Appends the current class and its children as C# code to the given <see cref="StringBuilder"/>
@@ -236,7 +246,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             var hasXmlDoc = !string.IsNullOrWhiteSpace(XmlDocSummary)
                 || _xmlDocAdditionalLines?.Count > 0
-                || GenericTypes.Any(gt => !string.IsNullOrWhiteSpace(gt.Value?.XmlDoc));
+                || _genericTypes?.Any(gt => !string.IsNullOrWhiteSpace(gt.Value?.XmlDoc)) == true;
 
             if (!hasXmlDoc)
                 return;
@@ -252,7 +262,7 @@ namespace Basilisque.CodeAnalysis.Syntax
             }
             else
             {
-                var lines = XmlDocSummary!.Split(CodeLines.LineSeparators, StringSplitOptions.None);
+                var lines = XmlDocSummary!.Split(LineSeparators, StringSplitOptions.None);
 
                 foreach (var line in lines)
                 {
@@ -265,19 +275,22 @@ namespace Basilisque.CodeAnalysis.Syntax
             sb.Append(indent);
             sb.AppendLine("/// </summary>");
 
-            foreach (var gt in GenericTypes)
+            if (_genericTypes != null)
             {
-                var gtXmlDoc = gt.Value?.XmlDoc;
+                foreach (var gt in _genericTypes)
+                {
+                    var gtXmlDoc = gt.Value?.XmlDoc;
 
-                sb.Append(indent);
-                sb.Append("/// <typeparam name=\"");
-                sb.Append(gt.Key);
-                sb.Append("\">");
+                    sb.Append(indent);
+                    sb.Append("/// <typeparam name=\"");
+                    sb.Append(gt.Key);
+                    sb.Append("\">");
 
-                if (!string.IsNullOrWhiteSpace(gtXmlDoc))
-                    sb.Append(gtXmlDoc);
+                    if (!string.IsNullOrWhiteSpace(gtXmlDoc))
+                        sb.Append(gtXmlDoc);
 
-                sb.AppendLine("</typeparam>");
+                    sb.AppendLine("</typeparam>");
+                }
             }
 
             if (_xmlDocAdditionalLines != null)
@@ -307,13 +320,13 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             bool hasGenericTypeConstraints = false;
 
-            if (GenericTypes.Count > 0)
+            if (_genericTypes?.Count > 0)
             {
                 sb.Append("<");
 
                 bool addCommaBeforeNextGenericType = false;
 
-                foreach (var genericType in GenericTypes)
+                foreach (var genericType in _genericTypes)
                 {
                     if (addCommaBeforeNextGenericType)
                         sb.Append(", ");
@@ -369,7 +382,10 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             var childIndent = GetIndentation(childIndentCnt);
 
-            foreach (var genericType in GenericTypes)
+            if (_genericTypes == null)
+                return;
+
+            foreach (var genericType in _genericTypes)
             {
                 if (genericType.Value?.Constraints?.Count > 0)
                 {

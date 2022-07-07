@@ -8,6 +8,11 @@ namespace Basilisque.CodeAnalysis.Syntax
     public abstract class SyntaxNode
     {
         /// <summary>
+        /// A list of line separators that can be used to split strings by lines
+        /// </summary>
+        internal static readonly string[] LineSeparators = new string[] { "\r\n", "\r", "\n" };
+
+        /// <summary>
         /// The <see cref="char"/> that is used for indentation
         /// </summary>
         protected static char IndentationCharacter { get { return ' '; } }

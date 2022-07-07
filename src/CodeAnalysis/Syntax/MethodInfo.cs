@@ -9,6 +9,7 @@ namespace Basilisque.CodeAnalysis.Syntax
     {
         private string _name;
         private string _returnType = "void";
+        private CodeLines? _body;
         private List<string>? _xmlDocAdditionalLines;
 
         /// <summary>
@@ -88,7 +89,16 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <summary>
         /// Contains the <see cref="CodeLines"/> of the body of the method
         /// </summary>
-        public CodeLines Body { get; } = new CodeLines();
+        public CodeLines Body
+        {
+            get
+            {
+                if (_body == null)
+                    _body = new CodeLines();
+
+                return _body;
+            }
+        }
 
         /// <summary>
         /// Creates a new <see cref="MethodInfo"/>
@@ -146,10 +156,13 @@ namespace Basilisque.CodeAnalysis.Syntax
             sb.AppendLine("{");
 
             var ci = childIndentCnt * IndentationCharacterCountPerLevel;
-            foreach (var line in Body)
+            if (_body != null)
             {
-                sb.Append(IndentationCharacter, ci);
-                sb.AppendLine(line);
+                foreach (var line in _body)
+                {
+                    sb.Append(IndentationCharacter, ci);
+                    sb.AppendLine(line);
+                }
             }
 
             sb.Append(indent);
@@ -175,7 +188,7 @@ namespace Basilisque.CodeAnalysis.Syntax
             }
             else
             {
-                var lines = XmlDocSummary!.Split(CodeLines.LineSeparators, StringSplitOptions.None);
+                var lines = XmlDocSummary!.Split(LineSeparators, StringSplitOptions.None);
 
                 foreach (var line in lines)
                 {

@@ -11,12 +11,6 @@ namespace Basilisque.CodeAnalysis.Syntax
         private List<string> _lines = new List<string>();
 
         /// <summary>
-        /// A list of line separators that can be used to split strings by lines
-        /// </summary>
-        internal static readonly string[] LineSeparators = new string[] { "\r\n", "\r", "\n" };
-
-
-        /// <summary>
         /// Gets or sets the line at a specified index
         /// </summary>
         /// <param name="index">The zero-based index of the line to get or set</param>
