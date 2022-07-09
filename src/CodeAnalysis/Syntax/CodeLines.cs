@@ -11,6 +11,17 @@ namespace Basilisque.CodeAnalysis.Syntax
         private List<string> _lines = new List<string>();
 
         /// <summary>
+        /// Gets the number of code lines contained in this list
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return _lines.Count;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the line at a specified index
         /// </summary>
         /// <param name="index">The zero-based index of the line to get or set</param>

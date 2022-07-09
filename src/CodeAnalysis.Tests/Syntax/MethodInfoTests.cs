@@ -273,5 +273,96 @@ public string MyMethod1<T1>()
 {
 }", src);
         }
+
+        [TestMethod]
+        public void Partial_IsInitializedByConstructor_IsPartial()
+        {
+            var methodInfo = new MethodInfo(true, "MyMethod");
+
+            Assert.AreEqual(true, methodInfo.IsPartial);
+            Assert.AreEqual("void", methodInfo.ReturnType);
+            Assert.AreEqual(AccessModifier.Private, methodInfo.AccessModifier);
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"partial void MyMethod();", src);
+        }
+
+        [TestMethod]
+        public void Partial_IsInitializedByConstructor_IsNotPartial()
+        {
+            var methodInfo = new MethodInfo(false, "MyMethod");
+
+            Assert.AreEqual(false, methodInfo.IsPartial);
+            Assert.AreEqual("void", methodInfo.ReturnType);
+            Assert.AreEqual(AccessModifier.Private, methodInfo.AccessModifier);
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"private void MyMethod()
+{
+}", src);
+        }
+
+        [TestMethod]
+        public void Partial_CannotChangeReturnType()
+        {
+            var methodInfo = new MethodInfo(true, "MyMethod");
+
+            Assert.ThrowsException<ArgumentException>(() => methodInfo.ReturnType = "string");
+        }
+
+        [TestMethod]
+        public void Partial_CannotChangeAccessModifier()
+        {
+            var methodInfo = new MethodInfo(true, "MyMethod");
+
+            Assert.ThrowsException<ArgumentException>(() => methodInfo.AccessModifier = AccessModifier.Public);
+        }
+
+        [TestMethod]
+        public void Partial_GenericWithoutBody()
+        {
+            var methodInfo = new MethodInfo(true, "MyMethod");
+
+            methodInfo.GenericTypes.Add("T1", (new List<string>() { "ISomeInterface" }, "T1 is cool"));
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"/// <summary>
+/// MyMethod
+/// </summary>
+/// <typeparam name=""T1"">T1 is cool</typeparam>
+partial void MyMethod<T1>()
+    where T1 : ISomeInterface;", src);
+        }
+
+        [TestMethod]
+        public void Partial_GenericWithBody()
+        {
+            var methodInfo = new MethodInfo(true, "MyMethod");
+
+            methodInfo.GenericTypes.Add("T1", (new List<string>() { "ISomeInterface" }, "T1 is cool"));
+
+            methodInfo.Body.Append(@"
+if (true == false)
+    ;
+throw new NotImplementedException();
+");
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"/// <summary>
+/// MyMethod
+/// </summary>
+/// <typeparam name=""T1"">T1 is cool</typeparam>
+partial void MyMethod<T1>()
+    where T1 : ISomeInterface
+{
+    if (true == false)
+        ;
+    throw new NotImplementedException();
+}", src);
+        }
     }
 }

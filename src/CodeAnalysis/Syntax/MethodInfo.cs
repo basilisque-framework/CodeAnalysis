@@ -7,6 +7,7 @@ namespace Basilisque.CodeAnalysis.Syntax
     /// </summary>
     public class MethodInfo : SyntaxNode
     {
+        private AccessModifier _accessModifier;
         private string _name;
         private string _returnType = "void";
         private CodeLines? _body;
@@ -17,7 +18,20 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// The access modifier that specifies the accessibility of the method
         /// </summary>
         /// <example>public</example>
-        public AccessModifier AccessModifier { get; set; }
+        public AccessModifier AccessModifier
+        {
+            get
+            {
+                return _accessModifier;
+            }
+            set
+            {
+                if (IsPartial && value != AccessModifier.Private)
+                    throw new ArgumentException("Partial methods have to be private");
+
+                _accessModifier = value;
+            }
+        }
 
         /// <summary>
         /// Defines if the method is static
@@ -28,6 +42,11 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// Defines if the method is async
         /// </summary>
         public bool IsAsync { get; set; } = false;
+
+        /// <summary>
+        /// Defines if the method is partial
+        /// </summary>
+        public bool IsPartial { get; } = false;
 
         /// <summary>
         /// The return type of the method as string
@@ -43,7 +62,12 @@ namespace Basilisque.CodeAnalysis.Syntax
                 if (string.IsNullOrWhiteSpace(value))
                     _returnType = "void";
                 else
+                {
+                    if (IsPartial && value != "void")
+                        throw new ArgumentException("The return type of partial methods has to be 'void'.");
+
                     _returnType = value;
+                }
             }
         }
 
@@ -138,6 +162,17 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// Creates a new <see cref="MethodInfo"/>
+        /// </summary>
+        /// <param name="isPartial">Defines if the method is partial</param>
+        /// <param name="name">The name of the method</param>
+        public MethodInfo(bool isPartial, string name)
+            : this(AccessModifier.Private, "void", name)
+        {
+            IsPartial = isPartial;
+        }
+
+        /// <summary>
         /// Appends the current method and its children as C# code to the given <see cref="StringBuilder"/>
         /// </summary>
         /// <param name="sb">The <see cref="StringBuilder"/> that the method is added to</param>
@@ -150,17 +185,23 @@ namespace Basilisque.CodeAnalysis.Syntax
             appendXmlDoc(sb, indentCharCnt);
 
             AppendIntentation(sb, indentCharCnt);
-            sb.Append(AccessModifier.ToKeywordString());
-            sb.Append(' ');
 
-            if (IsStatic)
-                sb.Append("static ");
+            if (IsPartial)
+                sb.Append("partial void ");
+            else
+            {
+                sb.Append(AccessModifier.ToKeywordString());
+                sb.Append(' ');
 
-            if (IsAsync)
-                sb.Append("async ");
+                if (IsStatic)
+                    sb.Append("static ");
 
-            sb.Append(ReturnType);
-            sb.Append(' ');
+                if (IsAsync)
+                    sb.Append("async ");
+
+                sb.Append(ReturnType);
+                sb.Append(' ');
+            }
 
             sb.Append(_name);
 
@@ -168,17 +209,27 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             sb.Append('(');
 
-            sb.AppendLine(")");
+            sb.Append(')');
 
             if (hasGenericTypeConstraints)
                 appendGenericTypeConstraints(sb, childIndentCharCnt);
 
+            var hasBody = _body?.Count > 0;
+
+            if (IsPartial && !hasBody)
+            {
+                sb.Append(';');
+                return;
+            }
+
+            sb.AppendLine();
+
             AppendIntentation(sb, indentCharCnt);
             sb.AppendLine("{");
 
-            if (_body != null)
+            if (hasBody)
             {
-                foreach (var line in _body)
+                foreach (var line in _body!)
                 {
                     AppendIntentation(sb, childIndentCharCnt);
                     sb.AppendLine(line);
@@ -291,6 +342,8 @@ namespace Basilisque.CodeAnalysis.Syntax
             {
                 if (genericType.Value?.Constraints?.Count > 0)
                 {
+                    sb.AppendLine();
+
                     AppendIntentation(sb, childIndentCharCnt);
                     sb.Append("where ");
                     sb.Append(genericType.Key);
@@ -306,8 +359,6 @@ namespace Basilisque.CodeAnalysis.Syntax
 
                         sb.Append(constraint);
                     }
-
-                    sb.AppendLine();
                 }
             }
         }
