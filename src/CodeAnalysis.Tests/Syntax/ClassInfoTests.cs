@@ -474,5 +474,69 @@ throw new NotImplementedException();
     }
 }", classStr);
         }
+
+        [TestMethod]
+        public void With1AdditionalCodeLine()
+        {
+            var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            classInfo.Methods.Add(new MethodInfo(AccessModifier.Public, "void", "MyPublicMethod")
+            {
+                XmlDocSummary = "This is a public method"
+            });
+
+            classInfo.AdditionalCodeLines.Append(@"
+public int TestProp { get; }
+");
+
+            var classStr = classInfo.ToString();
+
+            Assert.AreEqual(@"public class MyClass
+{
+    /// <summary>
+    /// This is a public method
+    /// </summary>
+    public void MyPublicMethod()
+    {
+    }
+    
+    public int TestProp { get; }
+}", classStr);
+        }
+
+        [TestMethod]
+        public void With2AdditionalCodeLines()
+        {
+            var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            classInfo.Methods.Add(new MethodInfo(AccessModifier.Public, "void", "MyPublicMethod")
+            {
+                XmlDocSummary = "This is a public method"
+            });
+
+            classInfo.AdditionalCodeLines.Append(@"
+public int TestProp { get; }
+
+This is some line that doesn't compile but I don't care what is added in here...
+");
+
+            var classStr = classInfo.ToString();
+
+            Assert.AreEqual(@"public class MyClass
+{
+    /// <summary>
+    /// This is a public method
+    /// </summary>
+    public void MyPublicMethod()
+    {
+    }
+    
+    public int TestProp { get; }
+    
+    This is some line that doesn't compile but I don't care what is added in here...
+}", classStr);
+        }
     }
 }

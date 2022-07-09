@@ -16,6 +16,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         private List<string>? _implementedInterfaces;
         private Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>? _genericTypes;
         private List<MethodInfo>? _methods;
+        private CodeLines? _additionalCodeLines;
 
         /// <summary>
         /// The name of the class
@@ -150,6 +151,20 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// Represents a list of additional code lines that are appended to the class body.
+        /// </summary>
+        public CodeLines AdditionalCodeLines
+        {
+            get
+            {
+                if (_additionalCodeLines == null)
+                    _additionalCodeLines = new CodeLines();
+
+                return _additionalCodeLines;
+            }
+        }
+
+        /// <summary>
         /// Creates a new instance of <see cref="ClassInfo"/>
         /// </summary>
         /// <param name="className" example="MyClass">The name of the class</param>
@@ -267,6 +282,8 @@ namespace Basilisque.CodeAnalysis.Syntax
                     sb.AppendLine();
                 }
             }
+
+            appendAdditionalCodeLines(sb, childIndentCharCnt);
 
             AppendIntentation(sb, indentCharCnt);
             sb.Append("}");
@@ -438,5 +455,19 @@ namespace Basilisque.CodeAnalysis.Syntax
             }
         }
 
+        private void appendAdditionalCodeLines(StringBuilder sb, int childIndentCharCnt)
+        {
+            if (_additionalCodeLines != null)
+            {
+                if (_additionalCodeLines.Count > 0)
+                    AppendIntentationLine(sb, childIndentCharCnt);
+
+                foreach (var additionalLine in _additionalCodeLines)
+                {
+                    AppendIntentation(sb, childIndentCharCnt);
+                    sb.AppendLine(additionalLine);
+                }
+            }
+        }
     }
 }
