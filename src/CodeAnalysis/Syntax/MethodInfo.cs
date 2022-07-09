@@ -186,58 +186,16 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             AppendIntentation(sb, indentCharCnt);
 
-            if (IsPartial)
-                sb.Append("partial void ");
-            else
-            {
-                sb.Append(AccessModifier.ToKeywordString());
-                sb.Append(' ');
-
-                if (IsStatic)
-                    sb.Append("static ");
-
-                if (IsAsync)
-                    sb.Append("async ");
-
-                sb.Append(ReturnType);
-                sb.Append(' ');
-            }
-
-            sb.Append(_name);
+            appendMethodWithName(sb);
 
             bool hasGenericTypeConstraints = appendGenericTypes(sb);
 
-            sb.Append('(');
-
-            sb.Append(')');
+            appendParameters(sb);
 
             if (hasGenericTypeConstraints)
                 appendGenericTypeConstraints(sb, childIndentCharCnt);
 
-            var hasBody = _body?.Count > 0;
-
-            if (IsPartial && !hasBody)
-            {
-                sb.Append(';');
-                return;
-            }
-
-            sb.AppendLine();
-
-            AppendIntentation(sb, indentCharCnt);
-            sb.AppendLine("{");
-
-            if (hasBody)
-            {
-                foreach (var line in _body!)
-                {
-                    AppendIntentation(sb, childIndentCharCnt);
-                    sb.AppendLine(line);
-                }
-            }
-
-            AppendIntentation(sb, indentCharCnt);
-            sb.Append("}");
+            appendMethodBody(sb, indentCharCnt, childIndentCharCnt);
         }
 
         private void appendXmlDoc(StringBuilder sb, int indentCharCnt)
@@ -304,6 +262,28 @@ namespace Basilisque.CodeAnalysis.Syntax
             }
         }
 
+        private void appendMethodWithName(StringBuilder sb)
+        {
+            if (IsPartial)
+                sb.Append("partial void ");
+            else
+            {
+                sb.Append(AccessModifier.ToKeywordString());
+                sb.Append(' ');
+
+                if (IsStatic)
+                    sb.Append("static ");
+
+                if (IsAsync)
+                    sb.Append("async ");
+
+                sb.Append(ReturnType);
+                sb.Append(' ');
+            }
+
+            sb.Append(_name);
+        }
+
         private bool appendGenericTypes(StringBuilder sb)
         {
             bool hasGenericTypeConstraints = false;
@@ -331,6 +311,15 @@ namespace Basilisque.CodeAnalysis.Syntax
             }
 
             return hasGenericTypeConstraints;
+        }
+
+        private static void appendParameters(StringBuilder sb)
+        {
+            sb.Append('(');
+
+            //ToDo: method parameters
+
+            sb.Append(')');
         }
 
         private void appendGenericTypeConstraints(StringBuilder sb, int childIndentCharCnt)
@@ -361,6 +350,34 @@ namespace Basilisque.CodeAnalysis.Syntax
                     }
                 }
             }
+        }
+
+        private void appendMethodBody(StringBuilder sb, int indentCharCnt, int childIndentCharCnt)
+        {
+            var hasBody = _body?.Count > 0;
+
+            if (IsPartial && !hasBody)
+            {
+                sb.Append(';');
+                return;
+            }
+
+            sb.AppendLine();
+
+            AppendIntentation(sb, indentCharCnt);
+            sb.AppendLine("{");
+
+            if (hasBody)
+            {
+                foreach (var line in _body!)
+                {
+                    AppendIntentation(sb, childIndentCharCnt);
+                    sb.AppendLine(line);
+                }
+            }
+
+            AppendIntentation(sb, indentCharCnt);
+            sb.Append("}");
         }
     }
 }
