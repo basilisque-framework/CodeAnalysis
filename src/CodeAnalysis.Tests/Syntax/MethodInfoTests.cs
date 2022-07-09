@@ -364,5 +364,33 @@ partial void MyMethod<T1>()
     throw new NotImplementedException();
 }", src);
         }
+
+        [TestMethod]
+        public void With1Parameter()
+        {
+            var methodInfo = new MethodInfo(true, "MyMethod");
+
+            methodInfo.Parameters.Add(new ParameterInfo(ParameterKind.Ordinary, "int", "myPar"));
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"partial void MyMethod(int myPar);", src);
+        }
+
+        [TestMethod]
+        public void With3Parameters()
+        {
+            var methodInfo = new MethodInfo(AccessModifier.Public, "void", "MyMethod");
+
+            methodInfo.Parameters.Add(new ParameterInfo(ParameterKind.Ordinary, "int", "myPar"));
+            methodInfo.Parameters.Add(new ParameterInfo(ParameterKind.Ordinary, "string", "myPar2") { DefaultValue = "" });
+            methodInfo.Parameters.Add(new ParameterInfo(ParameterKind.Ref, "string", "myPar3"));
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"public void MyMethod(int myPar, string myPar2 = """", ref string myPar3)
+{
+}", src);
+        }
     }
 }

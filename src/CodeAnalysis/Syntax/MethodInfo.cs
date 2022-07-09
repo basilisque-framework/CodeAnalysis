@@ -13,6 +13,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         private CodeLines? _body;
         private List<string>? _xmlDocAdditionalLines;
         private Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>? _genericTypes;
+        private List<ParameterInfo>? _parameters;
 
         /// <summary>
         /// The access modifier that specifies the accessibility of the method
@@ -108,6 +109,20 @@ namespace Basilisque.CodeAnalysis.Syntax
                     _xmlDocAdditionalLines = new List<string>();
 
                 return _xmlDocAdditionalLines;
+            }
+        }
+
+        /// <summary>
+        /// The parameters of the method
+        /// </summary>
+        public List<ParameterInfo> Parameters
+        {
+            get
+            {
+                if (_parameters == null)
+                    _parameters = new List<ParameterInfo>();
+
+                return _parameters;
             }
         }
 
@@ -313,11 +328,24 @@ namespace Basilisque.CodeAnalysis.Syntax
             return hasGenericTypeConstraints;
         }
 
-        private static void appendParameters(StringBuilder sb)
+        private void appendParameters(StringBuilder sb)
         {
             sb.Append('(');
 
-            //ToDo: method parameters
+            if (_parameters != null)
+            {
+                var isFirst = true;
+
+                foreach (var parameter in _parameters)
+                {
+                    if (isFirst)
+                        isFirst = false;
+                    else
+                        sb.Append(", ");
+
+                    parameter.ToString(sb, 0, Language.CSharp);
+                }
+            }
 
             sb.Append(')');
         }
