@@ -237,18 +237,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             appendXmlDoc(sb, indentCharCnt);
 
-            if (AddGeneratedCodeAttributes)
-            {
-                var generatedCodeToolName = GeneratedCodeToolName ?? _constructingAssemblyName.Name;
-                var generatedCodeToolVersion = GeneratedCodeToolVersion ?? _constructingAssemblyName.Version.ToString();
-
-                AppendIntentation(sb, indentCharCnt);
-                sb.AppendLine($@"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""{generatedCodeToolName}"", ""{generatedCodeToolVersion}"")]");
-                AppendIntentation(sb, indentCharCnt);
-                sb.AppendLine(@"[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
-                AppendIntentation(sb, indentCharCnt);
-                sb.AppendLine(@"[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
-            }
+            appendGeneratedCodeAttributes(sb, indentCharCnt);
 
             appendClassWithName(sb, indentCharCnt);
 
@@ -256,32 +245,15 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             appendBaseClassAndInterfaces(sb);
 
-            //append line break after class declaration
-            sb.AppendLine();
-
             if (hasGenericTypeConstraints)
                 appendGenericTypeConstraints(sb, childIndentCharCnt);
 
             AppendIntentation(sb, indentCharCnt);
             sb.AppendLine("{");
 
-            //ToDo: add properties, ...
+            //ToDo: add fields and properties
 
-            if (_methods != null)
-            {
-                var isFirst = true;
-
-                foreach (var method in _methods)
-                {
-                    if (isFirst)
-                        isFirst = false;
-                    else
-                        AppendIntentationLine(sb, childIndentCharCnt);
-
-                    method.ToString(sb, childIndentLvl, Language.CSharp);
-                    sb.AppendLine();
-                }
-            }
+            appendMethods(sb, childIndentLvl, childIndentCharCnt);
 
             appendAdditionalCodeLines(sb, childIndentCharCnt);
 
@@ -348,6 +320,22 @@ namespace Basilisque.CodeAnalysis.Syntax
                     sb.Append("/// ");
                     sb.AppendLine(line);
                 }
+            }
+        }
+
+        private void appendGeneratedCodeAttributes(StringBuilder sb, int indentCharCnt)
+        {
+            if (AddGeneratedCodeAttributes)
+            {
+                var generatedCodeToolName = GeneratedCodeToolName ?? _constructingAssemblyName.Name;
+                var generatedCodeToolVersion = GeneratedCodeToolVersion ?? _constructingAssemblyName.Version.ToString();
+
+                AppendIntentation(sb, indentCharCnt);
+                sb.AppendLine($@"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""{generatedCodeToolName}"", ""{generatedCodeToolVersion}"")]");
+                AppendIntentation(sb, indentCharCnt);
+                sb.AppendLine(@"[global::System.Diagnostics.DebuggerNonUserCodeAttribute()]");
+                AppendIntentation(sb, indentCharCnt);
+                sb.AppendLine(@"[global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]");
             }
         }
 
@@ -423,6 +411,9 @@ namespace Basilisque.CodeAnalysis.Syntax
                     sb.Append(interfaceName);
                 }
             }
+
+            //append line break after class declaration
+            sb.AppendLine();
         }
 
         private void appendGenericTypeConstraints(StringBuilder sb, int childIndentCharCnt)
@@ -450,6 +441,25 @@ namespace Basilisque.CodeAnalysis.Syntax
                         sb.Append(constraint);
                     }
 
+                    sb.AppendLine();
+                }
+            }
+        }
+
+        private void appendMethods(StringBuilder sb, int childIndentLvl, int childIndentCharCnt)
+        {
+            if (_methods != null)
+            {
+                var isFirst = true;
+
+                foreach (var method in _methods)
+                {
+                    if (isFirst)
+                        isFirst = false;
+                    else
+                        AppendIntentationLine(sb, childIndentCharCnt);
+
+                    method.ToString(sb, childIndentLvl, Language.CSharp);
                     sb.AppendLine();
                 }
             }
