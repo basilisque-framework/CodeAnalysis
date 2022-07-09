@@ -11,6 +11,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         private string _returnType = "void";
         private CodeLines? _body;
         private List<string>? _xmlDocAdditionalLines;
+        private Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>? _genericTypes;
 
         /// <summary>
         /// The access modifier that specifies the accessibility of the method
@@ -101,6 +102,20 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// A list of generic type arguments of this method and their constraints
+        /// </summary>
+        public Dictionary<string, (List<string>? Constraints, string? XmlDoc)?> GenericTypes
+        {
+            get
+            {
+                if (_genericTypes == null)
+                    _genericTypes = new Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>();
+
+                return _genericTypes;
+            }
+        }
+
+        /// <summary>
         /// Creates a new <see cref="MethodInfo"/>
         /// </summary>
         /// <param name="accessModifier">The access modifier that specifies the accessibility of the method</param>
@@ -149,9 +164,14 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             sb.Append(_name);
 
+            bool hasGenericTypeConstraints = appendGenericTypes(sb);
+
             sb.Append('(');
 
             sb.AppendLine(")");
+
+            if (hasGenericTypeConstraints)
+                appendGenericTypeConstraints(sb, childIndentCharCnt);
 
             AppendIntentation(sb, indentCharCnt);
             sb.AppendLine("{");
@@ -172,7 +192,8 @@ namespace Basilisque.CodeAnalysis.Syntax
         private void appendXmlDoc(StringBuilder sb, int indentCharCnt)
         {
             var hasXmlDoc = !string.IsNullOrWhiteSpace(XmlDocSummary)
-                || _xmlDocAdditionalLines?.Count > 0;
+                || _xmlDocAdditionalLines?.Count > 0
+                || _genericTypes?.Any(gt => !string.IsNullOrWhiteSpace(gt.Value?.XmlDoc)) == true;
 
             if (!hasXmlDoc)
                 return;
@@ -201,6 +222,26 @@ namespace Basilisque.CodeAnalysis.Syntax
             AppendIntentation(sb, indentCharCnt);
             sb.AppendLine("/// </summary>");
 
+
+            if (_genericTypes != null)
+            {
+                foreach (var gt in _genericTypes)
+                {
+                    var gtXmlDoc = gt.Value?.XmlDoc;
+
+                    AppendIntentation(sb, indentCharCnt);
+                    sb.Append("/// <typeparam name=\"");
+                    sb.Append(gt.Key);
+                    sb.Append("\">");
+
+                    if (!string.IsNullOrWhiteSpace(gtXmlDoc))
+                        sb.Append(gtXmlDoc);
+
+                    sb.AppendLine("</typeparam>");
+                }
+            }
+
+
             if (_xmlDocAdditionalLines != null)
             {
                 foreach (var line in _xmlDocAdditionalLines)
@@ -212,5 +253,63 @@ namespace Basilisque.CodeAnalysis.Syntax
             }
         }
 
+        private bool appendGenericTypes(StringBuilder sb)
+        {
+            bool hasGenericTypeConstraints = false;
+
+            if (_genericTypes?.Count > 0)
+            {
+                sb.Append("<");
+
+                bool addCommaBeforeNextGenericType = false;
+
+                foreach (var genericType in _genericTypes)
+                {
+                    if (addCommaBeforeNextGenericType)
+                        sb.Append(", ");
+                    else
+                        addCommaBeforeNextGenericType = true;
+
+                    sb.Append(genericType.Key);
+
+                    if (!hasGenericTypeConstraints && genericType.Value?.Constraints?.Count > 0)
+                        hasGenericTypeConstraints = true;
+                }
+
+                sb.Append(">");
+            }
+
+            return hasGenericTypeConstraints;
+        }
+
+        private void appendGenericTypeConstraints(StringBuilder sb, int childIndentCharCnt)
+        {
+            if (_genericTypes == null)
+                return;
+
+            foreach (var genericType in _genericTypes)
+            {
+                if (genericType.Value?.Constraints?.Count > 0)
+                {
+                    AppendIntentation(sb, childIndentCharCnt);
+                    sb.Append("where ");
+                    sb.Append(genericType.Key);
+                    sb.Append(" : ");
+
+                    bool addCommaBeforeNextConstraint = false;
+                    foreach (var constraint in genericType.Value?.Constraints!)
+                    {
+                        if (addCommaBeforeNextConstraint)
+                            sb.Append(", ");
+                        else
+                            addCommaBeforeNextConstraint = true;
+
+                        sb.Append(constraint);
+                    }
+
+                    sb.AppendLine();
+                }
+            }
+        }
     }
 }

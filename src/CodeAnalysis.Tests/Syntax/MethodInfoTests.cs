@@ -162,6 +162,26 @@ public string MyMethod1()
 }", src);
         }
 
+
+        [TestMethod]
+        public void WithXmlDoc_Generic()
+        {
+            var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
+
+            methodInfo.GenericTypes.Add("T1", (null, "This is my generic parameter"));
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"/// <summary>
+/// MyMethod
+/// </summary>
+/// <typeparam name=""T1"">This is my generic parameter</typeparam>
+private int MyMethod<T1>()
+{
+}", src);
+        }
+
+
         [TestMethod]
         public void WithXmlDoc_FullDoc()
         {
@@ -173,15 +193,83 @@ public string MyMethod1()
             methodInfo.XmlDocSummary = @"This is the summary for the method
 Line 2";
 
+
+            methodInfo.GenericTypes.Add("T1", (null, "This is my generic parameter"));
+
             var src = methodInfo.ToString();
 
             Assert.AreEqual(@"/// <summary>
 /// This is the summary for the method
 /// Line 2
 /// </summary>
+/// <typeparam name=""T1"">This is my generic parameter</typeparam>
 /// <example>This is the first line</example>
 /// <someTag>This is the second line</someTag>
-public string MyMethod1()
+public string MyMethod1<T1>()
+{
+}", src);
+        }
+
+        [TestMethod]
+        public void With1GenericType_NoConstraints()
+        {
+            var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
+
+            methodInfo.GenericTypes.Add("T1", (null, null));
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"private int MyMethod<T1>()
+{
+}", src);
+        }
+
+        [TestMethod]
+        public void With1GenericType_WithConstraints()
+        {
+            var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
+
+            methodInfo.GenericTypes.Add("T1", (new List<string>() { "ISomeInterface" }, null));
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"private int MyMethod<T1>()
+    where T1 : ISomeInterface
+{
+}", src);
+        }
+
+        [TestMethod]
+        public void With3GenericType_NoConstraints()
+        {
+            var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
+
+            methodInfo.GenericTypes.Add("T1", (null, null));
+            methodInfo.GenericTypes.Add("T2", (null, null));
+            methodInfo.GenericTypes.Add("T3", (null, null));
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"private int MyMethod<T1, T2, T3>()
+{
+}", src);
+        }
+
+        [TestMethod]
+        public void With3GenericType_WithConstraints()
+        {
+            var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
+
+            methodInfo.GenericTypes.Add("A1", (new List<string>() { "ISomeInterface" }, null));
+            methodInfo.GenericTypes.Add("A2", (new List<string>() { "ISomeOtherInterface" }, null));
+            methodInfo.GenericTypes.Add("A3", (new List<string>() { "ISomeInterface", "ISomeOtherInterface" }, null));
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"private int MyMethod<A1, A2, A3>()
+    where A1 : ISomeInterface
+    where A2 : ISomeOtherInterface
+    where A3 : ISomeInterface, ISomeOtherInterface
 {
 }", src);
         }
