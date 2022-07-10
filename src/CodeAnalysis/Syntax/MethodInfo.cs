@@ -14,6 +14,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         private List<string>? _xmlDocAdditionalLines;
         private Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>? _genericTypes;
         private List<ParameterInfo>? _parameters;
+        private bool _isExtensionMethod = false;
 
         /// <summary>
         /// The access modifier that specifies the accessibility of the method
@@ -48,6 +49,24 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// Defines if the method is partial
         /// </summary>
         public bool IsPartial { get; } = false;
+
+        /// <summary>
+        /// Defines if the method is an extension method
+        /// </summary>
+        public bool IsExtensionMethod
+        {
+            get
+            {
+                return _isExtensionMethod;
+            }
+            set
+            {
+                _isExtensionMethod = value;
+
+                if (_isExtensionMethod)
+                    IsStatic = true;
+            }
+        }
 
         /// <summary>
         /// The return type of the method as string
@@ -334,6 +353,9 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             if (_parameters != null)
             {
+                if (IsExtensionMethod)
+                    sb.Append("this ");
+
                 var isFirst = true;
 
                 foreach (var parameter in _parameters)

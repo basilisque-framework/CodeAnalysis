@@ -392,5 +392,21 @@ partial void MyMethod<T1>()
 {
 }", src);
         }
+
+        [TestMethod]
+        public void IsExtensionMethod()
+        {
+            var methodInfo = new MethodInfo(AccessModifier.Public, "void", "MyMethod");
+
+            methodInfo.Parameters.Add(new ParameterInfo(ParameterKind.Ordinary, "int", "myPar"));
+
+            methodInfo.IsExtensionMethod = true;
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"public static void MyMethod(this int myPar)
+{
+}", src);
+        }
     }
 }
