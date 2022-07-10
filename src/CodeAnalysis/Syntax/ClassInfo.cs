@@ -66,6 +66,11 @@ namespace Basilisque.CodeAnalysis.Syntax
         public bool IsPartial { get; set; } = false;
 
         /// <summary>
+        /// Defines if the generated class is a static class or not
+        /// </summary>
+        public bool IsStatic { get; set; } = false;
+
+        /// <summary>
         /// The text that is used as summary for the XML documentation comment
         /// </summary>
         public string? XmlDocSummary { get; set; }
@@ -343,6 +348,9 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             AppendIntentation(sb, indentCharCnt);
             sb.Append(AccessModifier.ToKeywordString());
+
+            if (IsStatic)
+                sb.Append(" static");
 
             if (IsPartial)
                 sb.Append(" partial");

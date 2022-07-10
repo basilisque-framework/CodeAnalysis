@@ -313,6 +313,20 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         }
 
         [TestMethod]
+        public void StaticClass_CorrectString()
+        {
+            var classInfo = new ClassInfo("TestClass1", AccessModifier.PrivateProtected);
+            classInfo.AddGeneratedCodeAttributes = false;
+            classInfo.IsStatic = true;
+
+            var classStr = classInfo.ToString();
+
+            Assert.AreEqual(@"private protected static class TestClass1
+{
+}", classStr);
+        }
+
+        [TestMethod]
         public void WithXmlDoc_Summary()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
