@@ -77,6 +77,34 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// Checks if a given string is enclosed in parenthesis valid for C#
+        /// </summary>
+        /// <param name="str">The string that should be checked</param>
+        /// <returns>A boolean value if the string is enclosed in parenthesis or not</returns>
+        protected static bool StringIsInParenthesisCSharp(string str)
+        {
+            if (!str.EndsWith("\""))
+                return false;
+
+            if (str.StartsWith("\""))
+                return true;
+
+            if (str.StartsWith("@\""))
+                return true;
+
+            if (str.StartsWith("$\""))
+                return true;
+
+            if (str.StartsWith("@$\""))
+                return true;
+
+            if (str.StartsWith("$@\""))
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
         /// Gets the indentation string for a given number of indentation levels
         /// </summary>
         /// <param name="indentationCount">The number of indentation levels</param>

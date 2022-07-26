@@ -99,5 +99,47 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             Assert.AreEqual($"bool myParameter", src);
         }
+
+        [DataTestMethod]
+        [DataRow(null, DisplayName = "Name = null")]
+        [DataRow("", DisplayName = "Name = \"\"")]
+        [DataRow("   ", DisplayName = "Name = \"   \"")]
+        public void EmptyName_ThrowsException(string name)
+        {
+            Assert.ThrowsException<ArgumentNullException>(() => new ParameterInfo(ParameterKind.Ordinary, "type", name));
+        }
+
+        [DataTestMethod]
+        [DataRow(null, DisplayName = "Type = null")]
+        [DataRow("", DisplayName = "Type = \"\"")]
+        [DataRow("   ", DisplayName = "Type = \"   \"")]
+        public void EmptyType_ThrowsException(string type)
+        {
+            Assert.ThrowsException<ArgumentNullException>(() => new ParameterInfo(ParameterKind.Ordinary, type, "name"));
+        }
+
+        [TestMethod]
+        public void CanChangeName()
+        {
+            var parameterInfo = new ParameterInfo(ParameterKind.Ordinary, "bool", "myParameter");
+
+            Assert.AreEqual("myParameter", parameterInfo.Name);
+
+            parameterInfo.Name = "myParameter2";
+
+            Assert.AreEqual("myParameter2", parameterInfo.Name);
+        }
+
+        [TestMethod]
+        public void CanChangeType()
+        {
+            var parameterInfo = new ParameterInfo(ParameterKind.Ordinary, "bool", "myParameter");
+
+            Assert.AreEqual("bool", parameterInfo.Type);
+
+            parameterInfo.Type = "bool2";
+
+            Assert.AreEqual("bool2", parameterInfo.Type);
+        }
     }
 }

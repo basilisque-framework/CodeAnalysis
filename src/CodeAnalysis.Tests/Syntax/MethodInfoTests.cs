@@ -169,6 +169,7 @@ public string MyMethod1()
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
 
             methodInfo.GenericTypes.Add("T1", (null, "This is my generic parameter"));
+            methodInfo.GenericTypes.Add("T2", null);
 
             var src = methodInfo.ToString();
 
@@ -176,7 +177,8 @@ public string MyMethod1()
 /// MyMethod
 /// </summary>
 /// <typeparam name=""T1"">This is my generic parameter</typeparam>
-private int MyMethod<T1>()
+/// <typeparam name=""T2""></typeparam>
+private int MyMethod<T1, T2>()
 {
 }", src);
         }
@@ -244,9 +246,9 @@ public string MyMethod1<T1>()
         {
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
 
-            methodInfo.GenericTypes.Add("T1", (null, null));
+            methodInfo.GenericTypes.Add("T1", null);
             methodInfo.GenericTypes.Add("T2", (null, null));
-            methodInfo.GenericTypes.Add("T3", (null, null));
+            methodInfo.GenericTypes.Add("T3", (new List<string>(), null));
 
             var src = methodInfo.ToString();
 
@@ -256,17 +258,20 @@ public string MyMethod1<T1>()
         }
 
         [TestMethod]
-        public void With3GenericType_WithConstraints()
+        public void With5GenericType_With3Constraints()
         {
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
 
             methodInfo.GenericTypes.Add("A1", (new List<string>() { "ISomeInterface" }, null));
             methodInfo.GenericTypes.Add("A2", (new List<string>() { "ISomeOtherInterface" }, null));
             methodInfo.GenericTypes.Add("A3", (new List<string>() { "ISomeInterface", "ISomeOtherInterface" }, null));
+            methodInfo.GenericTypes.Add("A4", null);
+            methodInfo.GenericTypes.Add("A5", (null, null));
+            methodInfo.GenericTypes.Add("A6", (new List<string>(), null));
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"private int MyMethod<A1, A2, A3>()
+            Assert.AreEqual(@"private int MyMethod<A1, A2, A3, A4, A5, A6>()
     where A1 : ISomeInterface
     where A2 : ISomeOtherInterface
     where A3 : ISomeInterface, ISomeOtherInterface

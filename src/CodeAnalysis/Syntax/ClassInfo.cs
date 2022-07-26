@@ -17,6 +17,8 @@ namespace Basilisque.CodeAnalysis.Syntax
         private Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>? _genericTypes;
         private List<MethodInfo>? _methods;
         private CodeLines? _additionalCodeLines;
+        private List<FieldInfo> _fields;
+        private List<PropertyInfo> _properties;
 
         /// <summary>
         /// The name of the class
@@ -156,6 +158,34 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// A list of <see cref="FieldInfo"/> that this class contains
+        /// </summary>
+        public List<FieldInfo> Fields
+        {
+            get
+            {
+                if (_fields == null)
+                    _fields = new();
+
+                return _fields;
+            }
+        }
+
+        /// <summary>
+        /// A list of <see cref="PropertyInfo"/> that this class contains
+        /// </summary>
+        public List<PropertyInfo> Properties
+        {
+            get
+            {
+                if (_properties == null)
+                    _properties = new();
+
+                return _properties;
+            }
+        }
+
+        /// <summary>
         /// Represents a list of additional code lines that are appended to the class body.
         /// </summary>
         public CodeLines AdditionalCodeLines
@@ -256,11 +286,15 @@ namespace Basilisque.CodeAnalysis.Syntax
             AppendIntentation(sb, indentCharCnt);
             sb.AppendLine("{");
 
-            //ToDo: add fields and properties
+            var alreadyHasContent = appendFields(sb, childIndentLvl);
 
-            appendMethods(sb, childIndentLvl, childIndentCharCnt);
+            alreadyHasContent = appendAdditionalFieldsForProperties(sb, childIndentLvl) || alreadyHasContent;
 
-            appendAdditionalCodeLines(sb, childIndentCharCnt);
+            alreadyHasContent = appendProperties(sb, childIndentLvl, childIndentCharCnt, alreadyHasContent) || alreadyHasContent;
+
+            alreadyHasContent = appendMethods(sb, childIndentLvl, childIndentCharCnt, alreadyHasContent) || alreadyHasContent;
+
+            alreadyHasContent = appendAdditionalCodeLines(sb, childIndentCharCnt, alreadyHasContent) || alreadyHasContent;
 
             AppendIntentation(sb, indentCharCnt);
             sb.Append("}");
@@ -426,10 +460,7 @@ namespace Basilisque.CodeAnalysis.Syntax
 
         private void appendGenericTypeConstraints(StringBuilder sb, int childIndentCharCnt)
         {
-            if (_genericTypes == null)
-                return;
-
-            foreach (var genericType in _genericTypes)
+            foreach (var genericType in _genericTypes!)
             {
                 if (genericType.Value?.Constraints?.Count > 0)
                 {
@@ -439,7 +470,7 @@ namespace Basilisque.CodeAnalysis.Syntax
                     sb.Append(" : ");
 
                     bool addCommaBeforeNextConstraint = false;
-                    foreach (var constraint in genericType.Value?.Constraints!)
+                    foreach (var constraint in genericType.Value.Value.Constraints)
                     {
                         if (addCommaBeforeNextConstraint)
                             sb.Append(", ");
@@ -454,38 +485,107 @@ namespace Basilisque.CodeAnalysis.Syntax
             }
         }
 
-        private void appendMethods(StringBuilder sb, int childIndentLvl, int childIndentCharCnt)
+        private bool appendFields(StringBuilder sb, int childIndentLvl)
         {
-            if (_methods != null)
+            if (_fields == null)
+                return false;
+
+            if (_fields.Count < 1)
+                return false;
+
+            foreach (var field in _fields)
             {
-                var isFirst = true;
-
-                foreach (var method in _methods)
-                {
-                    if (isFirst)
-                        isFirst = false;
-                    else
-                        AppendIntentationLine(sb, childIndentCharCnt);
-
-                    method.ToString(sb, childIndentLvl, Language.CSharp);
-                    sb.AppendLine();
-                }
+                field.ToString(sb, childIndentLvl, Language.CSharp);
+                sb.AppendLine();
             }
+
+            return true;
         }
 
-        private void appendAdditionalCodeLines(StringBuilder sb, int childIndentCharCnt)
+        private bool appendAdditionalFieldsForProperties(StringBuilder sb, int childIndentLvl)
         {
-            if (_additionalCodeLines != null)
-            {
-                if (_additionalCodeLines.Count > 0)
-                    AppendIntentationLine(sb, childIndentCharCnt);
+            if (_properties == null)
+                return false;
 
-                foreach (var additionalLine in _additionalCodeLines)
-                {
-                    AppendIntentation(sb, childIndentCharCnt);
-                    sb.AppendLine(additionalLine);
-                }
+            var result = false;
+
+            foreach (var property in _properties)
+            {
+                if (result)
+                    sb.AppendLine();
+
+                result = property.AppendFieldIfNecessary(sb, childIndentLvl, Language.CSharp, _fields) || result;
             }
+
+            if (result)
+                sb.AppendLine();
+
+            return result;
+        }
+
+        private bool appendProperties(StringBuilder sb, int childIndentLvl, int childIndentCharCnt, bool alreadyHasContent)
+        {
+            if (_properties == null)
+                return false;
+
+            if (_properties.Count < 1)
+                return false;
+
+            foreach (var property in _properties)
+            {
+                if (alreadyHasContent)
+                    AppendIntentationLine(sb, childIndentCharCnt);
+                else
+                    alreadyHasContent = true;
+
+                property.ToString(sb, childIndentLvl, Language.CSharp);
+
+                sb.AppendLine();
+            }
+
+            return true;
+        }
+
+        private bool appendMethods(StringBuilder sb, int childIndentLvl, int childIndentCharCnt, bool alreadyHasContent)
+        {
+            if (_methods == null)
+                return false;
+
+            if (_methods.Count < 1)
+                return false;
+
+            foreach (var method in _methods)
+            {
+                if (alreadyHasContent)
+                    AppendIntentationLine(sb, childIndentCharCnt);
+                else
+                    alreadyHasContent = true;
+
+                method.ToString(sb, childIndentLvl, Language.CSharp);
+                sb.AppendLine();
+            }
+
+            return true;
+        }
+
+        private bool appendAdditionalCodeLines(StringBuilder sb, int childIndentCharCnt, bool alreadyHasContent)
+        {
+            if (_additionalCodeLines == null)
+                return false;
+
+            if (_additionalCodeLines.Count < 1)
+                return false;
+
+            if (alreadyHasContent)
+                AppendIntentationLine(sb, childIndentCharCnt);
+
+            foreach (var additionalLine in _additionalCodeLines)
+            {
+                AppendIntentation(sb, childIndentCharCnt);
+                sb.AppendLine(additionalLine);
+            }
+
+            return true;
         }
     }
 }

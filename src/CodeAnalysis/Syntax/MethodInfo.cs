@@ -374,9 +374,6 @@ namespace Basilisque.CodeAnalysis.Syntax
 
         private void appendGenericTypeConstraints(StringBuilder sb, int childIndentCharCnt)
         {
-            if (_genericTypes == null)
-                return;
-
             foreach (var genericType in _genericTypes)
             {
                 if (genericType.Value?.Constraints?.Count > 0)
@@ -389,7 +386,7 @@ namespace Basilisque.CodeAnalysis.Syntax
                     sb.Append(" : ");
 
                     bool addCommaBeforeNextConstraint = false;
-                    foreach (var constraint in genericType.Value?.Constraints!)
+                    foreach (var constraint in genericType.Value.Value.Constraints)
                     {
                         if (addCommaBeforeNextConstraint)
                             sb.Append(", ");

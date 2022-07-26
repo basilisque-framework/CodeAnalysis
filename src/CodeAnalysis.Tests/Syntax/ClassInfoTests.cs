@@ -109,17 +109,18 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         }
 
         [TestMethod]
-        public void With3GenericTypes_NoConstraints_NoBaseClass()
+        public void With4GenericTypes_NoConstraints_NoBaseClass()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
             classInfo.GenericTypes.Add("T1", null);
             classInfo.GenericTypes.Add("T2", null);
             classInfo.GenericTypes.Add("T3", (new List<string>() { }, null));
+            classInfo.GenericTypes.Add("T4", (null, null));
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private class TestClass1<T1, T2, T3>
+            Assert.AreEqual(@"private class TestClass1<T1, T2, T3, T4>
 {
 }", classStr);
         }
@@ -205,7 +206,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         }
 
         [TestMethod]
-        public void With3GenericTypes_WithConstraints_WithBaseClass()
+        public void With5GenericTypes_WithConstraints_WithBaseClass()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -213,10 +214,12 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             classInfo.GenericTypes.Add("T1", null);
             classInfo.GenericTypes.Add("T2", (new List<string>() { "class", "new()" }, null));
             classInfo.GenericTypes.Add("T3", (new List<string>() { "enum" }, null));
+            classInfo.GenericTypes.Add("T4", (new List<string>(), null));
+            classInfo.GenericTypes.Add("T5", (null, null));
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private class TestClass1<T1, T2, T3> : MyBaseClass1
+            Assert.AreEqual(@"private class TestClass1<T1, T2, T3, T4, T5> : MyBaseClass1
     where T2 : class, new()
     where T3 : enum
 {
@@ -353,6 +356,7 @@ private class TestClass1
             classInfo.AddGeneratedCodeAttributes = false;
 
             classInfo.GenericTypes.Add("T1", (null, "T1 is cool"));
+            classInfo.GenericTypes.Add("T2", null);
 
             var classStr = classInfo.ToString();
 
@@ -360,7 +364,8 @@ private class TestClass1
 /// TestClass1
 /// </summary>
 /// <typeparam name=""T1"">T1 is cool</typeparam>
-private class TestClass1<T1>
+/// <typeparam name=""T2""></typeparam>
+private class TestClass1<T1, T2>
 {
 }", classStr);
         }
@@ -490,6 +495,24 @@ throw new NotImplementedException();
         }
 
         [TestMethod]
+        public void AccessAllChildProperties_ButLeaveThemEmpty()
+        {
+            var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            Assert.IsNotNull(classInfo.Fields);
+            Assert.IsNotNull(classInfo.Properties);
+            Assert.IsNotNull(classInfo.Methods);
+            Assert.IsNotNull(classInfo.AdditionalCodeLines);
+            Assert.IsNotNull(classInfo.XmlDocAdditionalLines);
+
+            var src = classInfo.ToString();
+            Assert.AreEqual(@"public class MyClass
+{
+}", src);
+        }
+
+        [TestMethod]
         public void With1AdditionalCodeLine()
         {
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
@@ -551,6 +574,116 @@ This is some line that doesn't compile but I don't care what is added in here...
     
     This is some line that doesn't compile but I don't care what is added in here...
 }", classStr);
+        }
+
+        [TestMethod]
+        public void With2Fields()
+        {
+            var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            classInfo.Fields.Add(new FieldInfo("double", "_someField"));
+            classInfo.Fields.Add(new FieldInfo("int", "_myField"));
+
+            var src = classInfo.ToString();
+
+            Assert.AreEqual(@"public class MyClass
+{
+    private double _someField;
+    private int _myField;
+}", src);
+        }
+
+        [TestMethod]
+        public void With1Property()
+        {
+            var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            classInfo.Properties.Add(new PropertyInfo("int", "MyProp"));
+
+            var src = classInfo.ToString();
+
+            Assert.AreEqual(@"public class MyClass
+{
+    public int MyProp { get; set; }
+}", src);
+        }
+
+        [TestMethod]
+        public void With2Properties()
+        {
+            var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            classInfo.Properties.Add(new PropertyInfo("int", "MyProp"));
+            classInfo.Properties.Add(new PropertyInfo("int", "MyProp2"));
+
+            var src = classInfo.ToString();
+
+            Assert.AreEqual(@"public class MyClass
+{
+    public int MyProp { get; set; }
+    
+    public int MyProp2 { get; set; }
+}", src);
+        }
+
+        [TestMethod]
+        public void With2Properties_WithAdditionalFieldsAndMethods()
+        {
+            var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            classInfo.Fields.Add(new FieldInfo("int", "_someOtherField"));
+
+            classInfo.Properties.Add(new PropertyInfo("int", "MyProp") { FieldName = "_myField" });
+            classInfo.Properties.Add(new PropertyInfo("int", "MyProp2") { FieldName = "_myField2" });
+
+            classInfo.Methods.Add(new MethodInfo(AccessModifier.Public, "bool", "CanDoSomething"));
+
+            var src = classInfo.ToString();
+
+            Assert.AreEqual(@"public class MyClass
+{
+    private int _someOtherField;
+    private int _myField;
+    private int _myField2;
+    
+    public int MyProp
+    {
+        get
+        {
+            return this._myField;
+        }
+        set
+        {
+            if (value != this._myField)
+            {
+                this._myField = value;
+            }
+        }
+    }
+    
+    public int MyProp2
+    {
+        get
+        {
+            return this._myField2;
+        }
+        set
+        {
+            if (value != this._myField2)
+            {
+                this._myField2 = value;
+            }
+        }
+    }
+    
+    public bool CanDoSomething()
+    {
+    }
+}", src);
         }
     }
 }

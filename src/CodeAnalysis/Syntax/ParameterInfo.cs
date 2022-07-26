@@ -80,8 +80,7 @@ namespace Basilisque.CodeAnalysis.Syntax
 
         protected override void ToCSharpString(StringBuilder sb, int indentLvl, int childIndentLvl, int indentCharCnt, int childIndentCharCnt)
         {
-            if (indentCharCnt > 0)
-                AppendIntentation(sb, indentCharCnt);
+            AppendIntentation(sb, indentCharCnt);
 
             switch (ParameterKind)
             {
@@ -112,7 +111,7 @@ namespace Basilisque.CodeAnalysis.Syntax
 
                 if (isStringType)
                 {
-                    if (!stringIsInParenthesis(defaultValue))
+                    if (!StringIsInParenthesisCSharp(defaultValue))
                     {
                         defaultValue = defaultValue.Replace("\"", "\\\"");
 
@@ -128,29 +127,6 @@ namespace Basilisque.CodeAnalysis.Syntax
                     sb.Append(defaultValue);
                 }
             }
-        }
-
-        private bool stringIsInParenthesis(string str)
-        {
-            if (!str.EndsWith("\""))
-                return false;
-
-            if (str.StartsWith("\""))
-                return true;
-
-            if (str.StartsWith("@\""))
-                return true;
-
-            if (str.StartsWith("$\""))
-                return true;
-
-            if (str.StartsWith("@$\""))
-                return true;
-
-            if (str.StartsWith("$@\""))
-                return true;
-
-            return false;
         }
     }
 }
