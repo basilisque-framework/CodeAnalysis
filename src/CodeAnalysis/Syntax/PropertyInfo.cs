@@ -199,6 +199,58 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// Converts the current <see cref="SyntaxNode"/> and its children to C# code
+        /// </summary>
+        /// <param name="includeBackingFieldIfNecessary">Defines, if the backing field of the property is part of the resulting string or not</param>
+        /// <returns>Returns a code representation of the current <see cref="SyntaxNode"/> and its children as string</returns>
+        public string ToString(bool includeBackingFieldIfNecessary)
+        {
+            return ToString(Language.CSharp, includeBackingFieldIfNecessary);
+        }
+
+        /// <summary>
+        /// Converts the current <see cref="SyntaxNode"/> and its children to code in the specified <see cref="Language"/>
+        /// </summary>
+        /// <param name="language">The <see cref="Language"/> that is used to generate the code</param>
+        /// <param name="includeBackingFieldIfNecessary">Defines, if the backing field of the property is part of the resulting string or not</param>
+        /// <returns>Returns a code representation of the current <see cref="SyntaxNode"/> and its children as string</returns>
+        public string ToString(Language language, bool includeBackingFieldIfNecessary)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            ToString(sb, 0, language, includeBackingFieldIfNecessary);
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Appends the current <see cref="SyntaxNode"/> and its children as code in the specified <see cref="Language"/> to the given <see cref="StringBuilder"/>
+        /// </summary>
+        /// <param name="stringBuilder">The <see cref="StringBuilder"/> that the <see cref="SyntaxNode"/> is added to</param>
+        /// <param name="indentationLevel" example="0">The count of indentation levels for this <see cref="SyntaxNode"/></param>
+        /// <param name="language">The <see cref="Language"/> that is used to generate the code</param>
+        /// <param name="includeBackingFieldIfNecessary">Defines, if the backing field of the property is part of the resulting string or not</param>
+        /// <exception cref="ArgumentNullException">Thrown when the given <paramref name="stringBuilder"/> is null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the given <paramref name="indentationLevel"/> is less or equal to 0</exception>
+        public void ToString(StringBuilder stringBuilder, int indentationLevel, Language language, bool includeBackingFieldIfNecessary)
+        {
+            Action<StringBuilder, int, int, int, int> langSpecificToString = (sb, iLvl, cILvl, iCharCnt, cICharCnt) =>
+            {
+                switch (language)
+                {
+                    case Language.VisualBasic:
+                        throw new NotSupportedException("Visual Basic is not supported by this generator.");
+                    case Language.CSharp:
+                    default:
+                        ToCSharpString(sb, iLvl, cILvl, iCharCnt, cICharCnt, includeBackingFieldIfNecessary);
+                        break;
+                }
+            };
+
+            InnerToString(stringBuilder, indentationLevel, language, langSpecificToString);
+        }
+
+        /// <summary>
         /// Appends the current <see cref="PropertyInfo"/> as C# code to the given <see cref="StringBuilder"/>
         /// </summary>
         /// <param name="sb">The <see cref="StringBuilder"/> that the <see cref="PropertyInfo"/> is added to</param>
@@ -208,6 +260,26 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <param name="childIndentCharCnt">The count of indentation characters for the direct childre of this <see cref="PropertyInfo"/> (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the direct child level)</param>
         protected override void ToCSharpString(StringBuilder sb, int indentLvl, int childIndentLvl, int indentCharCnt, int childIndentCharCnt)
         {
+            ToCSharpString(sb, indentLvl, childIndentLvl, indentCharCnt, childIndentCharCnt, true);
+        }
+
+        /// <summary>
+        /// Appends the current <see cref="PropertyInfo"/> as C# code to the given <see cref="StringBuilder"/>
+        /// </summary>
+        /// <param name="sb">The <see cref="StringBuilder"/> that the <see cref="PropertyInfo"/> is added to</param>
+        /// <param name="indentLvl">The count of indentation levels the <see cref="PropertyInfo"/> should be indented by</param>
+        /// <param name="childIndentLvl">The count of indentation levels the direct children of this <see cref="PropertyInfo"/> should be indented by</param>
+        /// <param name="indentCharCnt">The count of indentation characters for the current <see cref="PropertyInfo"/> (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the current level)</param>
+        /// <param name="childIndentCharCnt">The count of indentation characters for the direct childre of this <see cref="PropertyInfo"/> (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the direct child level)</param>
+        /// <param name="includeBackingFieldIfNecessary">Defines, if the backing field of the property is part of the resulting string when necessary or not</param>
+        protected void ToCSharpString(StringBuilder sb, int indentLvl, int childIndentLvl, int indentCharCnt, int childIndentCharCnt, bool includeBackingFieldIfNecessary)
+        {
+            if (includeBackingFieldIfNecessary)
+            {
+                if (AppendFieldIfNecessary(sb, indentLvl, Language.CSharp, null!))
+                    sb.AppendLine();
+            }
+
             appendXmlDoc(sb, indentCharCnt);
 
             AppendIntentation(sb, indentCharCnt);

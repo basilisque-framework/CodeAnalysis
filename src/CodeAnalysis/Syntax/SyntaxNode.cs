@@ -55,6 +55,31 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <exception cref="ArgumentOutOfRangeException">Thrown when the given <paramref name="indentationLevel"/> is less or equal to 0</exception>
         public void ToString(StringBuilder stringBuilder, int indentationLevel, Language language)
         {
+            Action<StringBuilder, int, int, int, int> langSpecificToString;
+            switch (language)
+            {
+                case Language.VisualBasic:
+                    throw new NotSupportedException("Visual Basic is not supported by this generator.");
+                case Language.CSharp:
+                default:
+                    langSpecificToString = ToCSharpString;
+                    break;
+            }
+
+            InnerToString(stringBuilder, indentationLevel, language, langSpecificToString);
+        }
+
+        /// <summary>
+        /// Appends the current <see cref="SyntaxNode"/> and its children as code in the specified <see cref="Language"/> to the given <see cref="StringBuilder"/>
+        /// </summary>
+        /// <param name="stringBuilder">The <see cref="StringBuilder"/> that the <see cref="SyntaxNode"/> is added to</param>
+        /// <param name="indentationLevel" example="0">The count of indentation levels for this <see cref="SyntaxNode"/></param>
+        /// <param name="language">The <see cref="Language"/> that is used to generate the code</param>
+        /// <param name="langSpecificToString">The language specific action that is called to generate the result string</param>
+        /// <exception cref="ArgumentNullException">Thrown when the given <paramref name="stringBuilder"/> is null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the given <paramref name="indentationLevel"/> is less or equal to 0</exception>
+        protected void InnerToString(StringBuilder stringBuilder, int indentationLevel, Language language, Action<StringBuilder, int, int, int, int> langSpecificToString)
+        {
             if (stringBuilder == null)
                 throw new ArgumentNullException(nameof(stringBuilder));
 
@@ -65,15 +90,7 @@ namespace Basilisque.CodeAnalysis.Syntax
             var indentCharCnt = indentationLevel * IndentationCharacterCountPerLevel;
             var childIndentCharCnt = childindentationLevel * IndentationCharacterCountPerLevel;
 
-            switch (language)
-            {
-                case Language.VisualBasic:
-                    throw new NotSupportedException("Visual Basic is not supported by this generator.");
-                case Language.CSharp:
-                default:
-                    ToCSharpString(stringBuilder, indentationLevel, childindentationLevel, indentCharCnt, childIndentCharCnt);
-                    break;
-            }
+            langSpecificToString(stringBuilder, indentationLevel, childindentationLevel, indentCharCnt, childIndentCharCnt);
         }
 
         /// <summary>

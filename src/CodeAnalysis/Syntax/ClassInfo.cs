@@ -538,7 +538,7 @@ namespace Basilisque.CodeAnalysis.Syntax
                 else
                     alreadyHasContent = true;
 
-                property.ToString(sb, childIndentLvl, Language.CSharp);
+                property.ToString(sb, childIndentLvl, Language.CSharp, false);
 
                 sb.AppendLine();
             }

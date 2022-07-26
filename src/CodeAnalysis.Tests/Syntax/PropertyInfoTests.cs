@@ -204,7 +204,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 return _myProperty;
 ");
 
-            var src = propertyInfo.ToString();
+            var src = propertyInfo.ToString(Language.CSharp, false);
             var fieldName = propertyInfo.FieldName;
 
             Assert.AreEqual(false, string.IsNullOrWhiteSpace(fieldName));
@@ -234,7 +234,7 @@ return _myProperty;
 _myProperty = value;
 ");
 
-            var src = propertyInfo.ToString();
+            var src = propertyInfo.ToString(false);
             var fieldName = propertyInfo.FieldName;
 
             Assert.AreEqual(false, string.IsNullOrWhiteSpace(fieldName));
@@ -334,7 +334,7 @@ _myProperty = value;
             propertyInfo.HasGetter = false;
             propertyInfo.HasSetter = false;
 
-            var src = propertyInfo.ToString();
+            var src = propertyInfo.ToString(false);
 
             Assert.AreEqual(@"public int MyProperty
 {
@@ -381,7 +381,7 @@ return _myProperty;
             Assert.AreEqual(false, string.IsNullOrWhiteSpace(fieldName));
 
             var sb = new System.Text.StringBuilder();
-            propertyInfo.ToString(sb, 1, Language.CSharp);
+            propertyInfo.ToString(sb, 1, Language.CSharp, false);
             var src = sb.ToString();
 
             Assert.AreEqual($@"    public int MyProperty
@@ -419,7 +419,7 @@ return _myProperty;
 
             propertyInfo.FieldName = "_myField";
 
-            var src = propertyInfo.ToString();
+            var src = propertyInfo.ToString(false);
 
             Assert.AreEqual(@"public int MyProperty
 {
@@ -706,6 +706,31 @@ public int MyProperty { get; set; }", src);
 
             Assert.IsTrue(wasAppended);
             Assert.AreEqual(@"        private int _someField = 9;", src);
+        }
+
+        [TestMethod]
+        public void IncludeBackingField()
+        {
+            var propertyInfo = new PropertyInfo("int", "PropertyName");
+            propertyInfo.FieldName = "_fieldForPropertyName";
+
+            var src = propertyInfo.ToString();
+
+            Assert.AreEqual(@"private int _fieldForPropertyName;
+public int PropertyName
+{
+    get
+    {
+        return this._fieldForPropertyName;
+    }
+    set
+    {
+        if (value != this._fieldForPropertyName)
+        {
+            this._fieldForPropertyName = value;
+        }
+    }
+}", src);
         }
     }
 }
