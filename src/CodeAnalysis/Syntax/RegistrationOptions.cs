@@ -54,5 +54,16 @@
 
             return compilationInfo;
         }
+
+        /// <summary>
+        /// Returns the hint name that can be used to add source text to a <see cref="SourceProductionContext"/>.
+        /// Supplements the provided <paramref name="compilationName"/> with a matching file ending.
+        /// </summary>
+        /// <param name="compilationName">The name of the compilation that is supplemented with a matching file ending</param>
+        /// <returns>The hint name as string</returns>
+        public string GetHintName(string compilationName)
+        {
+            return CompilationInfo.GetHintName(compilationName, Language);
+        }
     }
 }

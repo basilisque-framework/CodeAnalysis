@@ -425,6 +425,21 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         }
 
         [TestMethod]
+        [DataRow(null, DisplayName = "CompilationName = null")]
+        [DataRow("", DisplayName = "CompilationName = \"\"")]
+        [DataRow("   ", DisplayName = "CompilationName = \"   \"")]
+        public void GetHintName_EnsureHintNameForEmptyCompilationName(string compilationName)
+        {
+            var hintName = CompilationInfo.GetHintName(compilationName, Language.CSharp);
+
+            Assert.IsFalse(string.IsNullOrWhiteSpace(hintName));
+
+            Assert.IsTrue(hintName.EndsWith(".g.cs"));
+
+            Assert.IsTrue(hintName.Length >= 6);
+        }
+
+        [TestMethod]
         public void ToString_ForVisualBasic_ThrowsNotSupportedException()
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1");

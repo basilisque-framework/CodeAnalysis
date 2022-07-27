@@ -220,6 +220,18 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <returns>The hint name as string</returns>
         public string GetHintName(Language language)
         {
+            return GetHintName(_compilationName, language);
+        }
+
+        /// <summary>
+        /// Returns the hint name that can be used to add source text to a <see cref="SourceProductionContext"/>.
+        /// Supplements the provided <paramref name="compilationName"/> with a matching file ending.
+        /// </summary>
+        /// <param name="compilationName">The name of the compilation that is supplemented with a matching file ending</param>
+        /// <param name="language">The <see cref="Language"/> that is used to generate the source code</param>
+        /// <returns>The hint name as string</returns>
+        public static string GetHintName(string compilationName, Language language)
+        {
             string fileExt;
             switch (language)
             {
@@ -232,7 +244,9 @@ namespace Basilisque.CodeAnalysis.Syntax
                     break;
             }
 
-            var compilationName = _compilationName;
+            if (string.IsNullOrWhiteSpace(compilationName))
+                compilationName = Guid.NewGuid().ToString("n");
+
             if (!compilationName.EndsWith(fileExt))
             {
                 if (compilationName.EndsWith(".g"))
