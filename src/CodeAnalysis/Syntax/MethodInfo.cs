@@ -51,6 +51,11 @@ namespace Basilisque.CodeAnalysis.Syntax
         public bool IsPartial { get; } = false;
 
         /// <summary>
+        /// Defines if the method is an override
+        /// </summary>
+        public bool IsOverride { get; set; } = false;
+
+        /// <summary>
         /// Defines if the method is an extension method
         /// </summary>
         public bool IsExtensionMethod
@@ -311,6 +316,9 @@ namespace Basilisque.CodeAnalysis.Syntax
                 if (IsAsync)
                     sb.Append("async ");
 
+                if (IsOverride)
+                    sb.Append("override ");
+
                 sb.Append(ReturnType);
                 sb.Append(' ');
             }
@@ -374,7 +382,7 @@ namespace Basilisque.CodeAnalysis.Syntax
 
         private void appendGenericTypeConstraints(StringBuilder sb, int childIndentCharCnt)
         {
-            foreach (var genericType in _genericTypes)
+            foreach (var genericType in _genericTypes!)
             {
                 if (genericType.Value?.Constraints?.Count > 0)
                 {

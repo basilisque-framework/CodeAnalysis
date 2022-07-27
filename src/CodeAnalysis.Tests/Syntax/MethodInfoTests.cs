@@ -105,6 +105,20 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         }
 
         [TestMethod]
+        public void MethodsCanOverrideBaseMethods()
+        {
+            var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
+
+            methodInfo.IsOverride = true;
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"private override int MyMethod()
+{
+}", src);
+        }
+
+        [TestMethod]
         public void BodyGetsIndented()
         {
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
