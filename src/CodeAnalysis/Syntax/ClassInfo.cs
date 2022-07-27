@@ -17,8 +17,8 @@ namespace Basilisque.CodeAnalysis.Syntax
         private Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>? _genericTypes;
         private List<MethodInfo>? _methods;
         private CodeLines? _additionalCodeLines;
-        private List<FieldInfo> _fields;
-        private List<PropertyInfo> _properties;
+        private List<FieldInfo>? _fields;
+        private List<PropertyInfo>? _properties;
 
         /// <summary>
         /// The name of the class

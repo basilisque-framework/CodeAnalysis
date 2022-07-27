@@ -11,12 +11,66 @@ namespace Basilisque.CodeAnalysis.Syntax
     /// <exception cref="ArgumentNullException">Thrown when the <paramref name="compilationName"/> is null, empty or whitespace</exception>
     public delegate CompilationInfo CompilationInfoFactory(string compilationName, string? targetNamespace);
 
+    /// <summary>
+    /// Represents a single source output for source generation
+    /// (e.g. to be used as source input for a <see cref="SourceProductionContext"/>)
+    /// </summary>
+    public class CompilationInfo : CompilationInfo<CompilationInfo>
+    {
+
+        /// <summary>
+        /// Creates a new <see cref="CompilationInfo"/> for the specified language
+        /// </summary>
+        /// <param name="compilationName" example="CodeAnalysis_GeneratedSource">The name of the current compilation or rather the 'source output' (e.g. used as the hintName for the <see cref="SourceProductionContext"/>)</param>
+        /// <param name="targetNamespace" example="Basilisque.CodeAnalysis">The containing namespace of all child syntax nodes (when the <see cref="CompilationInfo{TCompilationInfo}.TargetNamespace"/> is null, empty or whitespace, all children are in the global namespace)</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="compilationName"/> is null, empty or whitespace</exception>
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public CompilationInfo(
+            string compilationName,
+            string? targetNamespace
+            )
+            : base(compilationName, targetNamespace, null, null, System.Reflection.Assembly.GetCallingAssembly().GetName())
+        { }
+
+        /// <summary>
+        /// Creates a new <see cref="CompilationInfo"/> for the specified language
+        /// </summary>
+        /// <param name="compilationName" example="CodeAnalysis_GeneratedSource">The name of the current compilation or rather the 'source output' (e.g. used as the hintName for the <see cref="SourceProductionContext"/>)</param>
+        /// <param name="targetNamespace" example="Basilisque.CodeAnalysis">The containing namespace of all child syntax nodes (when the <see cref="CompilationInfo{TCompilationInfo}.TargetNamespace"/> is null, empty or whitespace, all children are in the global namespace)</param>
+        /// <param name="generatedCodeToolName">The name of the tool that generated the source. (used for the <see cref="System.CodeDom.Compiler.GeneratedCodeAttribute"/>)</param>
+        /// <param name="generatedCodeToolVersion">The version of the tool that generated the source. (used for the <see cref="System.CodeDom.Compiler.GeneratedCodeAttribute"/>)</param>
+        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="compilationName"/> is null, empty or whitespace</exception>
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
+        public CompilationInfo(
+            string compilationName,
+            string? targetNamespace,
+            string generatedCodeToolName,
+            string generatedCodeToolVersion
+            )
+            : base(compilationName, targetNamespace, generatedCodeToolName, generatedCodeToolVersion, System.Reflection.Assembly.GetCallingAssembly().GetName())
+        { }
+
+        internal CompilationInfo(
+            string compilationName,
+            string? targetNamespace,
+            string? generatedCodeToolName,
+            string? generatedCodeToolVersion,
+            System.Reflection.AssemblyName constructingAssemblyName
+            )
+            : base(compilationName,
+                  targetNamespace,
+                  generatedCodeToolName,
+                  generatedCodeToolVersion,
+                  constructingAssemblyName)
+        { }
+    }
 
     /// <summary>
     /// Represents a single source output for source generation
     /// (e.g. to be used as source input for a <see cref="SourceProductionContext"/>)
     /// </summary>
-    public class CompilationInfo : SyntaxNode
+    public class CompilationInfo<TCompilationInfo> : SyntaxNode
+        where TCompilationInfo : CompilationInfo<TCompilationInfo>
     {
         private System.Reflection.AssemblyName _constructingAssemblyName;
         private string _compilationName;
@@ -117,38 +171,6 @@ namespace Basilisque.CodeAnalysis.Syntax
             }
         }
 
-        /// <summary>
-        /// Creates a new <see cref="CompilationInfo"/> for the specified language
-        /// </summary>
-        /// <param name="compilationName" example="CodeAnalysis_GeneratedSource">The name of the current compilation or rather the 'source output' (e.g. used as the hintName for the <see cref="SourceProductionContext"/>)</param>
-        /// <param name="targetNamespace" example="Basilisque.CodeAnalysis">The containing namespace of all child syntax nodes (when the <see cref="TargetNamespace"/> is null, empty or whitespace, all children are in the global namespace)</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="compilationName"/> is null, empty or whitespace</exception>
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
-        public CompilationInfo(
-            string compilationName,
-            string? targetNamespace
-            )
-            : this(compilationName, targetNamespace, null, null, System.Reflection.Assembly.GetCallingAssembly().GetName())
-        { }
-
-        /// <summary>
-        /// Creates a new <see cref="CompilationInfo"/> for the specified language
-        /// </summary>
-        /// <param name="compilationName" example="CodeAnalysis_GeneratedSource">The name of the current compilation or rather the 'source output' (e.g. used as the hintName for the <see cref="SourceProductionContext"/>)</param>
-        /// <param name="targetNamespace" example="Basilisque.CodeAnalysis">The containing namespace of all child syntax nodes (when the <see cref="TargetNamespace"/> is null, empty or whitespace, all children are in the global namespace)</param>
-        /// <param name="generatedCodeToolName">The name of the tool that generated the source. (used for the <see cref="System.CodeDom.Compiler.GeneratedCodeAttribute"/>)</param>
-        /// <param name="generatedCodeToolVersion">The version of the tool that generated the source. (used for the <see cref="System.CodeDom.Compiler.GeneratedCodeAttribute"/>)</param>
-        /// <exception cref="ArgumentNullException">Thrown when the <paramref name="compilationName"/> is null, empty or whitespace</exception>
-        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
-        public CompilationInfo(
-            string compilationName,
-            string? targetNamespace,
-            string generatedCodeToolName,
-            string generatedCodeToolVersion
-            )
-            : this(compilationName, targetNamespace, generatedCodeToolName, generatedCodeToolVersion, System.Reflection.Assembly.GetCallingAssembly().GetName())
-        { }
-
         internal CompilationInfo(
             string compilationName,
             string? targetNamespace,
@@ -173,7 +195,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <param name="className" example="MyClass">The name of the class</param>
         /// <param name="classConfiguration">A callback that is executed after creating the <see cref="ClassInfo"/> and that can be used to configure the created object</param>
         /// <returns>Returns the current <see cref="CompilationInfo"/> to enable use of fluent syntax</returns>
-        public CompilationInfo AddNewClassInfo(string className, Action<ClassInfo> classConfiguration)
+        public TCompilationInfo AddNewClassInfo(string className, Action<ClassInfo> classConfiguration)
         {
             return AddNewClassInfo(className, AccessModifier.Public, classConfiguration);
         }
@@ -185,7 +207,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <param name="accessModifier" example="AccessModifier.Public">The access modifier that specifies the accessibility of the class</param>
         /// <param name="classConfiguration">A callback that is executed after creating the <see cref="ClassInfo"/> and that can be used to configure the created object</param>
         /// <returns>Returns the current <see cref="CompilationInfo"/> to enable use of fluent syntax</returns>
-        public CompilationInfo AddNewClassInfo(string className, AccessModifier accessModifier, Action<ClassInfo> classConfiguration)
+        public TCompilationInfo AddNewClassInfo(string className, AccessModifier accessModifier, Action<ClassInfo> classConfiguration)
         {
             var classInfo = new ClassInfo(className, accessModifier, GeneratedCodeToolName, GeneratedCodeToolVersion, _constructingAssemblyName);
 
@@ -195,7 +217,7 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             Classes.Add(classInfo);
 
-            return this;
+            return (TCompilationInfo)this;
         }
 
         /// <summary>
@@ -204,13 +226,13 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <param name="context">The <see cref="SourceProductionContext"/> where the <see cref="SourceProductionContext.AddSource(string, string)"/> method is called on</param>
         /// <param name="language">The <see cref="Language"/> that is used to generate the source code</param>
         /// <returns>Returns the current <see cref="CompilationInfo"/> to enable use of fluent syntax</returns>
-        public CompilationInfo AddToSourceProductionContext(SourceProductionContext context, Language language)
+        public TCompilationInfo AddToSourceProductionContext(SourceProductionContext context, Language language)
         {
             var compilationName = GetHintName(language);
 
             context.AddSource(compilationName, ToString(language));
 
-            return this;
+            return (TCompilationInfo)this;
         }
 
         /// <summary>

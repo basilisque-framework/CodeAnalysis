@@ -57,7 +57,7 @@
                 TSource src = opt.Left;
                 ((NullableContextOptions nullableContextOptions, Language language), Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion) = opt.Right;
 
-                var registrationOptions = new RegistrationOptions(language, languageVersion, nullableContextOptions, callingAssembly);
+                var registrationOptions = new RegistrationOptions(spc, language, languageVersion, nullableContextOptions, callingAssembly);
 
                 action(spc, src, registrationOptions);
             });
@@ -85,7 +85,7 @@
                 TSource src = opt.Left;
                 ((NullableContextOptions nullableContextOptions, Language language), Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion) = opt.Right;
 
-                var registrationOptions = new RegistrationOptions(language, languageVersion, nullableContextOptions, callingAssembly);
+                var registrationOptions = new RegistrationOptions(spc, language, languageVersion, nullableContextOptions, callingAssembly);
 
                 action(spc, src, registrationOptions);
             });
@@ -114,7 +114,7 @@
                 TSource src = opt.Left;
                 ((NullableContextOptions nullableContextOptions, Language language), Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion) = opt.Right;
 
-                var registrationOptions = new RegistrationOptions(language, languageVersion, nullableContextOptions, callingAssembly);
+                var registrationOptions = new RegistrationOptions(spc, language, languageVersion, nullableContextOptions, callingAssembly);
 
                 action(spc, src, registrationOptions);
             });
@@ -143,7 +143,7 @@
                 TSource src = opt.Left;
                 ((NullableContextOptions nullableContextOptions, Language language), Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion) = opt.Right;
 
-                var registrationOptions = new RegistrationOptions(language, languageVersion, nullableContextOptions, callingAssembly);
+                var registrationOptions = new RegistrationOptions(spc, language, languageVersion, nullableContextOptions, callingAssembly);
 
                 action(spc, src, registrationOptions);
             });

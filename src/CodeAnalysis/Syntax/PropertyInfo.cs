@@ -493,7 +493,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <param name="language">The <see cref="Language"/> that the field is generated in</param>
         /// <param name="fields">The list of fields that is used to check if the needed field already exists or not</param>
         /// <returns>A <see cref="bool"/> value that states if a field was added or not</returns>
-        public bool AppendFieldIfNecessary(StringBuilder sb, int indentLvl, Language language, List<FieldInfo> fields)
+        public bool AppendFieldIfNecessary(StringBuilder sb, int indentLvl, Language language, List<FieldInfo>? fields)
         {
             if (sb == null)
                 return false;
