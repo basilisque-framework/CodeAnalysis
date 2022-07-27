@@ -316,6 +316,20 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         }
 
         [TestMethod]
+        public void SealedClass_CorrectString()
+        {
+            var classInfo = new ClassInfo("TestClass1", AccessModifier.PrivateProtected);
+            classInfo.AddGeneratedCodeAttributes = false;
+            classInfo.IsSealed = true;
+
+            var classStr = classInfo.ToString();
+
+            Assert.AreEqual(@"private protected sealed class TestClass1
+{
+}", classStr);
+        }
+
+        [TestMethod]
         public void StaticClass_CorrectString()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.PrivateProtected);

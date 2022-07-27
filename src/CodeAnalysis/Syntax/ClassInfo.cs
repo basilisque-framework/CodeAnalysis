@@ -73,6 +73,11 @@ namespace Basilisque.CodeAnalysis.Syntax
         public bool IsStatic { get; set; } = false;
 
         /// <summary>
+        /// Defines if the generated class is a sealed (not inheritable) class or not
+        /// </summary>
+        public bool IsSealed { get; set; } = false;
+
+        /// <summary>
         /// The text that is used as summary for the XML documentation comment
         /// </summary>
         public string? XmlDocSummary { get; set; }
@@ -385,6 +390,9 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             if (IsStatic)
                 sb.Append(" static");
+
+            if (IsSealed)
+                sb.Append(" sealed");
 
             if (IsPartial)
                 sb.Append(" partial");
