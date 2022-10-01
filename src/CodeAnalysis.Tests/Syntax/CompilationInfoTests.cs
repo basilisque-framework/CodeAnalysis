@@ -446,5 +446,35 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             Assert.ThrowsException<NotSupportedException>(() => compilationInfo.ToString(Language.VisualBasic));
         }
+
+        [TestMethod]
+        public void WithUsings_CorrectString()
+        {
+            var compilationInfo = new CompilationInfo("MyCompilation1", targetNamespace: "Test.NS1")
+                .AddNewClassInfo("MyClass1", AccessModifier.Public, ci =>
+                {
+                    ci.AddGeneratedCodeAttributes = true;
+                });
+
+            compilationInfo.Usings.Add("My.First.Using");
+            compilationInfo.Usings.Add("using My.Second.Using;");
+
+            compilationInfo.EnableNullableContext = false;
+
+            compilationInfo.AddGeneratedCodeAttributes = true;
+
+            var str = compilationInfo.ToString();
+
+            string codeGenAttrStr = _codeGenerationAttributeStringCompilationInfo + @"using My.First.Using;
+using My.Second.Using;
+
+namespace Test.NS1
+{
+" + _codeGenerationAttributeStringClassInfoIndented;
+            Assert.AreEqual(codeGenAttrStr + @"    public class MyClass1
+    {
+    }
+}", str);
+        }
     }
 }

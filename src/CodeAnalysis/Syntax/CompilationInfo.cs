@@ -78,6 +78,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         private string? _generatedCodeToolName;
         private string? _generatedCodeToolVersion;
         private List<ClassInfo>? _classes;
+        private List<string>? _usings = null;
 
         /// <summary>
         /// The name of the current compilation or rather the 'source output'
@@ -156,6 +157,25 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// (When set to true, the generated code is enclosed in #nullable enable/restore)
         /// </summary>
         public bool EnableNullableContext { get; set; } = true;
+
+        /// <summary>
+        /// A list of namespaces that will be used by the current compilation
+        /// </summary>
+        public List<string> Usings
+        {
+            get
+            {
+                if (_usings == null)
+                    _usings = new List<string>();
+
+                return _usings;
+            }
+        }
+
+        /// <summary>
+        /// Determines if the current compilation contains any usings or not
+        /// </summary>
+        public bool HasUsings { get { return _usings?.Count > 0; } }
 
         /// <summary>
         /// A list of classes that are contained in the given <see cref="TargetNamespace"/>
@@ -322,6 +342,32 @@ namespace Basilisque.CodeAnalysis.Syntax
             {
                 sb.AppendLine("#nullable enable");
                 sb.AppendLine();
+            }
+
+            if (HasUsings)
+            {
+                var addedUsings = false;
+
+                foreach (var ns in Usings)
+                {
+                    if (string.IsNullOrWhiteSpace(ns))
+                        continue;
+
+                    if (!ns.StartsWith("using "))
+                        sb.Append("using ");
+
+                    sb.Append(ns);
+
+                    if (!ns.EndsWith(";"))
+                        sb.Append(";");
+
+                    sb.AppendLine();
+
+                    addedUsings = true;
+                }
+
+                if (addedUsings)
+                    sb.AppendLine();
             }
 
             if (hasNamespace)

@@ -105,10 +105,10 @@ namespace Basilisque.CodeAnalysis.TestSupport.SourceGenerators.UnitTests.Verifie
         {
             var compilationOptions = (CSharpCompilationOptions)base.CreateCompilationOptions();
 
-            if (DiagnosticOptions != null && DiagnosticOptions.Count > 0)
+            if (_diagnosticOptions?.Count > 0)
             {
                 var opt = compilationOptions.SpecificDiagnosticOptions;
-                foreach (var item in DiagnosticOptions)
+                foreach (var item in _diagnosticOptions)
                 {
                     opt = opt.SetItem(item.Key, item.Value);
                 }

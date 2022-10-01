@@ -11,7 +11,7 @@
 	<!-- NuGet package properties and project info -->
 	<PropertyGroup>
 		<Authors>Alexander Stärk</Authors>
-		<VersionPrefix>0.2.10</VersionPrefix>
+		<VersionPrefix>0.2.11</VersionPrefix>
 		<AssemblyVersion>$(VersionPrefix).0</AssemblyVersion>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		
