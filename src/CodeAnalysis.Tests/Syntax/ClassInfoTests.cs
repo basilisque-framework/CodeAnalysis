@@ -436,6 +436,22 @@ private class TestClass1<T1, T2>
         }
 
         [TestMethod]
+        public void WithXmlDoc_InheritDoc()
+        {
+            var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            classInfo.InheritXmlDoc = true;
+
+            var classStr = classInfo.ToString();
+
+            Assert.AreEqual(@"/// <inheritdoc />
+private class TestClass1
+{
+}", classStr);
+        }
+
+        [TestMethod]
         public void WithOneMethod()
         {
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);

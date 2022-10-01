@@ -78,6 +78,11 @@ namespace Basilisque.CodeAnalysis.Syntax
         public bool IsSealed { get; set; } = false;
 
         /// <summary>
+        /// When this property is set, and '<inheritdoc />'-tag is generated.
+        /// </summary>
+        public bool InheritXmlDoc { get; set; } = false;
+
+        /// <summary>
         /// The text that is used as summary for the XML documentation comment
         /// </summary>
         public string? XmlDocSummary { get; set; }
@@ -307,6 +312,13 @@ namespace Basilisque.CodeAnalysis.Syntax
 
         private void appendXmlDoc(StringBuilder sb, int indentCharCnt)
         {
+            if (InheritXmlDoc)
+            {
+                AppendIntentation(sb, indentCharCnt);
+                sb.AppendLine("/// <inheritdoc />");
+                return;
+            }
+
             var hasXmlDoc = !string.IsNullOrWhiteSpace(XmlDocSummary)
                 || _xmlDocAdditionalLines?.Count > 0
                 || _genericTypes?.Any(gt => !string.IsNullOrWhiteSpace(gt.Value?.XmlDoc)) == true;

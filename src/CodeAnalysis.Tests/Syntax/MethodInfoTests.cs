@@ -227,6 +227,21 @@ public string MyMethod1<T1>()
         }
 
         [TestMethod]
+        public void WithXmlDoc_InheritDoc()
+        {
+            var methodInfo = new MethodInfo(AccessModifier.Public, "string", "MyMethod1");
+
+            methodInfo.InheritXmlDoc = true;
+
+            var src = methodInfo.ToString();
+
+            Assert.AreEqual(@"/// <inheritdoc />
+public string MyMethod1()
+{
+}", src);
+        }
+
+        [TestMethod]
         public void With1GenericType_NoConstraints()
         {
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");

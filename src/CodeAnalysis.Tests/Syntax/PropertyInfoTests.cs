@@ -468,6 +468,19 @@ public int MyProperty { get; set; }", src);
 public int MyProperty { get; set; }", src);
         }
 
+        [TestMethod]
+        public void WithXmlDoc_InheritDoc()
+        {
+            var propertyInfo = new PropertyInfo("int", "MyProperty");
+
+            propertyInfo.InheritXmlDoc = true;
+
+            var src = propertyInfo.ToString();
+
+            Assert.AreEqual(@"/// <inheritdoc />
+public int MyProperty { get; set; }", src);
+        }
+
         [DataTestMethod]
         [DataRow(true, true, true, DisplayName = "Body = true, Auto = true, Expected = true")]
         [DataRow(true, false, true, DisplayName = "Body = true, Auto = false, Expected = true")]
