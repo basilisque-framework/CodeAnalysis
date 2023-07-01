@@ -1,6 +1,23 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+﻿/*
+   Copyright 2023 Alexander Stärk
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
 using System.Collections.Immutable;
+using System.Threading;
 
 namespace Basilisque.CodeAnalysis.TestSupport.SourceGenerators.UnitTests.Verifiers
 {
@@ -22,6 +39,16 @@ namespace Basilisque.CodeAnalysis.TestSupport.SourceGenerators.UnitTests.Verifie
         /// The target <see cref="LanguageVersion"/> that the source generator should generate code for
         /// </summary>
         public LanguageVersion LanguageVersion { get; set; } = LanguageVersion.Default;
+
+        /// <summary>
+        /// The assembly name of the compilation
+        /// </summary>
+        public string? AssemblyName { get; set; } = null;
+
+        /// <summary>
+        /// Also applies the <see cref="AssemblyName"/> to the compilation when it is null or empty
+        /// </summary>
+        public bool SetAssemblyNameIfNullOrEmpty { get; set; } = false;
 
         /// <summary>
         /// The global options that should be provided to the source generator
@@ -117,6 +144,15 @@ namespace Basilisque.CodeAnalysis.TestSupport.SourceGenerators.UnitTests.Verifie
             }
 
             return compilationOptions;
+        }
+
+        /// <inheritdoc />
+        protected override CompilationWithAnalyzers CreateCompilationWithAnalyzers(Compilation compilation, ImmutableArray<DiagnosticAnalyzer> analyzers, AnalyzerOptions options, CancellationToken cancellationToken)
+        {
+            if (!string.IsNullOrEmpty(AssemblyName) || SetAssemblyNameIfNullOrEmpty)
+                compilation = compilation.WithAssemblyName(AssemblyName);
+
+            return base.CreateCompilationWithAnalyzers(compilation, analyzers, options, cancellationToken);
         }
     }
 }
