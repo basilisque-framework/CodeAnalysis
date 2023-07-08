@@ -14,6 +14,10 @@
    limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<!-- NUnit doesn't support netstandard 2.0. But the way we use it in this project, this doesn't matter. -->
+		<NoWarn>NU1701</NoWarn>
+	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.1.0" />
 		<PackageReference Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing.NUnit" Version="1.1.1" />
