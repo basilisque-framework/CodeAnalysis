@@ -1,0 +1,29 @@
+<!--
+   Copyright 2023 Alexander Stärk
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<Project>
+	<PropertyGroup>
+		<BAS_CA_Dependency_PackCS Condition="'$(BAS_CA_Dependency_PackCS)' == ''">true</BAS_CA_Dependency_PackCS>
+        <!--<BAS_CA_Dependency_PackVB Condition="'$(BAS_CA_Dependency_PackVB)' == ''">true</BAS_CA_Dependency_PackVB>-->
+		<BAS_CA_Set_IncludeBuildOutput Condition="'$(BAS_CA_Set_IncludeBuildOutput)' == ''">true</BAS_CA_Set_IncludeBuildOutput>
+		<BAS_CA_Assembly_PackCS Condition="'$(BAS_CA_Assembly_PackCS)' == ''">true</BAS_CA_Assembly_PackCS>
+		<!--<BAS_CA_Assembly_PackVB Condition="'$(BAS_CA_Assembly_PackVB)' == ''">true</BAS_CA_Assembly_PackVB>-->
+    </PropertyGroup>
+	<PropertyGroup>
+		<!-- disable packing in Basilisque.CommonBuild - will be done by this project -->
+		<BAS_CB_CodeAnalysis_PackCS>false</BAS_CB_CodeAnalysis_PackCS>
+		<BAS_CB_Set_IncludeBuildOutput>false</BAS_CB_Set_IncludeBuildOutput>
+	</PropertyGroup>
+</Project>

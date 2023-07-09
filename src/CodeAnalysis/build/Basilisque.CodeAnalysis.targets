@@ -1,0 +1,50 @@
+<!--
+   Copyright 2023 Alexander Stärk
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<Project>
+	<!-- Pack the Basilisque.CodeAnalysis dependency alongside the generator assembly -->
+	<ItemGroup Condition="$(BAS_CA_Dependency_PackCS)">
+		<None Include="$(MSBuildThisFileDirectory)..\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+	</ItemGroup>
+	<!--<ItemGroup Condition="$(BAS_CA_Dependency_PackVB)">
+		<None Include="$(MSBuildThisFileDirectory)..\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/vb" Visible="false" />
+	</ItemGroup>-->
+
+
+	<PropertyGroup>
+		<!-- do not pack an analyzer project as normal lib dependency... -->
+		<IncludeBuildOutput Condition="'$(BAS_CA_Set_IncludeBuildOutput)' == 'true'">false</IncludeBuildOutput>
+	</PropertyGroup>
+	<ItemGroup Condition="$(BAS_CA_Assembly_PackCS)">
+		<!-- ... pack it in the analyzer directory instead (for C#) -->
+		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+	</ItemGroup>
+	<!--<ItemGroup Condition="$(BAS_CA_Assembly_PackVB)">
+		--><!-- ... pack it in the analyzer directory instead (for VB) --><!--
+		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/vb" Visible="false" />
+	</ItemGroup>-->
+
+
+	<!-- BEGIN WORKAROUND https://github.com/dotnet/roslyn/issues/52017 -->
+	<PropertyGroup>
+		<GetTargetPathDependsOn>$(GetTargetPathDependsOn);BAS_CA_GetDependencyTargetPaths</GetTargetPathDependsOn>
+	</PropertyGroup>
+	<Target Name="BAS_CA_GetDependencyTargetPaths">
+		<ItemGroup>
+			<TargetPathWithTargetPlatformMoniker Include="$(MSBuildThisFileDirectory)..\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
+		</ItemGroup>
+	</Target>
+	<!-- END WORKAROUND https://github.com/dotnet/roslyn/issues/52017 -->
+</Project>
