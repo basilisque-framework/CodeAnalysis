@@ -17,11 +17,13 @@
 	<!-- set BAS_CB_ProjType_CodeAnalysis to true -->
 	<PropertyGroup Condition="'$(MSBuildProjectName)' == 'CodeAnalysis'">
 		<BAS_CB_ProjType_CodeAnalysis>true</BAS_CB_ProjType_CodeAnalysis>
+		<BAS_CB_Set_IncludeBuildOutput>false</BAS_CB_Set_IncludeBuildOutput>
+		<BAS_CB_CodeAnalysis_PackCS>false</BAS_CB_CodeAnalysis_PackCS>
 	</PropertyGroup>
 	
 	<!-- import common build properties from NuGet -->
 	<ItemGroup>
-		<PackageReference Include="Basilisque.CommonFrameworkBuild" Version="1.0.0-RC5">
+		<PackageReference Include="Basilisque.CommonFrameworkBuild" Version="1.0.0-RC10">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 	</ItemGroup>

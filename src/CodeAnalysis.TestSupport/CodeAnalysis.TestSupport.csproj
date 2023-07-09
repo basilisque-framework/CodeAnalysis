@@ -16,7 +16,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<!-- workaround for https://github.com/NuGet/Home/issues/12544 -->
-		<PackageId>Basilisque.$(AssemblyName)</PackageId>
+		<BAS_CFB_Set_PackageId>false</BAS_CFB_Set_PackageId>
+		<PackageId>Basilisque.$(MSBuildProjectName)</PackageId>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis" Version="4.1.0" />
