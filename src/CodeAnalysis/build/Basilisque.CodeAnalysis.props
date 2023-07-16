@@ -20,6 +20,7 @@
 		<BAS_CA_Set_IncludeBuildOutput Condition="'$(BAS_CA_Set_IncludeBuildOutput)' == ''">true</BAS_CA_Set_IncludeBuildOutput>
 		<BAS_CA_Assembly_PackCS Condition="'$(BAS_CA_Assembly_PackCS)' == ''">true</BAS_CA_Assembly_PackCS>
 		<!--<BAS_CA_Assembly_PackVB Condition="'$(BAS_CA_Assembly_PackVB)' == ''">true</BAS_CA_Assembly_PackVB>-->
+		<BAS_CA_Pack_TargetProject_MSBuild_Files Condition="'$(BAS_CA_Pack_TargetProject_MSBuild_Files)' == ''">true</BAS_CA_Pack_TargetProject_MSBuild_Files>
     </PropertyGroup>
 	<PropertyGroup>
 		<!-- disable packing in Basilisque.CommonBuild - will be done by this project -->

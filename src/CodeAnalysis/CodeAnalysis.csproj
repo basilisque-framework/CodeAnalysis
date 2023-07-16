@@ -24,6 +24,7 @@
 
 	<ItemGroup>
 		<!--<None Include="..\..\README.md" Pack="true" PackagePath="docs"/>-->
-		<None Include="build/**" Pack="true" PackagePath="build"/>
+		<None Include="build/**" Pack="true" PackagePath="build" />
+		<None Include="targetProjectBuild/**" Pack="true" PackagePath="targetProjectBuild" />
 	</ItemGroup>
 </Project>

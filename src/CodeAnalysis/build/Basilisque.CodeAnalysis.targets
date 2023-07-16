@@ -36,6 +36,11 @@
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/vb" Visible="false" />
 	</ItemGroup>-->
 
+	<!-- pack the props/targets files  -->
+	<ItemGroup Condition="'$(BAS_CA_Pack_TargetProject_MSBuild_Files)' == 'true'">
+		<None Include="$(MSBuildThisFileDirectory)../targetProjectBuild/**" Pack="true" PackagePath="build"/>
+	</ItemGroup>
+
 
 	<!-- BEGIN WORKAROUND https://github.com/dotnet/roslyn/issues/52017 -->
 	<PropertyGroup>
