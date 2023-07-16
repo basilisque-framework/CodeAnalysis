@@ -108,8 +108,8 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <summary>
         /// Appends source code to the current code lines
         /// </summary>
-        /// <param name="sourceCode"></param>
-        public void Append(string sourceCode)
+        /// <param name="sourceCode">The source code that will be appended.</param>
+        public void Add(string sourceCode)
         {
             if (sourceCode == null)
                 return;

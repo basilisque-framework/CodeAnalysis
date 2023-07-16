@@ -35,7 +35,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(null!);
+            codeLines.Add(null!);
 
             var src = codeLines.ToString();
 
@@ -47,9 +47,9 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append("Test");
+            codeLines.Add("Test");
 
-            codeLines.Append(null!);
+            codeLines.Add(null!);
 
             var src = codeLines.ToString();
 
@@ -63,7 +63,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(C_WHITESPACE);
+            codeLines.Add(C_WHITESPACE);
 
             var src = codeLines.ToString();
 
@@ -75,7 +75,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append("MyLine");
+            codeLines.Add("MyLine");
 
             var src = codeLines.ToString();
 
@@ -87,7 +87,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@"MyLine
+            codeLines.Add(@"MyLine
 MySecondLine");
 
             var src = codeLines.ToString();
@@ -101,14 +101,14 @@ MySecondLine", src);
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@"MyLine
+            codeLines.Add(@"MyLine
 MySecondLine");
 
-            codeLines.Append("  MyThirdLine");
+            codeLines.Add("  MyThirdLine");
 
-            codeLines.Append("");
+            codeLines.Add("");
 
-            codeLines.Append(@" MyFourthLine 
+            codeLines.Add(@" MyFourthLine 
 MyFifthLine");
 
             var src = codeLines.ToString();
@@ -126,11 +126,11 @@ MyFifthLine", src);
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@"
+            codeLines.Add(@"
 MyFirstLine
 MySecondLine");
 
-            codeLines.Append(@"
+            codeLines.Add(@"
 MyThirdLine");
 
             var src = codeLines.ToString();
@@ -145,11 +145,11 @@ MyThirdLine", src);
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@"MyFirstLine
+            codeLines.Add(@"MyFirstLine
 MySecondLine
 ");
 
-            codeLines.Append(@"MyThirdLine
+            codeLines.Add(@"MyThirdLine
 ");
 
             var src = codeLines.ToString();
@@ -164,12 +164,12 @@ MyThirdLine", src);
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@"
+            codeLines.Add(@"
     MyFirstLine
     MySecondLine
 ");
 
-            codeLines.Append(@"
+            codeLines.Add(@"
 MyThirdLine
 ");
 
@@ -185,12 +185,12 @@ MyThirdLine", src);
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@" 
+            codeLines.Add(@" 
     MyFirstLine
     MySecondLine
  ");
 
-            codeLines.Append(@" 
+            codeLines.Add(@" 
 MyThirdLine
  ");
 
@@ -210,7 +210,7 @@ MyThirdLine
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@"
+            codeLines.Add(@"
 
 
     MyFirstLine
@@ -218,7 +218,7 @@ MyThirdLine
 
 ");
 
-            codeLines.Append(@"
+            codeLines.Add(@"
 MyThirdLine
 
 
@@ -241,7 +241,7 @@ MyThirdLine
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@"Line1
+            codeLines.Add(@"Line1
 Line2");
 
             var cnt = 0;
@@ -258,7 +258,7 @@ Line2");
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@"Line1
+            codeLines.Add(@"Line1
  Line2");
 
             var i = 0;
@@ -288,7 +288,7 @@ Line2");
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@"Line1
+            codeLines.Add(@"Line1
 Line2
 Line3");
 
@@ -307,7 +307,7 @@ Line3");
         {
             var codeLines = new CodeLines();
 
-            codeLines.Append(@"
+            codeLines.Add(@"
 if (i > 0)
 {
     i--;
@@ -331,7 +331,7 @@ if (i > 0)
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@"Line1
+            codeLines.Add(@"Line1
 Line2
 MyLine3");
 
@@ -345,7 +345,7 @@ MyLine3");
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@"
+            codeLines.Add(@"
 Line1
 Line2
 MyLine3
@@ -365,7 +365,7 @@ MyLine3", src);
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@"
+            codeLines.Add(@"
 Line1
 Line2
 MyLine3
@@ -389,7 +389,7 @@ MyLine3", src);
         {
             CodeLines codeLines = new CodeLines();
 
-            codeLines.Append(@"
+            codeLines.Add(@"
 Line1
 Line2
 MyLine3

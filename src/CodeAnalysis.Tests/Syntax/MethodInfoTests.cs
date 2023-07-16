@@ -138,7 +138,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
 
-            methodInfo.Body.Append(@"
+            methodInfo.Body.Add(@"
 if (true)
     doSomething();
 ");
@@ -393,7 +393,7 @@ partial void MyMethod<T1>()
 
             methodInfo.GenericTypes.Add("T1", (new List<string>() { "ISomeInterface" }, "T1 is cool"));
 
-            methodInfo.Body.Append(@"
+            methodInfo.Body.Add(@"
 if (true == false)
     ;
 throw new NotImplementedException();

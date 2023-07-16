@@ -506,7 +506,7 @@ private class TestClass1
                 XmlDocSummary = "This is an async method"
             };
 
-            methodInfo.Body.Append(@"
+            methodInfo.Body.Add(@"
 if (true == false)
     throw new Exception(""This should never occur"");
 
@@ -568,7 +568,7 @@ throw new NotImplementedException();
                 XmlDocSummary = "This is a public method"
             });
 
-            classInfo.AdditionalCodeLines.Append(@"
+            classInfo.AdditionalCodeLines.Add(@"
 public int TestProp { get; }
 ");
 
@@ -598,7 +598,7 @@ public int TestProp { get; }
                 XmlDocSummary = "This is a public method"
             });
 
-            classInfo.AdditionalCodeLines.Append(@"
+            classInfo.AdditionalCodeLines.Add(@"
 public int TestProp { get; }
 
 This is some line that doesn't compile but I don't care what is added in here...

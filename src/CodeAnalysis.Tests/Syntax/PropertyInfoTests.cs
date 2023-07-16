@@ -215,7 +215,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
-            propertyInfo.GetterBody.Append(@"
+            propertyInfo.GetterBody.Add(@"
 return _myProperty;
 ");
 
@@ -245,7 +245,7 @@ return _myProperty;
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
-            propertyInfo.SetterBody.Append(@"
+            propertyInfo.SetterBody.Add(@"
 _myProperty = value;
 ");
 
@@ -272,11 +272,11 @@ _myProperty = value;
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
-            propertyInfo.GetterBody.Append(@"
+            propertyInfo.GetterBody.Add(@"
 return _myProperty;
 ");
 
-            propertyInfo.SetterBody.Append(@"
+            propertyInfo.SetterBody.Add(@"
 _myProperty = value;
 ");
 
@@ -300,7 +300,7 @@ _myProperty = value;
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
-            propertyInfo.GetterBody.Append(@"
+            propertyInfo.GetterBody.Add(@"
 return _myProperty;
 ");
 
@@ -324,7 +324,7 @@ return _myProperty;
 
             propertyInfo.HasGetter = false;
 
-            propertyInfo.SetterBody.Append(@"
+            propertyInfo.SetterBody.Add(@"
 _myProperty = value;
 ");
 
@@ -388,7 +388,7 @@ _myProperty = value;
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
-            propertyInfo.GetterBody.Append(@"
+            propertyInfo.GetterBody.Add(@"
 return _myProperty;
 ");
 
@@ -508,7 +508,7 @@ public int MyProperty { get; set; }", src);
             propertyInfo.HasGetter = hasAuto;
 
             if (hasBody)
-                propertyInfo.GetterBody.Append("test");
+                propertyInfo.GetterBody.Add("test");
 
             Assert.AreEqual(expected, propertyInfo.HasGetter);
         }
@@ -525,7 +525,7 @@ public int MyProperty { get; set; }", src);
             propertyInfo.HasSetter = hasAuto;
 
             if (hasBody)
-                propertyInfo.SetterBody.Append("test");
+                propertyInfo.SetterBody.Add("test");
 
             Assert.AreEqual(expected, propertyInfo.HasSetter);
         }
@@ -537,7 +537,7 @@ public int MyProperty { get; set; }", src);
 
             propertyInfo.HasGetter = false;
 
-            propertyInfo.GetterBody.Append("body");
+            propertyInfo.GetterBody.Add("body");
 
             Assert.IsTrue(propertyInfo.HasGetter);
 
@@ -553,7 +553,7 @@ public int MyProperty { get; set; }", src);
 
             propertyInfo.HasSetter = false;
 
-            propertyInfo.SetterBody.Append("body");
+            propertyInfo.SetterBody.Add("body");
 
             Assert.IsTrue(propertyInfo.HasSetter);
 
@@ -645,10 +645,10 @@ public int MyProperty { get; set; }", src);
             propertyInfo.HasSetter = withAutoSetter;
 
             if (withGetterBody)
-                propertyInfo.GetterBody.Append("gb");
+                propertyInfo.GetterBody.Add("gb");
 
             if (withSetterBody)
-                propertyInfo.SetterBody.Append("sb");
+                propertyInfo.SetterBody.Add("sb");
 
             if (withFieldName)
                 propertyInfo.FieldName = "_myField";
