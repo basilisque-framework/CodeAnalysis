@@ -106,6 +106,15 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// Appends source code to the current code lines (alias for <see cref="Add(string)"/>)
+        /// </summary>
+        /// <param name="sourceCode"></param>
+        public void Append(string sourceCode)
+        {
+            Add(sourceCode);
+        }
+
+        /// <summary>
         /// Appends source code to the current code lines
         /// </summary>
         /// <param name="sourceCode">The source code that will be appended.</param>
