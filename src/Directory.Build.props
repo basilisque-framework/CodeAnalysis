@@ -39,7 +39,13 @@
 		<PackageProjectUrl>https://github.com/basilisque-framework/CodeAnalysis</PackageProjectUrl>
 		<PackageTags>CodeAnalysis CSharp CodeGeneration Compiler Compilation Syntax</PackageTags>
 		<!--<PackageIconUrl>http://www.url.de/nuget_icon.png</PackageIconUrl>-->
+		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
 	</PropertyGroup>
+
+	<!-- Pack README -->
+	<ItemGroup>
+		<None Include="..\..\README.md" Pack="true" PackagePath="docs"/>
+	</ItemGroup>
 
 	<!-- global usings -->
 	<ItemGroup>
