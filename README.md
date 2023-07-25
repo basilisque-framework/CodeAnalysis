@@ -23,7 +23,8 @@ This project provides helpers for writing .Net code analyzers and source generat
 
 [![NuGet Basilisque.CodeAnalysis](https://img.shields.io/badge/NuGet_Basilisque.CodeAnalysis.TestSupport.MSTest-latest-blue.svg)](https://www.nuget.org/packages/Basilisque.CodeAnalysis.TestSupport.MSTest)  
 [![NuGet Basilisque.CodeAnalysis](https://img.shields.io/badge/NuGet_Basilisque.CodeAnalysis.TestSupport.NUnit-latest-blue.svg)](https://www.nuget.org/packages/Basilisque.CodeAnalysis.TestSupport.NUnit)  
-[![NuGet Basilisque.CodeAnalysis](https://img.shields.io/badge/NuGet_Basilisque.CodeAnalysis.TestSupport.XUnit-latest-blue.svg)](https://www.nuget.org/packages/Basilisque.CodeAnalysis.TestSupport.XUnit)
+[![NuGet Basilisque.CodeAnalysis](https://img.shields.io/badge/NuGet_Basilisque.CodeAnalysis.TestSupport.XUnit-latest-blue.svg)](https://www.nuget.org/packages/Basilisque.CodeAnalysis.TestSupport.XUnit)  
+[![NuGet Basilisque.CodeAnalysis](https://img.shields.io/badge/NuGet_Basilisque.CodeAnalysis.TestSupport-latest-blue.svg)](https://www.nuget.org/packages/Basilisque.CodeAnalysis.TestSupport)
 
 ## Description
 This project contains helpers and structured classes, that support you in generating source code that is syntactically correct and well formatted.
