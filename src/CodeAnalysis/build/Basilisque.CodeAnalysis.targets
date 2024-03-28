@@ -1,5 +1,5 @@
 <!--
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 -->
 <Project>
 	<!-- Pack the Basilisque.CodeAnalysis dependency alongside the generator assembly -->
-	<ItemGroup Condition="$(BAS_CA_Dependency_PackCS)">
+	<ItemGroup Condition="'$(BAS_CA_Dependency_PackCS)' == 'true'">
 		<None Include="$(MSBuildThisFileDirectory)..\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
 	<!--<ItemGroup Condition="$(BAS_CA_Dependency_PackVB)">
@@ -27,7 +27,7 @@
 		<!-- do not pack an analyzer project as normal lib dependency... -->
 		<IncludeBuildOutput Condition="'$(BAS_CA_Set_IncludeBuildOutput)' == 'true'">false</IncludeBuildOutput>
 	</PropertyGroup>
-	<ItemGroup Condition="$(BAS_CA_Assembly_PackCS)">
+	<ItemGroup Condition="'$(BAS_CA_Assembly_PackCS)' == 'true'">
 		<!-- ... pack it in the analyzer directory instead (for C#) -->
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 	</ItemGroup>
