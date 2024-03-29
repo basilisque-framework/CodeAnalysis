@@ -1,5 +1,5 @@
 <!--
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -20,13 +20,6 @@
 		<BAS_CB_Set_IncludeBuildOutput>false</BAS_CB_Set_IncludeBuildOutput>
 		<BAS_CB_CodeAnalysis_PackCS>false</BAS_CB_CodeAnalysis_PackCS>
 	</PropertyGroup>
-	
-	<!-- import common build properties from NuGet -->
-	<ItemGroup>
-		<PackageReference Include="Basilisque.CommonFrameworkBuild" Version="1.0.0-RC10">
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
-	</ItemGroup>
 	
 	<!-- general build properties -->
 	<PropertyGroup>
