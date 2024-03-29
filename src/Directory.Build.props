@@ -44,4 +44,17 @@
 	<ItemGroup>
 		<Using Include="Microsoft.CodeAnalysis" />
 	</ItemGroup>
+
+
+	<!-- publish all target frameworks if target framework is unspecified -->
+	<Target Name="PublishProjectIfFrameworkSet" DependsOnTargets="Publish" Condition=" '$(TargetFramework)' != '' " />
+
+	<Target Name="PublishProjectForAllFrameworksIfFrameworkUnset" Condition=" '$(TargetFramework)' == '' ">
+		<ItemGroup>
+			<BAS_PublishFramework Include="$(TargetFrameworks)" />
+		</ItemGroup>
+		<MSBuild Projects="$(MSBuildProjectFile)" Targets="Publish" Properties="TargetFramework=%(BAS_PublishFramework.Identity)" />
+	</Target>
+
+	<Target Name="PublishAll" DependsOnTargets="PublishProjectIfFrameworkSet;PublishProjectForAllFrameworksIfFrameworkUnset" />
 </Project>
