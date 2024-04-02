@@ -18,6 +18,7 @@
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 	<IsPublishable>false</IsPublishable>
+	<IsPackable>false</IsPackable>
 	<DefineConstants>$(DefineConstants);BASILISQUE_BENCHMARK</DefineConstants>
   </PropertyGroup>
 
