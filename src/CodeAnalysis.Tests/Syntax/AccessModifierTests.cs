@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
    limitations under the License.
 */
 using Basilisque.CodeAnalysis.Syntax;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace Basilisque.CodeAnalysis.Tests.Syntax
 {
@@ -49,6 +50,246 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             {
                 AccessModifierExtensions.ToKeywordString((AccessModifier)20);
             });
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_ClassWithPublicModifier_ReturnsPublic()
+        {
+            var classDeclaration = SyntaxFactory.ClassDeclaration("TestClass")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
+            var result = classDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Public, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_ClassWithInternalModifier_ReturnsInternal()
+        {
+            var classDeclaration = SyntaxFactory.ClassDeclaration("TestClass")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword));
+
+            var result = classDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Internal, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_ClassWithProtectedInternalModifier_ReturnsProtectedInternal()
+        {
+            var classDeclaration = SyntaxFactory.ClassDeclaration("TestClass")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword), SyntaxFactory.Token(SyntaxKind.InternalKeyword));
+
+            var result = classDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.ProtectedInternal, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_ClassWithPrivateProtectedModifier_ReturnsPrivateProtected()
+        {
+            var classDeclaration = SyntaxFactory.ClassDeclaration("TestClass")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.ProtectedKeyword));
+
+            var result = classDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.PrivateProtected, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_ClassWithProtectedModifier_ReturnsProtected()
+        {
+            var classDeclaration = SyntaxFactory.ClassDeclaration("TestClass")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword));
+
+            var result = classDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Protected, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_ClassWithPrivateModifier_ReturnsPrivate()
+        {
+            var classDeclaration = SyntaxFactory.ClassDeclaration("TestClass")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
+
+            var result = classDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Private, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_ClassWithNoModifier_ReturnsInternal()
+        {
+            var classDeclaration = SyntaxFactory.ClassDeclaration("TestClass");
+
+            var result = classDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Internal, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_PropertyWithPublicModifier_ReturnsPublic()
+        {
+            var propertyDeclaration = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("int"), "TestProperty")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
+            var result = propertyDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Public, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_PropertyWithInternalModifier_ReturnsInternal()
+        {
+            var propertyDeclaration = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("int"), "TestProperty")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.InternalKeyword));
+
+            var result = propertyDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Internal, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_PropertyWithProtectedInternalModifier_ReturnsProtectedInternal()
+        {
+            var propertyDeclaration = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("int"), "TestProperty")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword), SyntaxFactory.Token(SyntaxKind.InternalKeyword));
+
+            var result = propertyDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.ProtectedInternal, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_PropertyWithPrivateProtectedModifier_ReturnsPrivateProtected()
+        {
+            var propertyDeclaration = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("int"), "TestProperty")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword), SyntaxFactory.Token(SyntaxKind.ProtectedKeyword));
+
+            var result = propertyDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.PrivateProtected, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_PropertyWithProtectedModifier_ReturnsProtected()
+        {
+            var propertyDeclaration = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("int"), "TestProperty")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.ProtectedKeyword));
+
+            var result = propertyDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Protected, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_PropertyWithPrivateModifier_ReturnsPrivate()
+        {
+            var propertyDeclaration = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("int"), "TestProperty")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PrivateKeyword));
+
+            var result = propertyDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Private, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_PropertyWithNoModifier_ReturnsPrivate()
+        {
+            var propertyDeclaration = SyntaxFactory.PropertyDeclaration(SyntaxFactory.ParseTypeName("int"), "TestProperty");
+
+            var result = propertyDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Private, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_EventWithPublicModifier_ReturnsPublic()
+        {
+            var eventDeclaration = SyntaxFactory.EventDeclaration(SyntaxFactory.ParseTypeName("EventHandler"), "TestEvent")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
+            var result = eventDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Public, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_EventWithNoModifier_ReturnsPrivate()
+        {
+            var eventDeclaration = SyntaxFactory.EventDeclaration(SyntaxFactory.ParseTypeName("EventHandler"), "TestEvent");
+
+            var result = eventDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Private, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_FieldWithPublicModifier_ReturnsPublic()
+        {
+            var fieldDeclaration = SyntaxFactory.FieldDeclaration(
+                SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName("int"))
+                    .AddVariables(SyntaxFactory.VariableDeclarator("TestField")))
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
+            var result = fieldDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Public, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_FieldWithNoModifier_ReturnsPrivate()
+        {
+            var fieldDeclaration = SyntaxFactory.FieldDeclaration(
+                SyntaxFactory.VariableDeclaration(SyntaxFactory.ParseTypeName("int"))
+                    .AddVariables(SyntaxFactory.VariableDeclarator("TestField")));
+
+            var result = fieldDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Private, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_MethodWithPublicModifier_ReturnsPublic()
+        {
+            var methodDeclaration = SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("void"), "TestMethod")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
+            var result = methodDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Public, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_MethodWithNoModifier_ReturnsPrivate()
+        {
+            var methodDeclaration = SyntaxFactory.MethodDeclaration(SyntaxFactory.ParseTypeName("void"), "TestMethod");
+
+            var result = methodDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Private, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_ConstructorWithPublicModifier_ReturnsPublic()
+        {
+            var constructorDeclaration = SyntaxFactory.ConstructorDeclaration("TestConstructor")
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword));
+
+            var result = constructorDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Public, result);
+        }
+
+        [TestMethod]
+        public void GetAccessModifier_ConstructorWithNoModifier_ReturnsPublic()
+        {
+            var constructorDeclaration = SyntaxFactory.ConstructorDeclaration("TestConstructor");
+
+            var result = constructorDeclaration.GetAccessModifier();
+
+            Assert.AreEqual(AccessModifier.Public, result);
         }
     }
 }
