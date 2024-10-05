@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -205,6 +205,24 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 }", str);
         }
 
+        [TestMethod]
+        [DataRow(true, DisplayName = "codeGenAttr: true")]
+        [DataRow(false, DisplayName = "codeGenAttr: false")]
+        public void WithFileScopedNamespace_NoClass_CorrectString(bool codeGenAttrEnabled)
+        {
+            var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1");
+
+            compilationInfo.EnableNullableContext = false;
+            compilationInfo.WriteFileScopedNamespace = true;
+            compilationInfo.AddGeneratedCodeAttributes = codeGenAttrEnabled;
+
+            var str = compilationInfo.ToString();
+
+            string codeGenAttrStr = codeGenAttrEnabled ? _codeGenerationAttributeStringCompilationInfo : string.Empty;
+
+            Assert.AreEqual(codeGenAttrStr + @"namespace MyNamespace1;", str);
+        }
+
         [DataTestMethod]
         [DataRow(null, DisplayName = "nullable context <default> (enabled)")]
         [DataRow(true, DisplayName = "nullable context enabled")]
@@ -265,6 +283,32 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         [DataRow(true, false, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: false")]
         [DataRow(false, true, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: true")]
         [DataRow(false, false, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: false")]
+        public void WithFileScopedNamespace_1Class_CorrectString(bool codeGenAttrEnabledCompilation, bool codeGenAttrEnabledClass)
+        {
+            var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1")
+                .AddNewClassInfo("MyClass1", AccessModifier.Public, ci => { ci.AddGeneratedCodeAttributes = codeGenAttrEnabledClass; });
+
+            compilationInfo.EnableNullableContext = false;
+            compilationInfo.WriteFileScopedNamespace = true;
+            compilationInfo.AddGeneratedCodeAttributes = codeGenAttrEnabledCompilation;
+
+            var str = compilationInfo.ToString();
+
+            string codeGenAttrStrCompilation = codeGenAttrEnabledCompilation ? _codeGenerationAttributeStringCompilationInfo : string.Empty;
+            string codeGenAttrStrClass = codeGenAttrEnabledClass ? _codeGenerationAttributeStringClassInfo : string.Empty;
+
+            Assert.AreEqual(codeGenAttrStrCompilation + @"namespace MyNamespace1;
+
+" + codeGenAttrStrClass + @"public class MyClass1
+{
+}", str);
+        }
+
+        [TestMethod]
+        [DataRow(true, true, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: true")]
+        [DataRow(true, false, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: false")]
+        [DataRow(false, true, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: true")]
+        [DataRow(false, false, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: false")]
         public void WithNamespace_2Classes_CorrectString(bool codeGenAttrEnabledCompilation, bool codeGenAttrEnabledClass)
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1")
@@ -288,6 +332,37 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 " + codeGenAttrStrClass + @"    public class MyClass2
     {
     }
+}", str);
+        }
+
+        [TestMethod]
+        [DataRow(true, true, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: true")]
+        [DataRow(true, false, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: false")]
+        [DataRow(false, true, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: true")]
+        [DataRow(false, false, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: false")]
+        public void WithFileScopedNamespace_2Classes_CorrectString(bool codeGenAttrEnabledCompilation, bool codeGenAttrEnabledClass)
+        {
+            var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1")
+                .AddNewClassInfo("MyClass1", AccessModifier.Public, ci => { ci.AddGeneratedCodeAttributes = codeGenAttrEnabledClass; })
+                .AddNewClassInfo("MyClass2", ci => { ci.AddGeneratedCodeAttributes = codeGenAttrEnabledClass; });
+
+            compilationInfo.EnableNullableContext = false;
+            compilationInfo.WriteFileScopedNamespace = true;
+            compilationInfo.AddGeneratedCodeAttributes = codeGenAttrEnabledCompilation;
+
+            var str = compilationInfo.ToString();
+
+            string codeGenAttrStrCompilation = codeGenAttrEnabledCompilation ? _codeGenerationAttributeStringCompilationInfo : string.Empty;
+            string codeGenAttrStrClass = codeGenAttrEnabledClass ? _codeGenerationAttributeStringClassInfo : string.Empty;
+
+            Assert.AreEqual(codeGenAttrStrCompilation + @"namespace MyNamespace1;
+
+" + codeGenAttrStrClass + @"public class MyClass1
+{
+}
+
+" + codeGenAttrStrClass + @"public class MyClass2
+{
 }", str);
         }
 

@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -90,6 +90,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         private System.Reflection.AssemblyName _constructingAssemblyName;
         private string _compilationName;
         private string? _targetNamespace;
+        private bool _writeFileScopedNamespace = false;
         private string? _generatedCodeToolName;
         private string? _generatedCodeToolVersion;
         private List<ClassInfo>? _classes;
@@ -127,6 +128,21 @@ namespace Basilisque.CodeAnalysis.Syntax
             set
             {
                 _targetNamespace = value;
+            }
+        }
+
+        /// <summary>
+        /// Determines if the namespace will be written as file scoped namespace or not
+        /// </summary>
+        public bool WriteFileScopedNamespace
+        {
+            get
+            {
+                return _writeFileScopedNamespace;
+            }
+            set
+            {
+                _writeFileScopedNamespace = value;
             }
         }
 
@@ -387,14 +403,25 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             if (hasNamespace)
             {
-                sb.Append("namespace ");
-                sb.AppendLine(_targetNamespace);
-                sb.AppendLine("{");
+                if (_writeFileScopedNamespace)
+                {
+                    sb.Append("namespace ");
+                    sb.Append(_targetNamespace);
+                    sb.Append(";");
+                }
+                else
+                {
+                    sb.Append("namespace ");
+                    sb.AppendLine(_targetNamespace);
+                    sb.AppendLine("{");
+                }
             }
 
-            bool addEmptyLineForNextClass = false;
+            bool addEmptyLineForNextClass = _writeFileScopedNamespace;
             if (_classes != null)
             {
+                var indentCls = hasNamespace && !_writeFileScopedNamespace ? childIndentLvl : indentLvl;
+
                 foreach (var classInfo in _classes)
                 {
                     if (addEmptyLineForNextClass)
@@ -405,17 +432,16 @@ namespace Basilisque.CodeAnalysis.Syntax
                     else
                         addEmptyLineForNextClass = true;
 
-                    classInfo.ToString(sb, hasNamespace ? childIndentLvl : indentLvl, Language.CSharp);
+                    classInfo.ToString(sb, indentCls, Language.CSharp);
                 }
             }
 
-            if (hasNamespace)
+            if (hasNamespace && !_writeFileScopedNamespace)
             {
                 if (addEmptyLineForNextClass)
                     sb.AppendLine();
                 sb.Append("}");
             }
-
 
             if (EnableNullableContext)
             {

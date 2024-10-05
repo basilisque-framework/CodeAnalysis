@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// Creates and returns an <see cref="IncrementalValueProvider{TValue}"/> with the options needed for a <see cref="CompilationInfo"/>
         /// </summary>
         /// <param name="context">The <see cref="IncrementalGeneratorInitializationContext"/> that is used to create the <see cref="IncrementalValueProvider{TValue}"/></param>
-        /// <returns>A <see cref="IncrementalValueProvider{TValue}"/> containing a <see cref="Tuple{Language, NullableContextOptions}"/></returns>
+        /// <returns>A <see cref="IncrementalValueProvider{TValue}"/> containing the compilation information</returns>
         /// <exception cref="System.NotSupportedException">Throws <see cref="System.NotSupportedException"/> when the compilation uses a language that is not supported by <see cref="Language"/></exception>
-        private static IncrementalValueProvider<((NullableContextOptions NullableContextOptions, Language Language) CompilationOptions, Microsoft.CodeAnalysis.CSharp.LanguageVersion LanguageVersion)> getCompilationInfoValuesProvider(this IncrementalGeneratorInitializationContext context)
+        private static IncrementalValueProvider<((NullableContextOptions NullableContextOptions, Language Language) CompilationOptions, int LanguageVersion)> getCompilationInfoValuesProvider(this IncrementalGeneratorInitializationContext context)
         {
             var compilationOptionsProvider = context.CompilationProvider.Select(static (cmp, ct) => (cmp.Options.Language, cmp.Options.NullableContextOptions));
 
@@ -35,15 +35,26 @@ namespace Basilisque.CodeAnalysis.Syntax
                 Language l;
                 if (cmp.Language == "C#")
                     l = Language.CSharp;
-                else if (cmp.Language == "Visual Basic")
-                    l = Language.CSharp;
+                //else if (cmp.Language == "Visual Basic")
+                //    l = Language.VisualBasic;
                 else
                     throw new System.NotSupportedException($"The language '{cmp.Language}' is not supported by this generator.");
 
                 return (cmp.NullableContextOptions, l);
             });
 
-            var languageVersionProvider = context.ParseOptionsProvider.Select((po, ct) => ((Microsoft.CodeAnalysis.CSharp.CSharpParseOptions)po).LanguageVersion);
+            var languageVersionProvider = context.ParseOptionsProvider.Select((po, ct) =>
+            {
+                int langVersion;
+                if (po is Microsoft.CodeAnalysis.CSharp.CSharpParseOptions cspo)
+                    langVersion = (int)cspo.LanguageVersion;
+                //else if (po is Microsoft.CodeAnalysis.VisualBasic.VisualBasicParseOptions vbpo)
+                //    return vbpo.LanguageVersion;
+                else
+                    throw new System.NotSupportedException($"The parse options of type '{po.GetType().FullName}' are not supported by this generator.");
+
+                return langVersion;
+            });
 
             var combinedProvider = selectedOptionsProvider.Combine(languageVersionProvider);
 
@@ -70,7 +81,7 @@ namespace Basilisque.CodeAnalysis.Syntax
             incrementalGeneratorInitializationContext.RegisterSourceOutput(combinedSource, (spc, opt) =>
             {
                 TSource src = opt.Left;
-                ((NullableContextOptions nullableContextOptions, Language language), Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion) = opt.Right;
+                ((NullableContextOptions nullableContextOptions, Language language), int languageVersion) = opt.Right;
 
                 var registrationOptions = new RegistrationOptions(spc, language, languageVersion, nullableContextOptions, callingAssembly);
 
@@ -98,7 +109,7 @@ namespace Basilisque.CodeAnalysis.Syntax
             incrementalGeneratorInitializationContext.RegisterSourceOutput(combinedSource, (spc, opt) =>
             {
                 TSource src = opt.Left;
-                ((NullableContextOptions nullableContextOptions, Language language), Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion) = opt.Right;
+                ((NullableContextOptions nullableContextOptions, Language language), int languageVersion) = opt.Right;
 
                 var registrationOptions = new RegistrationOptions(spc, language, languageVersion, nullableContextOptions, callingAssembly);
 
@@ -127,7 +138,7 @@ namespace Basilisque.CodeAnalysis.Syntax
             incrementalGeneratorInitializationContext.RegisterImplementationSourceOutput(combinedSource, (spc, opt) =>
             {
                 TSource src = opt.Left;
-                ((NullableContextOptions nullableContextOptions, Language language), Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion) = opt.Right;
+                ((NullableContextOptions nullableContextOptions, Language language), int languageVersion) = opt.Right;
 
                 var registrationOptions = new RegistrationOptions(spc, language, languageVersion, nullableContextOptions, callingAssembly);
 
@@ -156,7 +167,7 @@ namespace Basilisque.CodeAnalysis.Syntax
             incrementalGeneratorInitializationContext.RegisterImplementationSourceOutput(combinedSource, (spc, opt) =>
             {
                 TSource src = opt.Left;
-                ((NullableContextOptions nullableContextOptions, Language language), Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion) = opt.Right;
+                ((NullableContextOptions nullableContextOptions, Language language), int languageVersion) = opt.Right;
 
                 var registrationOptions = new RegistrationOptions(spc, language, languageVersion, nullableContextOptions, callingAssembly);
 

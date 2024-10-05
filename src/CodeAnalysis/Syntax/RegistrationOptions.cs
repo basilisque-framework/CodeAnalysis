@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
 namespace Basilisque.CodeAnalysis.Syntax
 {
     /// <summary>
@@ -33,7 +34,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <summary>
         /// The version of the <see cref="Language"/> that is used for the current compilation
         /// </summary>
-        public Microsoft.CodeAnalysis.CSharp.LanguageVersion LanguageVersion { get; }
+        public int LanguageVersion { get; }
 
         /// <summary>
         /// The <see cref="Microsoft.CodeAnalysis.NullableContextOptions"/> of the current compilation
@@ -56,7 +57,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         internal RegistrationOptions(
             SourceProductionContext context,
             Language language,
-            Microsoft.CodeAnalysis.CSharp.LanguageVersion languageVersion,
+            int languageVersion,
             NullableContextOptions nullableContextOptions,
             System.Reflection.AssemblyName callingAssembly)
         {
@@ -78,8 +79,21 @@ namespace Basilisque.CodeAnalysis.Syntax
             var compilationInfo = new ContextAwareCompilationInfo(Context, Language, compilationName, targetNamespace, null, null, CallingAssembly);
 
             compilationInfo.EnableNullableContext = NullableContextOptions.AnnotationsEnabled();
+            compilationInfo.WriteFileScopedNamespace = getFileScopedNamespaceSupported();
 
             return compilationInfo;
+        }
+
+        private bool getFileScopedNamespaceSupported()
+        {
+            switch (Language)
+            {
+                case Language.VisualBasic:
+                    return false;
+                case Language.CSharp:
+                default:
+                    return (Microsoft.CodeAnalysis.CSharp.LanguageVersion)LanguageVersion >= Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp10;
+            }
         }
 
         /// <summary>
