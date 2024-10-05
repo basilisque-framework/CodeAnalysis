@@ -24,29 +24,29 @@ namespace Basilisque.CodeAnalysis.Syntax
     public enum AccessModifier
     {
         /// <summary>
-        /// public - access is not restricted
-        /// </summary>
-        Public,
-        /// <summary>
-        /// internal - access is limited to the current assembly
-        /// </summary>
-        Internal,
-        /// <summary>
-        /// protected - access is limited to the containing class or types derived from the containing class
-        /// </summary>
-        Protected,
-        /// <summary>
         /// private - access is limited to the containing type
         /// </summary>
-        Private,
-        /// <summary>
-        /// protected internal - access is limited to the current assembly or types derived from the containing class
-        /// </summary>
-        ProtectedInternal,
+        Private = 1,
         /// <summary>
         /// private protected - access is limited to the containing class or types derived from the containing class within the current assembly
         /// </summary>
-        PrivateProtected
+        PrivateProtected = 2,
+        /// <summary>
+        /// protected - access is limited to the containing class or types derived from the containing class
+        /// </summary>
+        Protected = 3,
+        /// <summary>
+        /// internal - access is limited to the current assembly
+        /// </summary>
+        Internal = 4,
+        /// <summary>
+        /// protected internal - access is limited to the current assembly or types derived from the containing class
+        /// </summary>
+        ProtectedInternal = 5,
+        /// <summary>
+        /// public - access is not restricted
+        /// </summary>
+        Public = 6
     }
 
     /// <summary>
@@ -122,6 +122,45 @@ namespace Basilisque.CodeAnalysis.Syntax
                 return modifier.Value;
 
             return AccessModifier.Private;
+        }
+
+        /// <summary>
+        /// Casts a <see cref="AccessModifier"/> to the corresponding <see cref="Accessibility"/>.
+        /// </summary>
+        /// <param name="accessModifier">The <see cref="AccessModifier"/> to be castet.</param>
+        /// <returns>The corresponding <see cref="Accessibility"/></returns>
+        public static Accessibility ToAccessibility(this AccessModifier accessModifier)
+        {
+            return (Accessibility)accessModifier;
+        }
+
+        /// <summary>
+        /// Casts a <see cref="Accessibility"/> to the corresponding <see cref="AccessModifier"/>.
+        /// Providing <see cref="Accessibility.NotApplicable"/> raises a <see cref="ArgumentOutOfRangeException"/>.
+        /// </summary>
+        /// <param name="accessibility">The <see cref="Accessibility"/> to be castet.</param>
+        /// <returns>The corresponding <see cref="AccessModifier"/></returns>
+        /// <exception cref="ArgumentOutOfRangeException">Providing <see cref="Accessibility.NotApplicable"/> raises a <see cref="ArgumentOutOfRangeException"/></exception>
+        public static AccessModifier ToAccessModifier(this Accessibility accessibility)
+        {
+            if ((int)accessibility < 1)
+                throw new ArgumentOutOfRangeException();
+
+            return (AccessModifier)accessibility;
+        }
+
+        /// <summary>
+        /// Casts a <see cref="Accessibility"/> to the corresponding <see cref="AccessModifier"/>.
+        /// </summary>
+        /// <param name="accessibility">The <see cref="Accessibility"/> to be castet.</param>
+        /// <param name="defaultValue">The value that will be returned for <see cref="Accessibility.NotApplicable"/>.</param>
+        /// <returns>The corresponding <see cref="AccessModifier"/></returns>
+        public static AccessModifier ToAccessModifier(this Accessibility accessibility, AccessModifier defaultValue)
+        {
+            if ((int)accessibility < 1)
+                return defaultValue;
+
+            return (AccessModifier)accessibility;
         }
 
         private static AccessModifier? getAccessModifier(SyntaxTokenList modifiers)

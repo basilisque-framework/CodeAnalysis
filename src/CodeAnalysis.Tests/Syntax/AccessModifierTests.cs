@@ -291,5 +291,97 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             Assert.AreEqual(AccessModifier.Public, result);
         }
+
+        [DataTestMethod]
+        [DataRow(AccessModifier.Private, Accessibility.Private)]
+        [DataRow(AccessModifier.PrivateProtected, Accessibility.ProtectedAndInternal)]
+        [DataRow(AccessModifier.Protected, Accessibility.Protected)]
+        [DataRow(AccessModifier.Internal, Accessibility.Internal)]
+        [DataRow(AccessModifier.ProtectedInternal, Accessibility.ProtectedOrInternal)]
+        [DataRow(AccessModifier.Public, Accessibility.Public)]
+        public void ToAccessibility_ReturnsCorrectValue(AccessModifier src, Accessibility target)
+        {
+            var result = src.ToAccessibility();
+
+            Assert.AreEqual(target, result);
+        }
+
+        [DataTestMethod]
+        [DataRow(Accessibility.Private, AccessModifier.Private)]
+        [DataRow(Accessibility.ProtectedAndInternal, AccessModifier.PrivateProtected)]
+        [DataRow(Accessibility.Protected, AccessModifier.Protected)]
+        [DataRow(Accessibility.Internal, AccessModifier.Internal)]
+        [DataRow(Accessibility.ProtectedOrInternal, AccessModifier.ProtectedInternal)]
+        [DataRow(Accessibility.Public, AccessModifier.Public)]
+        public void ToToAccessModifier_ReturnsCorrectValue(Accessibility src, AccessModifier target)
+        {
+            var result = src.ToAccessModifier();
+
+            Assert.AreEqual(target, result);
+        }
+
+        [TestMethod]
+        public void ToAccessModifier_WithNotApplicable_ThrowsException()
+        {
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+            {
+                Accessibility.NotApplicable.ToAccessModifier();
+            });
+        }
+
+        [DataTestMethod]
+        [DataRow(AccessModifier.Protected)]
+        [DataRow(AccessModifier.PrivateProtected)]
+        public void ToAccessibility_WithDefault_ReturnsCorrectValue(AccessModifier defaultValue)
+        {
+            var result = Accessibility.NotApplicable.ToAccessModifier(defaultValue);
+
+            Assert.AreEqual(defaultValue, result);
+        }
+
+
+
+
+
+        [DataTestMethod]
+        [DataRow(AccessModifier.Private, Accessibility.Private)]
+        [DataRow(AccessModifier.PrivateProtected, Accessibility.ProtectedAndInternal)]
+        [DataRow(AccessModifier.Protected, Accessibility.Protected)]
+        [DataRow(AccessModifier.Internal, Accessibility.Internal)]
+        [DataRow(AccessModifier.ProtectedInternal, Accessibility.ProtectedOrInternal)]
+        [DataRow(AccessModifier.Public, Accessibility.Public)]
+        public void Casting_AccessModifier_To_Accessibility_ReturnsCorrectValue(AccessModifier src, Accessibility target)
+        {
+            var result = (Accessibility)src;
+
+            Assert.AreEqual(target, result);
+        }
+
+        [DataTestMethod]
+        [DataRow(Accessibility.Private, AccessModifier.Private)]
+        [DataRow(Accessibility.ProtectedAndInternal, AccessModifier.PrivateProtected)]
+        [DataRow(Accessibility.Protected, AccessModifier.Protected)]
+        [DataRow(Accessibility.Internal, AccessModifier.Internal)]
+        [DataRow(Accessibility.ProtectedOrInternal, AccessModifier.ProtectedInternal)]
+        [DataRow(Accessibility.Public, AccessModifier.Public)]
+        public void Casting_Accessibility_To_AccessModifier_ReturnsCorrectValue(Accessibility src, AccessModifier target)
+        {
+            var result = (AccessModifier)src;
+
+            Assert.AreEqual(target, result);
+        }
+
+        [TestMethod]
+        public void Ensure_AccessModifier_SupportsAllValuesOf_Accessibility_AndViceVersa()
+        {
+            var accessibilityValues = Enum.GetValues(typeof(Accessibility)).Cast<Accessibility>().ToList();
+            var accessModifierValues = Enum.GetValues(typeof(AccessModifier)).Cast<AccessModifier>().ToList();
+
+            var unmappedAV = accessibilityValues.Where(av => av != Accessibility.NotApplicable && !accessModifierValues.Contains((AccessModifier)av)).ToList();
+            var unmappedAMV = accessModifierValues.Where(amv => !accessibilityValues.Contains((Accessibility)amv)).ToList();
+
+            Assert.AreEqual(0, unmappedAV.Count);
+            Assert.AreEqual(0, unmappedAMV.Count);
+        }
     }
 }
