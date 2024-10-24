@@ -760,5 +760,36 @@ public int PropertyName
     }
 }", src);
         }
+
+        [TestMethod]
+        public void IsRequired()
+        {
+            var propertyInfo = new PropertyInfo("int", "MyProperty");
+
+            propertyInfo.IsRequired = true;
+
+            var src = propertyInfo.ToString();
+
+            Assert.AreEqual(@"public required int MyProperty { get; set; }", src);
+        }
+
+        [TestMethod]
+        public void IncludeAttributes()
+        {
+            var propertyInfo = new PropertyInfo("int", "MyProperty");
+
+            propertyInfo.Attributes.Add(new AttributeInfo("MyAttribute1"));
+
+            var ai = new AttributeInfo("MyAttribute2");
+            ai.ConstructorParameters.Add(new AttributeConstructorParameter("typeof(string)"));
+            ai.ConstructorParameters.Add(new AttributeConstructorParameter("param2", "typeof(int)"));
+            propertyInfo.Attributes.Add(ai);
+
+            var src = propertyInfo.ToString();
+
+            Assert.AreEqual(@"[MyAttribute1]
+[MyAttribute2(typeof(string), param2: typeof(int))]
+public int MyProperty { get; set; }", src);
+        }
     }
 }

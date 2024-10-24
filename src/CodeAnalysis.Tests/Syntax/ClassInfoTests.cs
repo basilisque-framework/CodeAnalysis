@@ -730,5 +730,32 @@ This is some line that doesn't compile but I don't care what is added in here...
     }
 }", src);
         }
+
+        [TestMethod]
+        public void With1Property_With2Attributes()
+        {
+            var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
+            classInfo.AddGeneratedCodeAttributes = false;
+
+            var propertyInfo = new PropertyInfo("int", "MyProp");
+
+            propertyInfo.Attributes.Add(new AttributeInfo("MyAttribute1"));
+
+            var ai = new AttributeInfo("MyAttribute2");
+            ai.ConstructorParameters.Add(new AttributeConstructorParameter("typeof(string)"));
+            ai.ConstructorParameters.Add(new AttributeConstructorParameter("param2", "typeof(int)"));
+            propertyInfo.Attributes.Add(ai);
+
+            classInfo.Properties.Add(propertyInfo);
+
+            var src = classInfo.ToString();
+
+            Assert.AreEqual(@"public class MyClass
+{
+    [MyAttribute1]
+    [MyAttribute2(typeof(string), param2: typeof(int))]
+    public int MyProp { get; set; }
+}", src);
+        }
     }
 }

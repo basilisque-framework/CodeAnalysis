@@ -31,6 +31,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         private string? _fieldName = null;
         private bool _hasAutoFieldName = true;
         private List<string>? _xmlDocAdditionalLines;
+        private List<AttributeInfo>? _attributes = null;
 
         /// <summary>
         /// The access modifier that specifies the accessibility of the property
@@ -200,11 +201,35 @@ namespace Basilisque.CodeAnalysis.Syntax
         }
 
         /// <summary>
+        /// Determines if the property is required or not
+        /// </summary>
+        public bool IsRequired { get; set; }
+
+        /// <summary>
+        /// Determines if the property has <see cref="Attributes"/>
+        /// </summary>
+        public bool HasAttributes { get { return _attributes?.Any() == true; } }
+
+        /// <summary>
+        /// Defines the attributes of the property
+        /// </summary>
+        public List<AttributeInfo> Attributes
+        {
+            get
+            {
+                if (_attributes is null)
+                    _attributes = new List<AttributeInfo>();
+
+                return _attributes;
+            }
+        }
+
+        /// <summary>
         /// Creates a new <see cref="PropertyInfo"/>
         /// </summary>
         /// <param name="type">The type of the property as string</param>
         /// <param name="name">The name of the property</param>
-        /// <exception cref="ArgumentNullException">Throws an <see cref="ArgumentNullException"/> when the name parameter is null or an empty string</exception>
+        /// <exception cref="ArgumentNullException">Throws an <see cref="ArgumentNullException"/> when the name or the type parameter is null or an empty string</exception>
         public PropertyInfo(string type, string name)
         {
             if (string.IsNullOrWhiteSpace(type))
@@ -302,11 +327,23 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             appendXmlDoc(sb, indentCharCnt);
 
+            if (HasAttributes)
+            {
+                foreach (var a in Attributes)
+                {
+                    a.ToString(sb, indentLvl, Language.CSharp);
+                    sb.AppendLine();
+                }
+            }
+
             AppendIntentation(sb, indentCharCnt);
 
             sb.Append(AccessModifier.ToKeywordString());
 
             sb.Append(' ');
+
+            if (IsRequired)
+                sb.Append("required ");
 
             sb.Append(_type);
 
