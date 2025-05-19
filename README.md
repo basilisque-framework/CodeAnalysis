@@ -19,11 +19,7 @@
 This project provides helpers for writing .Net code analyzers and source generators.
 
 [![NuGet Basilisque.CodeAnalysis](https://img.shields.io/badge/NuGet_Basilisque.CodeAnalysis-latest-blue.svg)](https://www.nuget.org/packages/Basilisque.CodeAnalysis)
-[![License](https://img.shields.io/badge/License-Apache%20License%202.0-red.svg)](LICENSE.txt)
-
-[![NuGet Basilisque.CodeAnalysis](https://img.shields.io/badge/NuGet_Basilisque.CodeAnalysis.TestSupport.MSTest-latest-blue.svg)](https://www.nuget.org/packages/Basilisque.CodeAnalysis.TestSupport.MSTest)  
-[![NuGet Basilisque.CodeAnalysis](https://img.shields.io/badge/NuGet_Basilisque.CodeAnalysis.TestSupport.NUnit-latest-blue.svg)](https://www.nuget.org/packages/Basilisque.CodeAnalysis.TestSupport.NUnit)  
-[![NuGet Basilisque.CodeAnalysis](https://img.shields.io/badge/NuGet_Basilisque.CodeAnalysis.TestSupport.XUnit-latest-blue.svg)](https://www.nuget.org/packages/Basilisque.CodeAnalysis.TestSupport.XUnit)  
+[![License](https://img.shields.io/badge/License-Apache%20License%202.0-red.svg)](LICENSE.txt)  
 [![NuGet Basilisque.CodeAnalysis](https://img.shields.io/badge/NuGet_Basilisque.CodeAnalysis.TestSupport-latest-blue.svg)](https://www.nuget.org/packages/Basilisque.CodeAnalysis.TestSupport)
 
 ## Description
@@ -100,11 +96,9 @@ Installing the package will automaticall configure your project to be packed as 
 So you're ready to [get started](https://github.com/basilisque-framework/CodeAnalysis/wiki/Getting-Started).
 
 ### Installation for Unit Tests
-This project currently provides helpers for MSTest, NUnit and XUnit.  
-So you have to install the correct package for the test framework you're using:  
-[Basilisque.CodeAnalysis.TestSupport.MSTest](https://www.nuget.org/packages/Basilisque.CodeAnalysis.TestSupport.MSTest)  
-[Basilisque.CodeAnalysis.TestSupport.NUnit](https://www.nuget.org/packages/Basilisque.CodeAnalysis.TestSupport.NUnit)  
-[Basilisque.CodeAnalysis.TestSupport.XUnit](https://www.nuget.org/packages/Basilisque.CodeAnalysis.TestSupport.XUnit)
+This project provides helpers for unit tests.  
+To make use of the install the package:  
+[Basilisque.CodeAnalysis.TestSupport](https://www.nuget.org/packages/Basilisque.CodeAnalysis.TestSupport)  
 
 Now you can write [your first Unit Test](https://github.com/basilisque-framework/CodeAnalysis/wiki/Getting-Started#unit-tests).
 

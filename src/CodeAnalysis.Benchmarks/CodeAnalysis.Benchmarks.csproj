@@ -1,5 +1,5 @@
 ﻿<!--
-   Copyright 2023-2024 Alexander Stärk
+   Copyright 2023-2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
-	<DefineConstants>$(DefineConstants);BASILISQUE_BENCHMARK</DefineConstants>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <DefineConstants>$(DefineConstants);BASILISQUE_BENCHMARK</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,11 +26,10 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" />
-	<PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
-	<PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
-		<PrivateAssets>all</PrivateAssets>
-		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	</PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
-
 </Project>

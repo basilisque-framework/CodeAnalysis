@@ -1,5 +1,5 @@
 ﻿/*
-   Copyright 2023 Alexander Stärk
+   Copyright 2023-2025 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
    limitations under the License.
 */
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
 using System.Collections.Immutable;
+using System.Reflection;
 
 namespace Basilisque.CodeAnalysis.TestSupport.SourceGenerators.UnitTests.Verifiers
 {
@@ -25,8 +27,16 @@ namespace Basilisque.CodeAnalysis.TestSupport.SourceGenerators.UnitTests.Verifie
     /// Helper class to support verifying incremental source generators
     /// </summary>
     /// <typeparam name="TSourceGenerator">The incremental source generator to be verified</typeparam>
+    public class IncrementalSourceGeneratorVerifier<TSourceGenerator> : IncrementalSourceGeneratorVerifier<TSourceGenerator, DefaultVerifier>
+        where TSourceGenerator : IIncrementalGenerator, new()
+    { }
+
+    /// <summary>
+    /// Helper class to support verifying incremental source generators
+    /// </summary>
+    /// <typeparam name="TSourceGenerator">The incremental source generator to be verified</typeparam>
     /// <typeparam name="TVerifier">The verifier that verifies the source generator</typeparam>
-    public class IncrementalSourceGeneratorVerifier<TSourceGenerator, TVerifier> : Microsoft.CodeAnalysis.CSharp.Testing.CSharpSourceGeneratorTest<EmptySourceGeneratorProvider, TVerifier>
+    public class IncrementalSourceGeneratorVerifier<TSourceGenerator, TVerifier> : Microsoft.CodeAnalysis.CSharp.Testing.CSharpSourceGeneratorTest<TSourceGenerator, TVerifier>
         where TSourceGenerator : IIncrementalGenerator, new()
         where TVerifier : IVerifier, new()
     {
@@ -75,28 +85,50 @@ namespace Basilisque.CodeAnalysis.TestSupport.SourceGenerators.UnitTests.Verifie
         }
 
         /// <summary>
-        /// Creates and returns the source generator under test
+        /// Workaround for https://github.com/dotnet/roslyn-sdk/pull/1204 in V1.1.2 until the fix is released in an official version.
+        /// After this is released, this code can be removed. The method GetAnalyzerOptions should do this job then.
         /// </summary>
-        /// <returns>A new instance of <see cref="ISourceGenerator"/> as IEnumerable</returns>
-        protected override IEnumerable<ISourceGenerator> GetSourceGenerators()
+        protected override Project ApplyCompilationOptions(Project project)
         {
-            yield return new TSourceGenerator().AsSourceGenerator();
+            var result = base.ApplyCompilationOptions(project);
+
+            if (_globalOptions is null)
+                return result;
+
+            var testStateProperty = typeof(Project).GetProperty("State", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            if (testStateProperty is null)
+                return result;
+
+            var testState = testStateProperty.GetValue(result);
+            if (testState is null)
+                return result;
+
+            var analyzerOptionsField = testState.GetType().GetField("_lazyAnalyzerOptions", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (analyzerOptionsField is null)
+                return result;
+
+            var baseOptions = base.GetAnalyzerOptions(project);
+
+            var analyzerOptions = new AnalyzerOptions(ImmutableArray<AdditionalText>.Empty, new Diagnostics.ConfigOptionsProvider(baseOptions.AnalyzerConfigOptionsProvider, _globalOptions));
+
+            analyzerOptionsField.SetValue(testState, analyzerOptions);
+
+            return result;
         }
 
         /// <summary>
-        /// Creates and returns the generator driver
+        /// Gets the effective analyzer options for a project. Returns the default value extended with the provided global options.
         /// </summary>
-        /// <param name="project">The <see cref="Project"/> to be tested</param>
-        /// <param name="sourceGenerators">The source generators to be tested</param>
-        /// <returns></returns>
-        protected override GeneratorDriver CreateGeneratorDriver(Project project, ImmutableArray<ISourceGenerator> sourceGenerators)
+        /// <param name="project">The project.</param>
+        /// <returns>The effective <see cref="AnalyzerOptions"/> for the project.</returns>
+        protected override AnalyzerOptions GetAnalyzerOptions(Project project)
         {
-            var driver = base.CreateGeneratorDriver(project, sourceGenerators);
+            var baseOptions = base.GetAnalyzerOptions(project);
 
-            if (_globalOptions != null)
-                driver = driver.WithUpdatedAnalyzerConfigOptions(new Diagnostics.ConfigOptionsProvider(project.AnalyzerOptions.AnalyzerConfigOptionsProvider, _globalOptions));
+            if (_globalOptions is null)
+                return baseOptions;
 
-            return driver;
+            return new AnalyzerOptions(ImmutableArray<AdditionalText>.Empty, new Diagnostics.ConfigOptionsProvider(baseOptions.AnalyzerConfigOptionsProvider, _globalOptions));
         }
 
         /// <summary>
