@@ -502,7 +502,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         [DataRow("MyCompilation1.g.cs", "MyCompilation1.g.cs", Language.CSharp, DisplayName = "name with .g.cs extension")]
         [DataRow("MyCompilation1.cs", "MyCompilation1.cs", Language.CSharp, DisplayName = "name with .cs extension")]
         [DataRow("MyCompilation1.my.cs", "MyCompilation1.my.cs", Language.CSharp, DisplayName = "name with .my.cs extension")]
-        [DataRow("MyCompilation1", "MyCompilation1.g.cs", -1, DisplayName = "Invalid language defaults to C#")]
+        [DataRow("MyCompilation1", "MyCompilation1.g.cs", (Language)(-1), DisplayName = "Invalid language defaults to C#")]
         [DataRow("MyCompilation1", "MyCompilation1.g.vb", Language.VisualBasic, DisplayName = "VB language without extension")]
         [DataRow("MyCompilation1.g.cs", "MyCompilation1.g.cs.g.vb", Language.VisualBasic, DisplayName = "Invalid extension is ignored")]
         public void GetHintName_ReturnsCorrectName(string compilationName, string expectedResult, Language language)
