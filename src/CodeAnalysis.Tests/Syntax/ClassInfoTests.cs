@@ -25,7 +25,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 ";
 
-        private string _codeGenerationAttributeString;
+        private readonly string _codeGenerationAttributeString;
 
         public ClassInfoTests()
         {
@@ -60,7 +60,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var classStr = classInfo.ToString();
 
-            string codeGenAttrStr = (!codeGenAttrEnabled.HasValue || codeGenAttrEnabled.HasValue && codeGenAttrEnabled.Value) ? _codeGenerationAttributeString : string.Empty;
+            string codeGenAttrStr = codeGenAttrEnabled.GetValueOrDefault(true) ? _codeGenerationAttributeString : string.Empty;
 
             Assert.AreEqual(codeGenAttrStr + @"protected internal class TestClass1
 {

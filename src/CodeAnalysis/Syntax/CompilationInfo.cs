@@ -87,7 +87,7 @@ namespace Basilisque.CodeAnalysis.Syntax
     public class CompilationInfo<TCompilationInfo> : SyntaxNode
         where TCompilationInfo : CompilationInfo<TCompilationInfo>
     {
-        private System.Reflection.AssemblyName _constructingAssemblyName;
+        private readonly System.Reflection.AssemblyName _constructingAssemblyName;
         private string _compilationName;
         private string? _targetNamespace;
         private bool _writeFileScopedNamespace = false;

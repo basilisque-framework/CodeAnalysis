@@ -222,7 +222,7 @@ return _myProperty;
             var src = propertyInfo.ToString(Language.CSharp, false);
             var fieldName = propertyInfo.FieldName;
 
-            Assert.AreEqual(false, string.IsNullOrWhiteSpace(fieldName));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(fieldName));
 
             Assert.AreEqual($@"public int MyProperty
 {{
@@ -252,7 +252,7 @@ _myProperty = value;
             var src = propertyInfo.ToString(false);
             var fieldName = propertyInfo.FieldName;
 
-            Assert.AreEqual(false, string.IsNullOrWhiteSpace(fieldName));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(fieldName));
 
             Assert.AreEqual($@"public int MyProperty
 {{
@@ -393,7 +393,7 @@ return _myProperty;
 ");
 
             var fieldName = propertyInfo.FieldName;
-            Assert.AreEqual(false, string.IsNullOrWhiteSpace(fieldName));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(fieldName));
 
             var sb = new System.Text.StringBuilder();
             propertyInfo.ToString(sb, 1, Language.CSharp, false);

@@ -20,7 +20,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
     [TestClass]
     public class StringExtensions_ToValidNamespaceTests
     {
-        Func<string?, string?> toValidNamespace;
+        private readonly Func<string?, string?> _toValidNamespace;
 
         public StringExtensions_ToValidNamespaceTests()
             : this(StringExtensions.ToValidNamespace)
@@ -28,7 +28,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
         public StringExtensions_ToValidNamespaceTests(Func<string?, string?> testFunc)
         {
-            toValidNamespace = testFunc;
+            _toValidNamespace = testFunc;
         }
 
         [TestMethod]
@@ -44,7 +44,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         [DataRow("", DisplayName = "empty string")]
         public void EmptySource_ReturnsNull(string? s)
         {
-            var result = toValidNamespace(s);
+            var result = _toValidNamespace(s);
 
             Assert.IsNull(result);
         }
@@ -55,7 +55,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         [DataRow("	 ", "__", DisplayName = "1 tab & 1 space")]
         public void Whitepace_ReturnsUnderscores(string? s, string expectedResult)
         {
-            var result = toValidNamespace(s);
+            var result = _toValidNamespace(s);
 
             Assert.AreEqual(expectedResult, result);
         }
@@ -73,9 +73,10 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         [DataRow("1NoDots", "_1NoDots", DisplayName = "invalid namespace without dots")]
         [DataRow("class", "@class", DisplayName = "single reserved keyword 'class'")]
         [DataRow("namespace", "@namespace", DisplayName = "single reserved keyword 'namespace'")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Name of method provides relevant test context")]
         public void SourceString_ReturnsCorrectNamespace(string? s, string expectedResult)
         {
-            var result = toValidNamespace(s);
+            var result = _toValidNamespace(s);
 
             Assert.AreEqual(expectedResult, result);
         }

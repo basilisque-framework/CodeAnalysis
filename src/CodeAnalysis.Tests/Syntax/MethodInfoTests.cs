@@ -328,7 +328,7 @@ public string MyMethod1()
         {
             var methodInfo = new MethodInfo(true, "MyMethod");
 
-            Assert.AreEqual(true, methodInfo.IsPartial);
+            Assert.IsTrue(methodInfo.IsPartial);
             Assert.AreEqual("void", methodInfo.ReturnType);
             Assert.AreEqual(AccessModifier.Private, methodInfo.AccessModifier);
 
@@ -342,7 +342,7 @@ public string MyMethod1()
         {
             var methodInfo = new MethodInfo(false, "MyMethod");
 
-            Assert.AreEqual(false, methodInfo.IsPartial);
+            Assert.IsFalse(methodInfo.IsPartial);
             Assert.AreEqual("void", methodInfo.ReturnType);
             Assert.AreEqual(AccessModifier.Private, methodInfo.AccessModifier);
 

@@ -88,6 +88,7 @@ namespace Basilisque.CodeAnalysis.TestSupport.SourceGenerators.UnitTests.Verifie
         /// Workaround for https://github.com/dotnet/roslyn-sdk/pull/1204 in V1.1.2 until the fix is released in an official version.
         /// After this is released, this code can be removed. The method GetAnalyzerOptions should do this job then.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "This is a workaround for an issue in dotnet: https://github.com/dotnet/roslyn-sdk/pull/1204")]
         protected override Project ApplyCompilationOptions(Project project)
         {
             var result = base.ApplyCompilationOptions(project);

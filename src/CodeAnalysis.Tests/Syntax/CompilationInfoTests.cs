@@ -45,9 +45,9 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
 ";
 
-        private string _codeGenerationAttributeStringCompilationInfo;
-        private string _codeGenerationAttributeStringClassInfo;
-        private string _codeGenerationAttributeStringClassInfoIndented;
+        private readonly string _codeGenerationAttributeStringCompilationInfo;
+        private readonly string _codeGenerationAttributeStringClassInfo;
+        private readonly string _codeGenerationAttributeStringClassInfoIndented;
 
         public CompilationInfoTests()
         {
@@ -148,7 +148,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 {
 }";
 
-            if (!enableNullableContext.HasValue || (enableNullableContext.HasValue && enableNullableContext.Value))
+            if (enableNullableContext.GetValueOrDefault(true))
                 expectedResult = @"#nullable enable
 
 " + expectedResult + @"
@@ -242,7 +242,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 {
 }";
 
-            if (!enableNullableContext.HasValue || (enableNullableContext.HasValue && enableNullableContext.Value))
+            if (enableNullableContext.GetValueOrDefault(true))
                 expectedResult = @"#nullable enable
 
 " + expectedResult + @"

@@ -144,7 +144,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         public static AccessModifier ToAccessModifier(this Accessibility accessibility)
         {
             if ((int)accessibility < 1)
-                throw new ArgumentOutOfRangeException();
+                throw new ArgumentOutOfRangeException(nameof(accessibility));
 
             return (AccessModifier)accessibility;
         }

@@ -22,7 +22,7 @@ namespace Basilisque.CodeAnalysis.Syntax
     /// </summary>
     public class ClassInfo : SyntaxNode
     {
-        private System.Reflection.AssemblyName _constructingAssemblyName;
+        private readonly System.Reflection.AssemblyName _constructingAssemblyName;
         private string _className;
         private string? _baseClass;
         private string? _generatedCodeToolName;
@@ -319,7 +319,7 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             alreadyHasContent = appendMethods(sb, childIndentLvl, childIndentCharCnt, alreadyHasContent) || alreadyHasContent;
 
-            alreadyHasContent = appendAdditionalCodeLines(sb, childIndentCharCnt, alreadyHasContent) || alreadyHasContent;
+            _ /*alreadyHasContent*/ = appendAdditionalCodeLines(sb, childIndentCharCnt, alreadyHasContent) || alreadyHasContent;
 
             AppendIntentation(sb, indentCharCnt);
             sb.Append("}");

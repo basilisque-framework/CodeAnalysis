@@ -58,6 +58,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         [DataRow("My$Class", "My_Class", DisplayName = "$ in the middle should be replaced")]
         [DataRow("class", "@class", DisplayName = "keyword should be prefixed with @")]
         [DataRow("Name.With.Dots.And.class.keyword", "Name_With_Dots_And_class_keyword", DisplayName = "keyword as part of a longer string should be fine")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Name of method provides relevant test context")]
         public void SourceString_ReturnsCorrectNamespace(string? s, string expectedResult)
         {
             var result = s.ToValidIdentifier();

@@ -15,19 +15,18 @@
 */
 using BenchmarkDotNet.Running;
 
-namespace Basilisque.CodeAnalysis.Benchmarks
+namespace Basilisque.CodeAnalysis.Benchmarks;
+
+internal static class Program
 {
-    internal class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-            BenchmarkDotNet.Configs.IConfig? config;
+        BenchmarkDotNet.Configs.IConfig? config;
 #if DEBUG
-            config = new BenchmarkDotNet.Configs.DebugInProcessConfig();
+        config = new BenchmarkDotNet.Configs.DebugInProcessConfig();
 #else
-            config = null;
+        config = null;
 #endif
-            BenchmarkRunner.Run(typeof(Program).Assembly, config);
-        }
+        BenchmarkRunner.Run(typeof(Program).Assembly, config);
     }
 }

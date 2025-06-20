@@ -319,11 +319,8 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <param name="includeBackingFieldIfNecessary">Defines, if the backing field of the property is part of the resulting string when necessary or not</param>
         protected void ToCSharpString(StringBuilder sb, int indentLvl, int childIndentLvl, int indentCharCnt, int childIndentCharCnt, bool includeBackingFieldIfNecessary)
         {
-            if (includeBackingFieldIfNecessary)
-            {
-                if (AppendFieldIfNecessary(sb, indentLvl, Language.CSharp, null!))
-                    sb.AppendLine();
-            }
+            if (includeBackingFieldIfNecessary && AppendFieldIfNecessary(sb, indentLvl, Language.CSharp, null!))
+                sb.AppendLine();
 
             appendXmlDoc(sb, indentCharCnt);
 
@@ -576,25 +573,24 @@ namespace Basilisque.CodeAnalysis.Syntax
                 if (!writeGetter && !writeSetter)
                     writeGetter = writeSetter = true;
 
-                if ((writeGetter && !hasGetterBody) || (writeSetter && !hasSetterBody))
+                var writeProp = (writeGetter && !hasGetterBody) || (writeSetter && !hasSetterBody);
+
+                if (writeProp && fields?.Any(fi => fi.Name == _fieldName) != true)
                 {
-                    if (fields?.Any(fi => fi.Name == _fieldName) != true)
-                    {
-                        AppendIntentation(sb, indentLvl * IndentationCharacterCountPerLevel);
+                    AppendIntentation(sb, indentLvl * IndentationCharacterCountPerLevel);
 
-                        sb.Append("private ");
+                    sb.Append("private ");
 
-                        sb.Append(_type);
+                    sb.Append(_type);
 
-                        sb.Append(' ');
+                    sb.Append(' ');
 
-                        sb.Append(_fieldName);
+                    sb.Append(_fieldName);
 
-                        if (!writeInitialValue(sb))
-                            sb.Append(";");
+                    if (!writeInitialValue(sb))
+                        sb.Append(";");
 
-                        return true;
-                    }
+                    return true;
                 }
             }
 

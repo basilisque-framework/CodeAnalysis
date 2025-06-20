@@ -23,7 +23,7 @@ namespace Basilisque.CodeAnalysis.Syntax
     /// </summary>
     public class CodeLines : SyntaxNode, IEnumerable<string>
     {
-        private List<string> _lines = new List<string>();
+        private readonly List<string> _lines = new List<string>();
 
         /// <summary>
         /// Gets the number of code lines contained in this list
@@ -133,11 +133,8 @@ namespace Basilisque.CodeAnalysis.Syntax
                 var line = lines[i];
 
                 //remove first/last line if emtpy
-                if (isMoreThanOneLine && (i == 0 || i == iMax))
-                {
-                    if (string.IsNullOrEmpty(line))
-                        continue;
-                }
+                if (isMoreThanOneLine && (i == 0 || i == iMax) && string.IsNullOrEmpty(line))
+                    continue;
 
                 _lines.Add(line);
             }
