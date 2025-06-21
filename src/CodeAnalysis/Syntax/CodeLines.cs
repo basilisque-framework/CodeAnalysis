@@ -23,7 +23,7 @@ namespace Basilisque.CodeAnalysis.Syntax
     /// </summary>
     public class CodeLines : SyntaxNode, IEnumerable<string>
     {
-        private readonly List<string> _lines = new List<string>();
+        private readonly List<string> _lines = new();
 
         /// <summary>
         /// Gets the number of code lines contained in this list

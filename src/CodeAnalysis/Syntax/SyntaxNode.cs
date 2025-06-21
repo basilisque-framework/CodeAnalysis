@@ -53,7 +53,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <returns>Returns a code representation of the current <see cref="SyntaxNode"/> and its children as string</returns>
         public string ToString(Language language)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             ToString(sb, 0, language);
 

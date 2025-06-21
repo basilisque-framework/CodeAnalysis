@@ -46,7 +46,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         [TestMethod]
         public void ToKeywordString_ThrowsForInvalidValue()
         {
-            Assert.ThrowsException<NotSupportedException>(() =>
+            Assert.ThrowsExactly<NotSupportedException>(() =>
             {
                 AccessModifierExtensions.ToKeywordString((AccessModifier)20);
             });
@@ -323,7 +323,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         [TestMethod]
         public void ToAccessModifier_WithNotApplicable_ThrowsException()
         {
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
             {
                 Accessibility.NotApplicable.ToAccessModifier();
             });
@@ -374,8 +374,8 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         [TestMethod]
         public void Ensure_AccessModifier_SupportsAllValuesOf_Accessibility_AndViceVersa()
         {
-            var accessibilityValues = Enum.GetValues(typeof(Accessibility)).Cast<Accessibility>().ToList();
-            var accessModifierValues = Enum.GetValues(typeof(AccessModifier)).Cast<AccessModifier>().ToList();
+            var accessibilityValues = Enum.GetValues<Accessibility>();
+            var accessModifierValues = Enum.GetValues<AccessModifier>();
 
             var unmappedAV = accessibilityValues.Where(av => av != Accessibility.NotApplicable && !accessModifierValues.Contains((AccessModifier)av)).ToList();
             var unmappedAMV = accessModifierValues.Where(amv => !accessibilityValues.Contains((Accessibility)amv)).ToList();

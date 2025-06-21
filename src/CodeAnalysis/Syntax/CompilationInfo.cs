@@ -196,8 +196,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_usings == null)
-                    _usings = new List<string>();
+                _usings ??= new List<string>();
 
                 return _usings;
             }
@@ -215,8 +214,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_classes == null)
-                    _classes = new List<ClassInfo>();
+                _classes ??= new List<ClassInfo>();
 
                 return _classes;
             }
@@ -260,9 +258,10 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <returns>Returns the current <see cref="CompilationInfo"/> to enable use of fluent syntax</returns>
         public TCompilationInfo AddNewClassInfo(string className, AccessModifier accessModifier, Action<ClassInfo> classConfiguration)
         {
-            var classInfo = new ClassInfo(className, accessModifier, GeneratedCodeToolName, GeneratedCodeToolVersion, _constructingAssemblyName);
-
-            classInfo.AddGeneratedCodeAttributes = this.AddGeneratedCodeAttributes;
+            var classInfo = new ClassInfo(className, accessModifier, GeneratedCodeToolName, GeneratedCodeToolVersion, _constructingAssemblyName)
+            {
+                AddGeneratedCodeAttributes = this.AddGeneratedCodeAttributes
+            };
 
             classConfiguration(classInfo);
 
@@ -305,18 +304,11 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <returns>The hint name as string</returns>
         public static string GetHintName(string compilationName, Language language)
         {
-            string fileExt;
-            switch (language)
+            string fileExt = language switch
             {
-                case Language.VisualBasic:
-                    fileExt = ".vb";
-                    break;
-                case Language.CSharp:
-                default:
-                    fileExt = ".cs";
-                    break;
-            }
-
+                Language.VisualBasic => ".vb",
+                _ => ".cs",
+            };
             if (string.IsNullOrWhiteSpace(compilationName))
                 compilationName = Guid.NewGuid().ToString("n");
 

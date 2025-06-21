@@ -11,9 +11,9 @@ public class AttributeInfoTests
     [DataRow("  ", DisplayName = "Name: '  '")]
     public void InvalidName_ThrowsArgumentNullException(string name)
     {
-        Assert.ThrowsException<ArgumentNullException>(() =>
+        Assert.ThrowsExactly<ArgumentNullException>(() =>
         {
-            new AttributeInfo(name);
+            _ = new AttributeInfo(name);
         });
     }
 

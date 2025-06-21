@@ -25,7 +25,7 @@ namespace Basilisque.CodeAnalysis.Syntax
     public class FieldInfo : SyntaxNode
     {
         private string _name;
-        private string? _type;
+        private string _type;
         private List<string>? _xmlDocAdditionalLines;
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                return _type!;
+                return _type;
             }
             set
             {
@@ -78,6 +78,25 @@ namespace Basilisque.CodeAnalysis.Syntax
         public string? InitialValue { get; set; }
 
         /// <summary>
+        /// The text that is used as summary for the XML documentation comment
+        /// </summary>
+        public string? XmlDocSummary { get; set; }
+
+        /// <summary>
+        /// Additional XML documentation lines.
+        /// Full lines including XML tags.
+        /// </summary>
+        public List<string> XmlDocAdditionalLines
+        {
+            get
+            {
+                _xmlDocAdditionalLines ??= new List<string>();
+
+                return _xmlDocAdditionalLines;
+            }
+        }
+
+        /// <summary>
         /// Creates a new <see cref="FieldInfo"/>
         /// </summary>
         /// <param name="type">The type of the field as string</param>
@@ -93,26 +112,6 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             _name = name;
             _type = type;
-        }
-
-        /// <summary>
-        /// The text that is used as summary for the XML documentation comment
-        /// </summary>
-        public string? XmlDocSummary { get; set; }
-
-        /// <summary>
-        /// Additional XML documentation lines.
-        /// Full lines including XML tags.
-        /// </summary>
-        public List<string> XmlDocAdditionalLines
-        {
-            get
-            {
-                if (_xmlDocAdditionalLines == null)
-                    _xmlDocAdditionalLines = new List<string>();
-
-                return _xmlDocAdditionalLines;
-            }
         }
 
         /// <summary>
@@ -154,7 +153,7 @@ namespace Basilisque.CodeAnalysis.Syntax
             var initialValue = InitialValue;
             if (initialValue != null)
             {
-                var isStringType = _type!.Equals("string", StringComparison.InvariantCultureIgnoreCase) || _type.Equals("system.string", StringComparison.InvariantCultureIgnoreCase);
+                var isStringType = _type.Equals("string", StringComparison.InvariantCultureIgnoreCase) || _type.Equals("system.string", StringComparison.InvariantCultureIgnoreCase);
 
                 if (isStringType)
                 {

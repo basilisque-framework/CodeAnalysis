@@ -76,10 +76,11 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <returns></returns>
         public ContextAwareCompilationInfo CreateCompilationInfo(string compilationName, string? targetNamespace)
         {
-            var compilationInfo = new ContextAwareCompilationInfo(Context, Language, compilationName, targetNamespace, null, null, CallingAssembly);
-
-            compilationInfo.EnableNullableContext = NullableContextOptions.AnnotationsEnabled();
-            compilationInfo.WriteFileScopedNamespace = getFileScopedNamespaceSupported();
+            var compilationInfo = new ContextAwareCompilationInfo(Context, Language, compilationName, targetNamespace, null, null, CallingAssembly)
+            {
+                EnableNullableContext = NullableContextOptions.AnnotationsEnabled(),
+                WriteFileScopedNamespace = getFileScopedNamespaceSupported()
+            };
 
             return compilationInfo;
         }

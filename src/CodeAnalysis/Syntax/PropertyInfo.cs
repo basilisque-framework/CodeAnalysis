@@ -154,8 +154,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_getterBody == null)
-                    _getterBody = new CodeLines();
+                _getterBody ??= new CodeLines();
 
                 return _getterBody;
             }
@@ -168,8 +167,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_setterBody == null)
-                    _setterBody = new CodeLines();
+                _setterBody ??= new CodeLines();
 
                 return _setterBody;
             }
@@ -193,8 +191,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_xmlDocAdditionalLines == null)
-                    _xmlDocAdditionalLines = new List<string>();
+                _xmlDocAdditionalLines ??= new List<string>();
 
                 return _xmlDocAdditionalLines;
             }
@@ -217,8 +214,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_attributes is null)
-                    _attributes = new List<AttributeInfo>();
+                _attributes ??= new List<AttributeInfo>();
 
                 return _attributes;
             }
@@ -261,7 +257,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <returns>Returns a code representation of the current <see cref="SyntaxNode"/> and its children as string</returns>
         public string ToString(Language language, bool includeBackingFieldIfNecessary)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
             ToString(sb, 0, language, includeBackingFieldIfNecessary);
 
@@ -285,7 +281,6 @@ namespace Basilisque.CodeAnalysis.Syntax
                 {
                     case Language.VisualBasic:
                         throw new NotSupportedException("Visual Basic is not supported by this generator.");
-                    case Language.CSharp:
                     default:
                         ToCSharpString(sb, iLvl, cILvl, iCharCnt, cICharCnt, includeBackingFieldIfNecessary);
                         break;

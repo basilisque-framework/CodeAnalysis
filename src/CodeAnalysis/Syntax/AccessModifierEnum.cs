@@ -63,20 +63,13 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <example>public</example>
         public static string ToKeywordString(this AccessModifier accessModifier)
         {
-            switch (accessModifier)
+            return accessModifier switch
             {
-                case AccessModifier.Public:
-                case AccessModifier.Internal:
-                case AccessModifier.Protected:
-                case AccessModifier.Private:
-                    return accessModifier.ToString().ToLower();
-                case AccessModifier.ProtectedInternal:
-                    return "protected internal";
-                case AccessModifier.PrivateProtected:
-                    return "private protected";
-                default:
-                    throw new NotSupportedException($"The access modifier '{accessModifier.ToString()}' is currently not supported.");
-            }
+                AccessModifier.Public or AccessModifier.Internal or AccessModifier.Protected or AccessModifier.Private => accessModifier.ToString().ToLower(),
+                AccessModifier.ProtectedInternal => "protected internal",
+                AccessModifier.PrivateProtected => "private protected",
+                _ => throw new NotSupportedException($"The access modifier '{accessModifier}' is currently not supported."),
+            };
         }
 
         /// <summary>

@@ -110,8 +110,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_xmlDocAdditionalLines == null)
-                    _xmlDocAdditionalLines = new List<string>();
+                _xmlDocAdditionalLines ??= new List<string>();
 
                 return _xmlDocAdditionalLines;
             }
@@ -161,8 +160,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_implementedInterfaces == null)
-                    _implementedInterfaces = new List<string>();
+                _implementedInterfaces ??= new List<string>();
 
                 return _implementedInterfaces;
             }
@@ -175,8 +173,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_methods == null)
-                    _methods = new List<MethodInfo>();
+                _methods ??= new List<MethodInfo>();
 
                 return _methods;
             }
@@ -189,8 +186,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_fields == null)
-                    _fields = new();
+                _fields ??= new();
 
                 return _fields;
             }
@@ -203,8 +199,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_properties == null)
-                    _properties = new();
+                _properties ??= new();
 
                 return _properties;
             }
@@ -217,8 +212,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_additionalCodeLines == null)
-                    _additionalCodeLines = new CodeLines();
+                _additionalCodeLines ??= new CodeLines();
 
                 return _additionalCodeLines;
             }
@@ -278,8 +272,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_genericTypes == null)
-                    _genericTypes = new Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>();
+                _genericTypes ??= new Dictionary<string, (List<string>? Constraints, string? XmlDoc)?>();
 
                 return _genericTypes;
             }
