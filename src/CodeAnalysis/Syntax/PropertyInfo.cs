@@ -565,33 +565,36 @@ namespace Basilisque.CodeAnalysis.Syntax
             bool hasGetterBody = _getterBody?.Count > 0;
             bool hasSetterBody = _setterBody?.Count > 0;
 
-            if (hasGetterBody || hasSetterBody || !_hasAutoFieldName)
+            if (!hasGetterBody && !hasSetterBody && _hasAutoFieldName)
+                return false;
+
+            var writeGetter = HasGetter;
+            var writeSetter = HasSetter;
+
+            if (!writeGetter && !writeSetter)
+                writeGetter = writeSetter = true;
+
+            var writeProp = (writeGetter && !hasGetterBody) || (writeSetter && !hasSetterBody);
+
+            if (!writeProp)
+                return false;
+
+            if (fields?.Any(fi => fi.Name == _fieldName) != true)
             {
-                var writeGetter = HasGetter;
-                var writeSetter = HasSetter;
+                AppendIntentation(sb, indentLvl * IndentationCharacterCountPerLevel);
 
-                if (!writeGetter && !writeSetter)
-                    writeGetter = writeSetter = true;
+                sb.Append("private ");
 
-                var writeProp = (writeGetter && !hasGetterBody) || (writeSetter && !hasSetterBody);
+                sb.Append(_type);
 
-                if (writeProp && fields?.Any(fi => fi.Name == _fieldName) != true)
-                {
-                    AppendIntentation(sb, indentLvl * IndentationCharacterCountPerLevel);
+                sb.Append(' ');
 
-                    sb.Append("private ");
+                sb.Append(_fieldName);
 
-                    sb.Append(_type);
+                if (!writeInitialValue(sb))
+                    sb.Append(";");
 
-                    sb.Append(' ');
-
-                    sb.Append(_fieldName);
-
-                    if (!writeInitialValue(sb))
-                        sb.Append(";");
-
-                    return true;
-                }
+                return true;
             }
 
             return false;

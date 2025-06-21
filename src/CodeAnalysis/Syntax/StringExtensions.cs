@@ -50,39 +50,37 @@ namespace Basilisque.CodeAnalysis.Syntax
 
             var parts = result.Split('.');
 
-            if (parts.Length > 1)
+            if (parts.Length <= 1)
+                return result.IsReservedKeyword() ? "@" + result : result;
+
+            char[] resultArr = new char[result.Length + parts.Length];
+            var targetIdx = 0;
+
+            var lastIdx = parts.Length - 1;
+            for (int i = 0; i < parts.Length; i++)
             {
-                char[] resultArr = new char[result.Length + parts.Length];
-                var targetIdx = 0;
+                var part = parts[i];
 
-                var lastIdx = parts.Length - 1;
-                for (int i = 0; i < parts.Length; i++)
+                if (part.IsReservedKeyword())
                 {
-                    var part = parts[i];
-
-                    if (part.IsReservedKeyword())
-                    {
-                        resultArr[targetIdx] = '@';
-                        targetIdx++;
-                    }
-
-                    foreach (var c in part)
-                    {
-                        resultArr[targetIdx] = c;
-                        targetIdx++;
-                    }
-
-                    if (i < lastIdx)
-                    {
-                        resultArr[targetIdx] = '.';
-                        targetIdx++;
-                    }
+                    resultArr[targetIdx] = '@';
+                    targetIdx++;
                 }
 
-                return new string(resultArr, 0, targetIdx);
+                foreach (var c in part)
+                {
+                    resultArr[targetIdx] = c;
+                    targetIdx++;
+                }
+
+                if (i < lastIdx)
+                {
+                    resultArr[targetIdx] = '.';
+                    targetIdx++;
+                }
             }
-            else
-                return result.IsReservedKeyword() ? "@" + result : result;
+
+            return new string(resultArr, 0, targetIdx);
         }
 
         /// <summary>

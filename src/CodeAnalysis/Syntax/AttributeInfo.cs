@@ -99,42 +99,53 @@ public class AttributeInfo : SyntaxNode
 
         var isFirstParameter = true;
         if (hasConstructorParameters)
-        {
-            foreach (var parameter in ConstructorParameters)
-            {
-                if (isFirstParameter)
-                    isFirstParameter = false;
-                else
-                    sb.Append(", ");
-
-                if (!string.IsNullOrWhiteSpace(parameter.Name))
-                {
-                    sb.Append(parameter.Name);
-                    sb.Append(": ");
-                }
-
-                sb.Append(parameter.Value);
-            }
-        }
+            isFirstParameter = appendConstructorParameters(sb);
 
         if (hasNamedParameters)
-        {
-            foreach (var parameter in NamedParameters)
-            {
-                if (isFirstParameter)
-                    isFirstParameter = false;
-                else
-                    sb.Append(", ");
+            appendNamedParameters(sb, isFirstParameter);
 
-                sb.Append(parameter.Name);
-                sb.Append(" = ");
-
-                sb.Append(parameter.Value);
-            }
-        }
         if (hasConstructorParameters || hasNamedParameters)
             sb.Append(")");
 
         sb.Append("]");
+    }
+
+    private bool appendConstructorParameters(StringBuilder sb)
+    {
+        var isFirstParameter = true;
+
+        foreach (var parameter in ConstructorParameters)
+        {
+            if (isFirstParameter)
+                isFirstParameter = false;
+            else
+                sb.Append(", ");
+
+            if (!string.IsNullOrWhiteSpace(parameter.Name))
+            {
+                sb.Append(parameter.Name);
+                sb.Append(": ");
+            }
+
+            sb.Append(parameter.Value);
+        }
+
+        return isFirstParameter;
+    }
+
+    private void appendNamedParameters(StringBuilder sb, bool isFirstParameter)
+    {
+        foreach (var parameter in NamedParameters)
+        {
+            if (isFirstParameter)
+                isFirstParameter = false;
+            else
+                sb.Append(", ");
+
+            sb.Append(parameter.Name);
+            sb.Append(" = ");
+
+            sb.Append(parameter.Value);
+        }
     }
 }

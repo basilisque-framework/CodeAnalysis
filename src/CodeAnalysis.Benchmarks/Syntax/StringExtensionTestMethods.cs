@@ -25,6 +25,7 @@ namespace Basilisque.CodeAnalysis.Benchmarks.Syntax
     /// In addition to that I wanted to try out BenchmarkDotNet.
     /// I'm sure the real implementation could be further optimized. But at the moment I don't see the point why I would invest time in doing that.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S3776:Cognitive Complexity of methods should not be too high", Justification = "This is just benchmark code")]
     public static class StringExtensionTestMethods
     {
         /// <summary>

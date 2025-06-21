@@ -295,7 +295,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         /// <param name="childIndentCharCnt">The count of indentation characters for the direct childre of this class (how many times should the <see cref="SyntaxNode.IndentationCharacter"/> be repeated for the direct child level)</param>
         protected override void ToCSharpString(StringBuilder sb, int indentLvl, int childIndentLvl, int indentCharCnt, int childIndentCharCnt)
         {
-            appendXmlDoc(sb, indentCharCnt);
+            appendXmlDocIfNecessary(sb, indentCharCnt);
 
             appendGeneratedCodeAttributes(sb, indentCharCnt);
 
@@ -325,7 +325,7 @@ namespace Basilisque.CodeAnalysis.Syntax
             sb.Append("}");
         }
 
-        private void appendXmlDoc(StringBuilder sb, int indentCharCnt)
+        private void appendXmlDocIfNecessary(StringBuilder sb, int indentCharCnt)
         {
             if (InheritXmlDoc)
             {
@@ -341,6 +341,11 @@ namespace Basilisque.CodeAnalysis.Syntax
             if (!hasXmlDoc)
                 return;
 
+            appendXmlDoc(sb, indentCharCnt);
+        }
+
+        private void appendXmlDoc(StringBuilder sb, int indentCharCnt)
+        {
             AppendIntentation(sb, indentCharCnt);
             sb.AppendLine("/// <summary>");
 
