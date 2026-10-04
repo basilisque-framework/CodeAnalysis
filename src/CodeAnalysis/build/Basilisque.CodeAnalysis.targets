@@ -1,5 +1,5 @@
 <!--
-   Copyright 2023-2024 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -27,10 +27,21 @@
 		<!-- do not pack an analyzer project as normal lib dependency... -->
 		<IncludeBuildOutput Condition="'$(BAS_CA_Set_IncludeBuildOutput)' == 'true'">false</IncludeBuildOutput>
 	</PropertyGroup>
-	<ItemGroup Condition="'$(BAS_CA_Assembly_PackCS)' == 'true'">
-		<!-- ... pack it in the analyzer directory instead (for C#) -->
-		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-	</ItemGroup>
+	<PropertyGroup Condition="'$(BAS_CA_Assembly_PackCS)' == 'true'">
+		<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);BAS_CA_GetAnalyzerPackageFiles</TargetsForTfmSpecificContentInPackage>
+	</PropertyGroup>
+	<Target Name="BAS_CA_GetAnalyzerPackageFiles"
+			DependsOnTargets="GetTargetPath"
+			Condition="'$(BAS_CA_Assembly_PackCS)' == 'true'">
+		<!-- GetTargetPath allows versioning targets to finalize the assembly name and SDK output path. -->
+		<MakeDir Directories="$(IntermediateOutputPath)Basilisque.CodeAnalysis" Condition="'$(IncludeBuildOutput)' == 'false'" />
+		<WriteLinesToFile File="$(IntermediateOutputPath)Basilisque.CodeAnalysis/_._" Lines="" Overwrite="true" WriteOnlyWhenDifferent="true" Condition="'$(IncludeBuildOutput)' == 'false'" />
+		<ItemGroup>
+			<TfmSpecificPackageFile Include="$(TargetPath)" PackagePath="analyzers/dotnet/cs" />
+			<TfmSpecificPackageFile Include="$(IntermediateOutputPath)Basilisque.CodeAnalysis/_._" PackagePath="lib/$(TargetFramework)" Condition="'$(IncludeBuildOutput)' == 'false'" />
+			<FileWrites Include="$(IntermediateOutputPath)Basilisque.CodeAnalysis/_._" Condition="'$(IncludeBuildOutput)' == 'false'" />
+		</ItemGroup>
+	</Target>
 	<!--<ItemGroup Condition="$(BAS_CA_Assembly_PackVB)">
 		--><!-- ... pack it in the analyzer directory instead (for VB) --><!--
 		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/vb" Visible="false" />

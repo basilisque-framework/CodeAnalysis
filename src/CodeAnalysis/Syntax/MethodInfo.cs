@@ -149,8 +149,7 @@ namespace Basilisque.CodeAnalysis.Syntax
         {
             get
             {
-                if (_xmlDocAdditionalLines == null)
-                    _xmlDocAdditionalLines = new List<string>();
+                _xmlDocAdditionalLines ??= new List<string>();
 
                 return _xmlDocAdditionalLines;
             }

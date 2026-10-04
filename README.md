@@ -1,5 +1,5 @@
 <!--
-   Copyright 2023-2025 Alexander Stärk
+   Copyright 2023-2026 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -95,6 +95,30 @@ Install the NuGet package [Basilisque.CodeAnalysis](https://www.nuget.org/packag
 Installing the package will automaticall configure your project to be packed as code analyzer/source generator. It will also pack its own assemblies beside your analyzer/generator as dependency.
 
 So you're ready to [get started](https://github.com/basilisque-framework/CodeAnalysis/wiki/Getting-Started).
+
+### Analyzer package validation
+The analyzer assembly is collected during framework-specific packing, after
+`GetTargetPath` has finalized its name and output directory. This supports version
+suffixes supplied by CommonBuild, SDK artifacts output, and `dotnet pack --no-build`.
+The empty `lib/<framework>/_._` placeholder preserves the dependency framework
+without exposing the analyzer as a runtime library.
+
+Run the packaging regression checks with:
+
+```powershell
+pwsh -File tests/Packaging/Test-AnalyzerPacking.ps1
+```
+
+The checks import the actual CodeAnalysis build files and exercise CommonBuild
+versioning with both SDK output layouts, with and without an assembly-name suffix,
+and with packing disabled. They also compare the packaged DLL with the compiler
+output. Existing CommonBuild integration tests independently cover its own analyzer
+packing target.
+
+If another support package already bundles `Basilisque.CodeAnalysis` alongside the
+analyzer, set `BAS_CA_Dependency_PackCS` to `false` in the analyzer project to avoid
+packing the same dependency twice. `BAS_CA_Assembly_PackCS` independently controls
+packing the analyzer itself.
 
 ### Installation for Unit Tests
 This project provides helpers for unit tests.  
