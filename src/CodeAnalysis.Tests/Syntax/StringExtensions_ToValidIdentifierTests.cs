@@ -17,53 +17,52 @@ using Basilisque.CodeAnalysis.Syntax;
 
 namespace Basilisque.CodeAnalysis.Tests.Syntax
 {
-    [TestClass]
     public class StringExtensions_ToValidIdentifierTests
     {
-        [TestMethod]
-        public void Ensure_CanBeCalledAsNormalMethod()
+        [Test]
+        public async Task Ensure_CanBeCalledAsNormalMethod()
         {
             var result = StringExtensions.ToValidIdentifier("");
 
-            Assert.IsNull(result);
+            await Assert.That(result).IsNull();
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "null")]
-        [DataRow("", DisplayName = "empty string")]
-        public void EmptySource_ReturnsNull(string? s)
+        [Test]
+        [Arguments(null, DisplayName = "null")]
+        [Arguments("", DisplayName = "empty string")]
+        public async Task EmptySource_ReturnsNull(string? s)
         {
             var result = s.ToValidIdentifier();
 
-            Assert.IsNull(result);
+            await Assert.That(result).IsNull();
         }
 
-        [TestMethod]
-        [DataRow("  ", "__", DisplayName = "2 spaces")]
-        [DataRow("    ", "____", DisplayName = "4 spaces")]
-        [DataRow("	 ", "__", DisplayName = "1 tab & 1 space")]
-        public void Whitepace_ReturnsUnderscores(string? s, string expectedResult)
+        [Test]
+        [Arguments("  ", "__", DisplayName = "2 spaces")]
+        [Arguments("    ", "____", DisplayName = "4 spaces")]
+        [Arguments("	 ", "__", DisplayName = "1 tab & 1 space")]
+        public async Task Whitepace_ReturnsUnderscores(string? s, string expectedResult)
         {
             var result = s.ToValidIdentifier();
 
-            Assert.AreEqual(expectedResult, result);
+            await Assert.That(result).IsEqualTo(expectedResult);
         }
 
-        [TestMethod]
-        [DataRow("Name.With.Dots", "Name_With_Dots", DisplayName = "Dots are replaced (in contrast to ToValidNamespace())")]
-        [DataRow("1MyClass", "_1MyClass", DisplayName = "Letter at start should be prefixed")]
-        [DataRow("%1MyClass", "_1MyClass", DisplayName = "Invalid start should replace first character")]
-        [DataRow("@MyClass", "_MyClass", DisplayName = "Starting with @ should be replaced")]
-        [DataRow("My@Class", "My_Class", DisplayName = "@ in the middle should be replaced")]
-        [DataRow("My$Class", "My_Class", DisplayName = "$ in the middle should be replaced")]
-        [DataRow("class", "@class", DisplayName = "keyword should be prefixed with @")]
-        [DataRow("Name.With.Dots.And.class.keyword", "Name_With_Dots_And_class_keyword", DisplayName = "keyword as part of a longer string should be fine")]
+        [Test]
+        [Arguments("Name.With.Dots", "Name_With_Dots", DisplayName = "Dots are replaced (in contrast to ToValidNamespace())")]
+        [Arguments("1MyClass", "_1MyClass", DisplayName = "Letter at start should be prefixed")]
+        [Arguments("%1MyClass", "_1MyClass", DisplayName = "Invalid start should replace first character")]
+        [Arguments("@MyClass", "_MyClass", DisplayName = "Starting with @ should be replaced")]
+        [Arguments("My@Class", "My_Class", DisplayName = "@ in the middle should be replaced")]
+        [Arguments("My$Class", "My_Class", DisplayName = "$ in the middle should be replaced")]
+        [Arguments("class", "@class", DisplayName = "keyword should be prefixed with @")]
+        [Arguments("Name.With.Dots.And.class.keyword", "Name_With_Dots_And_class_keyword", DisplayName = "keyword as part of a longer string should be fine")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Name of method provides relevant test context")]
-        public void SourceString_ReturnsCorrectNamespace(string? s, string expectedResult)
+        public async Task SourceString_ReturnsCorrectNamespace(string? s, string expectedResult)
         {
             var result = s.ToValidIdentifier();
 
-            Assert.AreEqual(expectedResult, result);
+            await Assert.That(result).IsEqualTo(expectedResult);
         }
     }
 }

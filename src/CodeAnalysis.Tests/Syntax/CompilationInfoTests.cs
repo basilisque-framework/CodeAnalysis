@@ -17,7 +17,6 @@ using Basilisque.CodeAnalysis.Syntax;
 
 namespace Basilisque.CodeAnalysis.Tests.Syntax
 {
-    [TestClass]
     public class CompilationInfoTests
     {
 
@@ -66,47 +65,47 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
                 .Replace("<GeneratorVersion>", execAssemblyName.Version?.ToString() ?? "1.0.0.0");
         }
 
-        [TestMethod]
-        [DataRow(null, true, DisplayName = "ns: null - codeGenAttr: true")]
-        [DataRow(null, false, DisplayName = "ns: null - codeGenAttr: false")]
-        [DataRow("", true, DisplayName = "ns: empty string - codeGenAttr: true")]
-        [DataRow("", false, DisplayName = "ns: empty string - codeGenAttr: false")]
-        [DataRow("   ", true, DisplayName = "ns: whitespace - codeGenAttr: true")]
-        [DataRow("   ", false, DisplayName = "ns: whitespace - codeGenAttr: false")]
-        public void NoNamespace_NoClass_IsEmpty(string ns, bool codeGenAttrEnabled)
+        [Test]
+        [Arguments(null, true, DisplayName = "ns: null - codeGenAttr: true")]
+        [Arguments(null, false, DisplayName = "ns: null - codeGenAttr: false")]
+        [Arguments("", true, DisplayName = "ns: empty string - codeGenAttr: true")]
+        [Arguments("", false, DisplayName = "ns: empty string - codeGenAttr: false")]
+        [Arguments("   ", true, DisplayName = "ns: whitespace - codeGenAttr: true")]
+        [Arguments("   ", false, DisplayName = "ns: whitespace - codeGenAttr: false")]
+        public async Task NoNamespace_NoClass_IsEmpty(string? ns, bool codeGenAttrEnabled)
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", targetNamespace: ns);
             compilationInfo.AddGeneratedCodeAttributes = codeGenAttrEnabled;
 
             var str = compilationInfo.ToString();
 
-            Assert.AreEqual(string.Empty, str);
+            await Assert.That(str).IsEqualTo(string.Empty);
         }
 
-        [TestMethod]
-        [DataRow(true, DisplayName = "nullable context enabled")]
-        [DataRow(false, DisplayName = "nullable context disabled")]
-        public void NoNamespace_NoClass_IsEmpty_WithNullableContext(bool enableNullableContext)
+        [Test]
+        [Arguments(true, DisplayName = "nullable context enabled")]
+        [Arguments(false, DisplayName = "nullable context disabled")]
+        public async Task NoNamespace_NoClass_IsEmpty_WithNullableContext(bool enableNullableContext)
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", targetNamespace: null);
             compilationInfo.EnableNullableContext = enableNullableContext;
 
             var str = compilationInfo.ToString();
 
-            Assert.AreEqual(string.Empty, str);
+            await Assert.That(str).IsEqualTo(string.Empty);
         }
 
-        [TestMethod]
-        [DataRow(null, null, DisplayName = "ns: null - codeGenAttr: <default>")]
-        [DataRow(null, true, DisplayName = "ns: null - codeGenAttr: true")]
-        [DataRow(null, false, DisplayName = "ns: null - codeGenAttr: false")]
-        [DataRow("", null, DisplayName = "ns: empty string - codeGenAttr: <default>")]
-        [DataRow("", true, DisplayName = "ns: empty string - codeGenAttr: true")]
-        [DataRow("", false, DisplayName = "ns: empty string - codeGenAttr: false")]
-        [DataRow("   ", null, DisplayName = "ns: whitespace - codeGenAttr: <default>")]
-        [DataRow("   ", true, DisplayName = "ns: whitespace - codeGenAttr: true")]
-        [DataRow("   ", false, DisplayName = "ns: whitespace - codeGenAttr: false")]
-        public void NoNamespace_1Class_CorrectString(string ns, bool? codeGenAttrEnabled)
+        [Test]
+        [Arguments(null, null, DisplayName = "ns: null - codeGenAttr: <default>")]
+        [Arguments(null, true, DisplayName = "ns: null - codeGenAttr: true")]
+        [Arguments(null, false, DisplayName = "ns: null - codeGenAttr: false")]
+        [Arguments("", null, DisplayName = "ns: empty string - codeGenAttr: <default>")]
+        [Arguments("", true, DisplayName = "ns: empty string - codeGenAttr: true")]
+        [Arguments("", false, DisplayName = "ns: empty string - codeGenAttr: false")]
+        [Arguments("   ", null, DisplayName = "ns: whitespace - codeGenAttr: <default>")]
+        [Arguments("   ", true, DisplayName = "ns: whitespace - codeGenAttr: true")]
+        [Arguments("   ", false, DisplayName = "ns: whitespace - codeGenAttr: false")]
+        public async Task NoNamespace_1Class_CorrectString(string? ns, bool? codeGenAttrEnabled)
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", targetNamespace: ns)
                 .AddNewClassInfo("MyClass1", AccessModifier.Public, ci =>
@@ -123,16 +122,16 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             var str = compilationInfo.ToString();
 
             string codeGenAttrStr = (!codeGenAttrEnabled.HasValue || (codeGenAttrEnabled.HasValue && codeGenAttrEnabled.Value)) ? _codeGenerationAttributeStringCompilationInfo + _codeGenerationAttributeStringClassInfo : string.Empty;
-            Assert.AreEqual(codeGenAttrStr + @"public class MyClass1
+            await Assert.That(str).IsEqualTo(codeGenAttrStr + @"public class MyClass1
 {
-}", str);
+}");
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "nullable context <default> (enabled)")]
-        [DataRow(true, DisplayName = "nullable context enabled")]
-        [DataRow(false, DisplayName = "nullable context disabled")]
-        public void NoNamespace_1Class_NullableContext_CorrectString(bool? enableNullableContext)
+        [Test]
+        [Arguments(null, DisplayName = "nullable context <default> (enabled)")]
+        [Arguments(true, DisplayName = "nullable context enabled")]
+        [Arguments(false, DisplayName = "nullable context disabled")]
+        public async Task NoNamespace_1Class_NullableContext_CorrectString(bool? enableNullableContext)
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", targetNamespace: null)
                 .AddNewClassInfo("MyClass1", AccessModifier.Public, ci => { ci.AddGeneratedCodeAttributes = false; });
@@ -155,15 +154,15 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
 #nullable restore";
 
-            Assert.AreEqual(expectedResult, str);
+            await Assert.That(str).IsEqualTo(expectedResult);
         }
 
-        [TestMethod]
-        [DataRow(true, true, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: true")]
-        [DataRow(true, false, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: false")]
-        [DataRow(false, true, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: true")]
-        [DataRow(false, false, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: false")]
-        public void NoNamespace_2Classes_CorrectString(bool codeGenAttrEnabledCompilationInfo, bool codeGenAttrEnabledClassInfo)
+        [Test]
+        [Arguments(true, true, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: true")]
+        [Arguments(true, false, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: false")]
+        [Arguments(false, true, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: true")]
+        [Arguments(false, false, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: false")]
+        public async Task NoNamespace_2Classes_CorrectString(bool codeGenAttrEnabledCompilationInfo, bool codeGenAttrEnabledClassInfo)
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", null)
                 .AddNewClassInfo("MyClass1", AccessModifier.Public, ci => { ci.AddGeneratedCodeAttributes = codeGenAttrEnabledClassInfo; })
@@ -177,19 +176,19 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             string codeGenAttrStrCompInfo = codeGenAttrEnabledCompilationInfo ? _codeGenerationAttributeStringCompilationInfo : string.Empty;
             string codeGenAttrStrClassInfo = codeGenAttrEnabledClassInfo ? _codeGenerationAttributeStringClassInfo : string.Empty;
 
-            Assert.AreEqual(codeGenAttrStrCompInfo + codeGenAttrStrClassInfo + @"public class MyClass1
+            await Assert.That(str).IsEqualTo(codeGenAttrStrCompInfo + codeGenAttrStrClassInfo + @"public class MyClass1
 {
 }
 
 " + codeGenAttrStrClassInfo + @"public class MyClass2
 {
-}", str);
+}");
         }
 
-        [TestMethod]
-        [DataRow(true, DisplayName = "codeGenAttr: true")]
-        [DataRow(false, DisplayName = "codeGenAttr: false")]
-        public void WithNamespace_NoClass_CorrectString(bool codeGenAttrEnabled)
+        [Test]
+        [Arguments(true, DisplayName = "codeGenAttr: true")]
+        [Arguments(false, DisplayName = "codeGenAttr: false")]
+        public async Task WithNamespace_NoClass_CorrectString(bool codeGenAttrEnabled)
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1");
 
@@ -200,15 +199,15 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             string codeGenAttrStr = codeGenAttrEnabled ? _codeGenerationAttributeStringCompilationInfo : string.Empty;
 
-            Assert.AreEqual(codeGenAttrStr + @"namespace MyNamespace1
+            await Assert.That(str).IsEqualTo(codeGenAttrStr + @"namespace MyNamespace1
 {
-}", str);
+}");
         }
 
-        [TestMethod]
-        [DataRow(true, DisplayName = "codeGenAttr: true")]
-        [DataRow(false, DisplayName = "codeGenAttr: false")]
-        public void WithFileScopedNamespace_NoClass_CorrectString(bool codeGenAttrEnabled)
+        [Test]
+        [Arguments(true, DisplayName = "codeGenAttr: true")]
+        [Arguments(false, DisplayName = "codeGenAttr: false")]
+        public async Task WithFileScopedNamespace_NoClass_CorrectString(bool codeGenAttrEnabled)
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1");
 
@@ -220,14 +219,14 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             string codeGenAttrStr = codeGenAttrEnabled ? _codeGenerationAttributeStringCompilationInfo : string.Empty;
 
-            Assert.AreEqual(codeGenAttrStr + @"namespace MyNamespace1;", str);
+            await Assert.That(str).IsEqualTo(codeGenAttrStr + @"namespace MyNamespace1;");
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "nullable context <default> (enabled)")]
-        [DataRow(true, DisplayName = "nullable context enabled")]
-        [DataRow(false, DisplayName = "nullable context disabled")]
-        public void WithNamespace_NoClass_NullableContext_CorrectString(bool? enableNullableContext)
+        [Test]
+        [Arguments(null, DisplayName = "nullable context <default> (enabled)")]
+        [Arguments(true, DisplayName = "nullable context enabled")]
+        [Arguments(false, DisplayName = "nullable context disabled")]
+        public async Task WithNamespace_NoClass_NullableContext_CorrectString(bool? enableNullableContext)
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1");
 
@@ -249,15 +248,15 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
 #nullable restore";
 
-            Assert.AreEqual(expectedResult, str);
+            await Assert.That(str).IsEqualTo(expectedResult);
         }
 
-        [TestMethod]
-        [DataRow(true, true, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: true")]
-        [DataRow(true, false, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: false")]
-        [DataRow(false, true, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: true")]
-        [DataRow(false, false, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: false")]
-        public void WithNamespace_1Class_CorrectString(bool codeGenAttrEnabledCompilation, bool codeGenAttrEnabledClass)
+        [Test]
+        [Arguments(true, true, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: true")]
+        [Arguments(true, false, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: false")]
+        [Arguments(false, true, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: true")]
+        [Arguments(false, false, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: false")]
+        public async Task WithNamespace_1Class_CorrectString(bool codeGenAttrEnabledCompilation, bool codeGenAttrEnabledClass)
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1")
                 .AddNewClassInfo("MyClass1", AccessModifier.Public, ci => { ci.AddGeneratedCodeAttributes = codeGenAttrEnabledClass; });
@@ -270,20 +269,20 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             string codeGenAttrStrCompilation = codeGenAttrEnabledCompilation ? _codeGenerationAttributeStringCompilationInfo : string.Empty;
             string codeGenAttrStrClass = codeGenAttrEnabledClass ? _codeGenerationAttributeStringClassInfoIndented : string.Empty;
 
-            Assert.AreEqual(codeGenAttrStrCompilation + @"namespace MyNamespace1
+            await Assert.That(str).IsEqualTo(codeGenAttrStrCompilation + @"namespace MyNamespace1
 {
 " + codeGenAttrStrClass + @"    public class MyClass1
     {
     }
-}", str);
+}");
         }
 
-        [TestMethod]
-        [DataRow(true, true, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: true")]
-        [DataRow(true, false, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: false")]
-        [DataRow(false, true, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: true")]
-        [DataRow(false, false, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: false")]
-        public void WithFileScopedNamespace_1Class_CorrectString(bool codeGenAttrEnabledCompilation, bool codeGenAttrEnabledClass)
+        [Test]
+        [Arguments(true, true, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: true")]
+        [Arguments(true, false, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: false")]
+        [Arguments(false, true, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: true")]
+        [Arguments(false, false, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: false")]
+        public async Task WithFileScopedNamespace_1Class_CorrectString(bool codeGenAttrEnabledCompilation, bool codeGenAttrEnabledClass)
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1")
                 .AddNewClassInfo("MyClass1", AccessModifier.Public, ci => { ci.AddGeneratedCodeAttributes = codeGenAttrEnabledClass; });
@@ -297,19 +296,19 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             string codeGenAttrStrCompilation = codeGenAttrEnabledCompilation ? _codeGenerationAttributeStringCompilationInfo : string.Empty;
             string codeGenAttrStrClass = codeGenAttrEnabledClass ? _codeGenerationAttributeStringClassInfo : string.Empty;
 
-            Assert.AreEqual(codeGenAttrStrCompilation + @"namespace MyNamespace1;
+            await Assert.That(str).IsEqualTo(codeGenAttrStrCompilation + @"namespace MyNamespace1;
 
 " + codeGenAttrStrClass + @"public class MyClass1
 {
-}", str);
+}");
         }
 
-        [TestMethod]
-        [DataRow(true, true, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: true")]
-        [DataRow(true, false, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: false")]
-        [DataRow(false, true, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: true")]
-        [DataRow(false, false, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: false")]
-        public void WithNamespace_2Classes_CorrectString(bool codeGenAttrEnabledCompilation, bool codeGenAttrEnabledClass)
+        [Test]
+        [Arguments(true, true, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: true")]
+        [Arguments(true, false, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: false")]
+        [Arguments(false, true, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: true")]
+        [Arguments(false, false, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: false")]
+        public async Task WithNamespace_2Classes_CorrectString(bool codeGenAttrEnabledCompilation, bool codeGenAttrEnabledClass)
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1")
                 .AddNewClassInfo("MyClass1", AccessModifier.Public, ci => { ci.AddGeneratedCodeAttributes = codeGenAttrEnabledClass; })
@@ -323,7 +322,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             string codeGenAttrStrCompilation = codeGenAttrEnabledCompilation ? _codeGenerationAttributeStringCompilationInfo : string.Empty;
             string codeGenAttrStrClass = codeGenAttrEnabledClass ? _codeGenerationAttributeStringClassInfoIndented : string.Empty;
 
-            Assert.AreEqual(codeGenAttrStrCompilation + @"namespace MyNamespace1
+            await Assert.That(str).IsEqualTo(codeGenAttrStrCompilation + @"namespace MyNamespace1
 {
 " + codeGenAttrStrClass + @"    public class MyClass1
     {
@@ -332,15 +331,15 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 " + codeGenAttrStrClass + @"    public class MyClass2
     {
     }
-}", str);
+}");
         }
 
-        [TestMethod]
-        [DataRow(true, true, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: true")]
-        [DataRow(true, false, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: false")]
-        [DataRow(false, true, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: true")]
-        [DataRow(false, false, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: false")]
-        public void WithFileScopedNamespace_2Classes_CorrectString(bool codeGenAttrEnabledCompilation, bool codeGenAttrEnabledClass)
+        [Test]
+        [Arguments(true, true, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: true")]
+        [Arguments(true, false, DisplayName = "codeGenAttr Compilation: true, codeGenAttr Class: false")]
+        [Arguments(false, true, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: true")]
+        [Arguments(false, false, DisplayName = "codeGenAttr Compilation: false, codeGenAttr Class: false")]
+        public async Task WithFileScopedNamespace_2Classes_CorrectString(bool codeGenAttrEnabledCompilation, bool codeGenAttrEnabledClass)
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1")
                 .AddNewClassInfo("MyClass1", AccessModifier.Public, ci => { ci.AddGeneratedCodeAttributes = codeGenAttrEnabledClass; })
@@ -355,7 +354,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             string codeGenAttrStrCompilation = codeGenAttrEnabledCompilation ? _codeGenerationAttributeStringCompilationInfo : string.Empty;
             string codeGenAttrStrClass = codeGenAttrEnabledClass ? _codeGenerationAttributeStringClassInfo : string.Empty;
 
-            Assert.AreEqual(codeGenAttrStrCompilation + @"namespace MyNamespace1;
+            await Assert.That(str).IsEqualTo(codeGenAttrStrCompilation + @"namespace MyNamespace1;
 
 " + codeGenAttrStrClass + @"public class MyClass1
 {
@@ -363,69 +362,69 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
 " + codeGenAttrStrClass + @"public class MyClass2
 {
-}", str);
+}");
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "null")]
-        [DataRow("", DisplayName = "empty string")]
-        [DataRow("   ", DisplayName = "whitespace")]
-        public void EmptyCompliationName_Throws(string compilationName)
+        [Test]
+        [Arguments(null, DisplayName = "null")]
+        [Arguments("", DisplayName = "empty string")]
+        [Arguments("   ", DisplayName = "whitespace")]
+        public void EmptyCompliationName_Throws(string? compilationName)
         {
-            Assert.ThrowsExactly<ArgumentNullException>(() => new CompilationInfo(compilationName, null));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new CompilationInfo(compilationName!, null));
 
             var compilationInfo = new CompilationInfo("Name1", "Namespace1");
             Assert.ThrowsExactly<ArgumentNullException>(() => compilationInfo.CompilationName = null!);
         }
 
-        [TestMethod]
-        public void CompilationName_Property_CorrectValue()
+        [Test]
+        public async Task CompilationName_Property_CorrectValue()
         {
             var compilationInfo = new CompilationInfo("MyInfo4711", null);
 
-            Assert.AreEqual("MyInfo4711", compilationInfo.CompilationName);
+            await Assert.That(compilationInfo.CompilationName).IsEqualTo("MyInfo4711");
 
             compilationInfo.CompilationName = "MyInfo0815";
-            Assert.AreEqual("MyInfo0815", compilationInfo.CompilationName);
+            await Assert.That(compilationInfo.CompilationName).IsEqualTo("MyInfo0815");
         }
 
-        [TestMethod]
-        public void TargetNamespace_Property_CorrectValue()
+        [Test]
+        public async Task TargetNamespace_Property_CorrectValue()
         {
             var compilationInfo = new CompilationInfo("MyInfo4711", "MyNS1");
 
-            Assert.AreEqual("MyNS1", compilationInfo.TargetNamespace);
+            await Assert.That(compilationInfo.TargetNamespace).IsEqualTo("MyNS1");
 
             compilationInfo.TargetNamespace = "MyNS2";
-            Assert.AreEqual("MyNS2", compilationInfo.TargetNamespace);
+            await Assert.That(compilationInfo.TargetNamespace).IsEqualTo("MyNS2");
 
             compilationInfo.TargetNamespace = null;
-            Assert.AreEqual(null, compilationInfo.TargetNamespace);
+            await Assert.That(compilationInfo.TargetNamespace).IsNull();
         }
 
-        [TestMethod]
-        public void GeneratedCodeToolName_Property_CorrectValue()
+        [Test]
+        public async Task GeneratedCodeToolName_Property_CorrectValue()
         {
             var compilationInfo = new CompilationInfo("MyInfo4711", "MyNS1", "MyToolName1", "MyToolVersion1");
 
-            Assert.AreEqual("MyToolName1", compilationInfo.GeneratedCodeToolName);
+            await Assert.That(compilationInfo.GeneratedCodeToolName).IsEqualTo("MyToolName1");
 
             compilationInfo.GeneratedCodeToolName = "MyToolName2";
-            Assert.AreEqual("MyToolName2", compilationInfo.GeneratedCodeToolName);
+            await Assert.That(compilationInfo.GeneratedCodeToolName).IsEqualTo("MyToolName2");
         }
 
-        [TestMethod]
-        public void GeneratedCodeToolVersion_Property_CorrectValue()
+        [Test]
+        public async Task GeneratedCodeToolVersion_Property_CorrectValue()
         {
             var compilationInfo = new CompilationInfo("MyInfo4711", "MyNS1", "MyToolName1", "MyToolVersion1");
 
-            Assert.AreEqual("MyToolVersion1", compilationInfo.GeneratedCodeToolVersion);
+            await Assert.That(compilationInfo.GeneratedCodeToolVersion).IsEqualTo("MyToolVersion1");
 
             compilationInfo.GeneratedCodeToolVersion = "MyToolVersion2";
-            Assert.AreEqual("MyToolVersion2", compilationInfo.GeneratedCodeToolVersion);
+            await Assert.That(compilationInfo.GeneratedCodeToolVersion).IsEqualTo("MyToolVersion2");
         }
 
-        [TestMethod]
+        [Test]
         public void ToStringWithStringBuilder_ThrowsWhenStringBuilderIsNull()
         {
             var compilationInfo = new CompilationInfo("MyInfo4711", "MyNS1");
@@ -433,7 +432,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.ThrowsExactly<ArgumentNullException>(() => compilationInfo.ToString(null!, 0, Language.CSharp));
         }
 
-        [TestMethod]
+        [Test]
         public void ToStringWithStringBuilder_ThrowsWhenIndentationCountIsLessThanZero()
         {
             var compilationInfo = new CompilationInfo("MyInfo4711", "MyNS1");
@@ -443,8 +442,8 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => compilationInfo.ToString(sb, -1, Language.CSharp));
         }
 
-        [TestMethod]
-        public void CodeGenerationAttribute_SetOnOneOfTwoClasses()
+        [Test]
+        public async Task CodeGenerationAttribute_SetOnOneOfTwoClasses()
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1")
                 .AddNewClassInfo("MyClass1", AccessModifier.ProtectedInternal, ci => { ci.AddGeneratedCodeAttributes = false; })
@@ -454,7 +453,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var str = compilationInfo.ToString();
 
-            Assert.AreEqual(_codeGenerationAttributeStringCompilationInfo + @"namespace MyNamespace1
+            await Assert.That(str).IsEqualTo(_codeGenerationAttributeStringCompilationInfo + @"namespace MyNamespace1
 {
     protected internal class MyClass1
     {
@@ -463,11 +462,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 " + _codeGenerationAttributeStringClassInfoIndented + @"    public class MyClass2
     {
     }
-}", str);
+}");
         }
 
-        [TestMethod]
-        public void CodeGenerationAttribute_ToolNameAndVersion_CanBeSpecifiedWithConstructor()
+        [Test]
+        public async Task CodeGenerationAttribute_ToolNameAndVersion_CanBeSpecifiedWithConstructor()
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1", "MyGenToolName", "MyGenToolVersion1");
 
@@ -475,13 +474,13 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var str = compilationInfo.ToString();
 
-            Assert.AreEqual(C_CODEGENERATION_ATTRIBUTE_STRING_COMPILATION_INFO.Replace("<GeneratorName>", "MyGenToolName").Replace("<GeneratorVersion>", "MyGenToolVersion1") + @"namespace MyNamespace1
+            await Assert.That(str).IsEqualTo(C_CODEGENERATION_ATTRIBUTE_STRING_COMPILATION_INFO.Replace("<GeneratorName>", "MyGenToolName").Replace("<GeneratorVersion>", "MyGenToolVersion1") + @"namespace MyNamespace1
 {
-}", str);
+}");
         }
 
-        [TestMethod]
-        public void CodeGenerationAttribute_ToolNameAndVersion_CanBeSpecifiedWithConstructor_ForInnerClass()
+        [Test]
+        public async Task CodeGenerationAttribute_ToolNameAndVersion_CanBeSpecifiedWithConstructor_ForInnerClass()
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", null, "MyGenToolName", "MyGenToolVersion1");
 
@@ -491,45 +490,45 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var str = compilationInfo.ToString();
 
-            Assert.AreEqual(C_CODEGENERATION_ATTRIBUTE_STRING_COMPILATION_INFO.Replace("<GeneratorName>", "MyGenToolName").Replace("<GeneratorVersion>", "MyGenToolVersion1") + C_CODEGENERATION_ATTRIBUTE_STRING_CLASS_INFO.Replace("<GeneratorName>", "MyGenToolName").Replace("<GeneratorVersion>", "MyGenToolVersion1") + @"public class MyClass1
+            await Assert.That(str).IsEqualTo(C_CODEGENERATION_ATTRIBUTE_STRING_COMPILATION_INFO.Replace("<GeneratorName>", "MyGenToolName").Replace("<GeneratorVersion>", "MyGenToolVersion1") + C_CODEGENERATION_ATTRIBUTE_STRING_CLASS_INFO.Replace("<GeneratorName>", "MyGenToolName").Replace("<GeneratorVersion>", "MyGenToolVersion1") + @"public class MyClass1
 {
-}", str);
+}");
         }
 
-        [TestMethod]
-        [DataRow("MyCompilation1", "MyCompilation1.g.cs", Language.CSharp, DisplayName = "name without extension")]
-        [DataRow("MyCompilation1.g", "MyCompilation1.g.cs", Language.CSharp, DisplayName = "name with .g extension")]
-        [DataRow("MyCompilation1.g.cs", "MyCompilation1.g.cs", Language.CSharp, DisplayName = "name with .g.cs extension")]
-        [DataRow("MyCompilation1.cs", "MyCompilation1.cs", Language.CSharp, DisplayName = "name with .cs extension")]
-        [DataRow("MyCompilation1.my.cs", "MyCompilation1.my.cs", Language.CSharp, DisplayName = "name with .my.cs extension")]
-        [DataRow("MyCompilation1", "MyCompilation1.g.cs", (Language)(-1), DisplayName = "Invalid language defaults to C#")]
-        [DataRow("MyCompilation1", "MyCompilation1.g.vb", Language.VisualBasic, DisplayName = "VB language without extension")]
-        [DataRow("MyCompilation1.g.cs", "MyCompilation1.g.cs.g.vb", Language.VisualBasic, DisplayName = "Invalid extension is ignored")]
-        public void GetHintName_ReturnsCorrectName(string compilationName, string expectedResult, Language language)
+        [Test]
+        [Arguments("MyCompilation1", "MyCompilation1.g.cs", Language.CSharp, DisplayName = "name without extension")]
+        [Arguments("MyCompilation1.g", "MyCompilation1.g.cs", Language.CSharp, DisplayName = "name with .g extension")]
+        [Arguments("MyCompilation1.g.cs", "MyCompilation1.g.cs", Language.CSharp, DisplayName = "name with .g.cs extension")]
+        [Arguments("MyCompilation1.cs", "MyCompilation1.cs", Language.CSharp, DisplayName = "name with .cs extension")]
+        [Arguments("MyCompilation1.my.cs", "MyCompilation1.my.cs", Language.CSharp, DisplayName = "name with .my.cs extension")]
+        [Arguments("MyCompilation1", "MyCompilation1.g.cs", (Language)(-1), DisplayName = "Invalid language defaults to C#")]
+        [Arguments("MyCompilation1", "MyCompilation1.g.vb", Language.VisualBasic, DisplayName = "VB language without extension")]
+        [Arguments("MyCompilation1.g.cs", "MyCompilation1.g.cs.g.vb", Language.VisualBasic, DisplayName = "Invalid extension is ignored")]
+        public async Task GetHintName_ReturnsCorrectName(string compilationName, string expectedResult, Language language)
         {
             var compilationInfo = new CompilationInfo(compilationName, "MyNamespace1");
 
             var hintName = compilationInfo.GetHintName(language);
 
-            Assert.AreEqual(expectedResult, hintName);
+            await Assert.That(hintName).IsEqualTo(expectedResult);
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "CompilationName = null")]
-        [DataRow("", DisplayName = "CompilationName = \"\"")]
-        [DataRow("   ", DisplayName = "CompilationName = \"   \"")]
-        public void GetHintName_EnsureHintNameForEmptyCompilationName(string compilationName)
+        [Test]
+        [Arguments(null, DisplayName = "CompilationName = null")]
+        [Arguments("", DisplayName = "CompilationName = \"\"")]
+        [Arguments("   ", DisplayName = "CompilationName = \"   \"")]
+        public async Task GetHintName_EnsureHintNameForEmptyCompilationName(string? compilationName)
         {
-            var hintName = CompilationInfo.GetHintName(compilationName, Language.CSharp);
+            var hintName = CompilationInfo.GetHintName(compilationName!, Language.CSharp);
 
-            Assert.IsFalse(string.IsNullOrWhiteSpace(hintName));
+            await Assert.That(string.IsNullOrWhiteSpace(hintName)).IsFalse();
 
-            Assert.IsTrue(hintName.EndsWith(".g.cs"));
+            await Assert.That(hintName.EndsWith(".g.cs")).IsTrue();
 
-            Assert.IsTrue(hintName.Length >= 6);
+            await Assert.That(hintName.Length >= 6).IsTrue();
         }
 
-        [TestMethod]
+        [Test]
         public void ToString_ForVisualBasic_ThrowsNotSupportedException()
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1");
@@ -537,8 +536,8 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.ThrowsExactly<NotSupportedException>(() => compilationInfo.ToString(Language.VisualBasic));
         }
 
-        [TestMethod]
-        public void WithUsings_CorrectString()
+        [Test]
+        public async Task WithUsings_CorrectString()
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", targetNamespace: "Test.NS1")
                 .AddNewClassInfo("MyClass1", AccessModifier.Public, ci =>
@@ -561,10 +560,10 @@ using My.Second.Using;
 namespace Test.NS1
 {
 " + _codeGenerationAttributeStringClassInfoIndented;
-            Assert.AreEqual(codeGenAttrStr + @"    public class MyClass1
+            await Assert.That(str).IsEqualTo(codeGenAttrStr + @"    public class MyClass1
     {
     }
-}", str);
+}");
         }
     }
 }

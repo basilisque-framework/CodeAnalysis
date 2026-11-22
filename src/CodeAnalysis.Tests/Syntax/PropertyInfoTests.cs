@@ -17,39 +17,38 @@ using Basilisque.CodeAnalysis.Syntax;
 
 namespace Basilisque.CodeAnalysis.Tests.Syntax
 {
-    [TestClass]
     public class PropertyInfoTests
     {
-        [TestMethod]
-        [DataRow(null, DisplayName = "Name = null")]
-        [DataRow("", DisplayName = "Name = \"\"")]
-        [DataRow("  ", DisplayName = "Name = \"  \"")]
-        public void Constructor_EmptyNameThrows(string name)
+        [Test]
+        [Arguments(null, DisplayName = "Name = null")]
+        [Arguments("", DisplayName = "Name = \"\"")]
+        [Arguments("  ", DisplayName = "Name = \"  \"")]
+        public void Constructor_EmptyNameThrows(string? name)
         {
-            Assert.ThrowsExactly<ArgumentNullException>(() => new PropertyInfo("int", name));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new PropertyInfo("int", name!));
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "Type = null")]
-        [DataRow("", DisplayName = "Type = \"\"")]
-        [DataRow("  ", DisplayName = "Type = \"  \"")]
-        public void Constructor_EmptyTypeThrows(string type)
+        [Test]
+        [Arguments(null, DisplayName = "Type = null")]
+        [Arguments("", DisplayName = "Type = \"\"")]
+        [Arguments("  ", DisplayName = "Type = \"  \"")]
+        public void Constructor_EmptyTypeThrows(string? type)
         {
-            Assert.ThrowsExactly<ArgumentNullException>(() => new PropertyInfo(type, "name"));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new PropertyInfo(type!, "name"));
         }
 
-        [TestMethod]
-        public void AutoImplemented()
+        [Test]
+        public async Task AutoImplemented()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"public int MyProperty { get; set; }", src);
+            await Assert.That(src).IsEqualTo(@"public int MyProperty { get; set; }");
         }
 
-        [TestMethod]
-        public void ChangeAccessModifier()
+        [Test]
+        public async Task ChangeAccessModifier()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -57,11 +56,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"private int MyProperty { get; set; }", src);
+            await Assert.That(src).IsEqualTo(@"private int MyProperty { get; set; }");
         }
 
-        [TestMethod]
-        public void ChangeName()
+        [Test]
+        public async Task ChangeName()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -69,49 +68,49 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"public int MyOtherProperty { get; set; }", src);
+            await Assert.That(src).IsEqualTo(@"public int MyOtherProperty { get; set; }");
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "Name = null")]
-        [DataRow("", DisplayName = "Name = \"\"")]
-        [DataRow("  ", DisplayName = "Name = \"  \"")]
-        public void EmptyNameThrows(string emptyName)
+        [Test]
+        [Arguments(null, DisplayName = "Name = null")]
+        [Arguments("", DisplayName = "Name = \"\"")]
+        [Arguments("  ", DisplayName = "Name = \"  \"")]
+        public void EmptyNameThrows(string? emptyName)
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
-            Assert.ThrowsExactly<ArgumentNullException>(() => propertyInfo.Name = emptyName);
+            Assert.ThrowsExactly<ArgumentNullException>(() => propertyInfo.Name = emptyName!);
         }
 
-        [TestMethod]
-        public void ChangeType()
+        [Test]
+        public async Task ChangeType()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
-            Assert.AreEqual("int", propertyInfo.Type);
+            await Assert.That(propertyInfo.Type).IsEqualTo("int");
 
             propertyInfo.Type = "string";
 
-            Assert.AreEqual("string", propertyInfo.Type);
+            await Assert.That(propertyInfo.Type).IsEqualTo("string");
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"public string MyProperty { get; set; }", src);
+            await Assert.That(src).IsEqualTo(@"public string MyProperty { get; set; }");
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "Type = null")]
-        [DataRow("", DisplayName = "Type = \"\"")]
-        [DataRow("  ", DisplayName = "Type = \"  \"")]
-        public void EmptyTypeThrows(string emptyType)
+        [Test]
+        [Arguments(null, DisplayName = "Type = null")]
+        [Arguments("", DisplayName = "Type = \"\"")]
+        [Arguments("  ", DisplayName = "Type = \"  \"")]
+        public void EmptyTypeThrows(string? emptyType)
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
-            Assert.ThrowsExactly<ArgumentNullException>(() => propertyInfo.Type = emptyType);
+            Assert.ThrowsExactly<ArgumentNullException>(() => propertyInfo.Type = emptyType!);
         }
 
-        [TestMethod]
-        public void HasInitialValue()
+        [Test]
+        public async Task HasInitialValue()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -119,11 +118,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"public int MyProperty { get; set; } = 8;", src);
+            await Assert.That(src).IsEqualTo(@"public int MyProperty { get; set; } = 8;");
         }
 
-        [TestMethod]
-        public void HasInvalidInitialValue()
+        [Test]
+        public async Task HasInvalidInitialValue()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -131,19 +130,19 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"public int MyProperty { get; set; }", src);
+            await Assert.That(src).IsEqualTo(@"public int MyProperty { get; set; }");
         }
 
-        [TestMethod]
-        [DataRow("test", "test", DisplayName = "InitialValue = no parenthesis")]
-        [DataRow("te\"st", "te\\\"st", DisplayName = "InitialValue = contains parenthesis")]
-        [DataRow("\"test", "\\\"test", DisplayName = "InitialValue = leading parenthesis")]
-        [DataRow("test\"", "test\\\"", DisplayName = "InitialValue = trailing parenthesis")]
-        [DataRow("@\"test", "@\\\"test", DisplayName = "InitialValue = starts with @")]
-        [DataRow("$\"test", "$\\\"test", DisplayName = "InitialValue = starts with $")]
-        [DataRow("$@\"test", "$@\\\"test", DisplayName = "InitialValue = starts with $@")]
-        [DataRow("@$\"test", "@$\\\"test", DisplayName = "InitialValue = starts with @$")]
-        public void WithInitialValue_StringAutoParenthesis(string initialValue, string expected)
+        [Test]
+        [Arguments("test", "test", DisplayName = "InitialValue = no parenthesis")]
+        [Arguments("te\"st", "te\\\"st", DisplayName = "InitialValue = contains parenthesis")]
+        [Arguments("\"test", "\\\"test", DisplayName = "InitialValue = leading parenthesis")]
+        [Arguments("test\"", "test\\\"", DisplayName = "InitialValue = trailing parenthesis")]
+        [Arguments("@\"test", "@\\\"test", DisplayName = "InitialValue = starts with @")]
+        [Arguments("$\"test", "$\\\"test", DisplayName = "InitialValue = starts with $")]
+        [Arguments("$@\"test", "$@\\\"test", DisplayName = "InitialValue = starts with $@")]
+        [Arguments("@$\"test", "@$\\\"test", DisplayName = "InitialValue = starts with @$")]
+        public async Task WithInitialValue_StringAutoParenthesis(string initialValue, string expected)
         {
             var propertyInfo = new PropertyInfo("string", "MyProperty");
 
@@ -151,18 +150,18 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual($@"public string MyProperty {{ get; set; }} = ""{expected}"";", src);
+            await Assert.That(src).IsEqualTo($@"public string MyProperty {{ get; set; }} = ""{expected}"";");
         }
 
-        [TestMethod]
-        [DataRow("\"test\"", DisplayName = "InitialValue = no additional parenthesis")]
-        [DataRow("\"te\"\"st\"", DisplayName = "InitialValue = contains double parenthesis")]
-        [DataRow("\"te\"st\"", DisplayName = "InitialValue = contains single parenthesis")]
-        [DataRow("@\"test\"", DisplayName = "InitialValue = starts with @")]
-        [DataRow("$\"test\"", DisplayName = "InitialValue = starts with $")]
-        [DataRow("$@\"test\"", DisplayName = "InitialValue = starts with $@")]
-        [DataRow("@$\"test\"", DisplayName = "InitialValue = starts with @$")]
-        public void WithInitialValue_StringManualParenthesis(string initialValue)
+        [Test]
+        [Arguments("\"test\"", DisplayName = "InitialValue = no additional parenthesis")]
+        [Arguments("\"te\"\"st\"", DisplayName = "InitialValue = contains double parenthesis")]
+        [Arguments("\"te\"st\"", DisplayName = "InitialValue = contains single parenthesis")]
+        [Arguments("@\"test\"", DisplayName = "InitialValue = starts with @")]
+        [Arguments("$\"test\"", DisplayName = "InitialValue = starts with $")]
+        [Arguments("$@\"test\"", DisplayName = "InitialValue = starts with $@")]
+        [Arguments("@$\"test\"", DisplayName = "InitialValue = starts with @$")]
+        public async Task WithInitialValue_StringManualParenthesis(string initialValue)
         {
             var propertyInfo = new PropertyInfo("string", "MyProperty");
 
@@ -170,11 +169,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual($@"public string MyProperty {{ get; set; }} = {initialValue};", src);
+            await Assert.That(src).IsEqualTo($@"public string MyProperty {{ get; set; }} = {initialValue};");
         }
 
-        [TestMethod]
-        public void AutoImplemented_GetOnly()
+        [Test]
+        public async Task AutoImplemented_GetOnly()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -182,11 +181,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"public int MyProperty { get; }", src);
+            await Assert.That(src).IsEqualTo(@"public int MyProperty { get; }");
         }
 
-        [TestMethod]
-        public void AutoImplemented_SetOnly()
+        [Test]
+        public async Task AutoImplemented_SetOnly()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -194,11 +193,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"public int MyProperty { set; }", src);
+            await Assert.That(src).IsEqualTo(@"public int MyProperty { set; }");
         }
 
-        [TestMethod]
-        public void AutoImplemented_GetAndSetFallback()
+        [Test]
+        public async Task AutoImplemented_GetAndSetFallback()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -207,11 +206,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"public int MyProperty { get; set; }", src);
+            await Assert.That(src).IsEqualTo(@"public int MyProperty { get; set; }");
         }
 
-        [TestMethod]
-        public void WithGetterBody_AutoSetter()
+        [Test]
+        public async Task WithGetterBody_AutoSetter()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -222,9 +221,9 @@ return _myProperty;
             var src = propertyInfo.ToString(Language.CSharp, false);
             var fieldName = propertyInfo.FieldName;
 
-            Assert.IsFalse(string.IsNullOrWhiteSpace(fieldName));
+            await Assert.That(string.IsNullOrWhiteSpace(fieldName)).IsFalse();
 
-            Assert.AreEqual($@"public int MyProperty
+            await Assert.That(src).IsEqualTo($@"public int MyProperty
 {{
     get
     {{
@@ -237,11 +236,11 @@ return _myProperty;
             this.{fieldName} = value;
         }}
     }}
-}}", src);
+}}");
         }
 
-        [TestMethod]
-        public void WithSetterBody_AutoGetter()
+        [Test]
+        public async Task WithSetterBody_AutoGetter()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -252,9 +251,9 @@ _myProperty = value;
             var src = propertyInfo.ToString(false);
             var fieldName = propertyInfo.FieldName;
 
-            Assert.IsFalse(string.IsNullOrWhiteSpace(fieldName));
+            await Assert.That(string.IsNullOrWhiteSpace(fieldName)).IsFalse();
 
-            Assert.AreEqual($@"public int MyProperty
+            await Assert.That(src).IsEqualTo($@"public int MyProperty
 {{
     get
     {{
@@ -264,11 +263,11 @@ _myProperty = value;
     {{
         _myProperty = value;
     }}
-}}", src);
+}}");
         }
 
-        [TestMethod]
-        public void WithGetterAndSetterBody()
+        [Test]
+        public async Task WithGetterAndSetterBody()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -282,7 +281,7 @@ _myProperty = value;
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"public int MyProperty
+            await Assert.That(src).IsEqualTo(@"public int MyProperty
 {
     get
     {
@@ -292,11 +291,11 @@ _myProperty = value;
     {
         _myProperty = value;
     }
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void WithGetterBody_NoSetter()
+        [Test]
+        public async Task WithGetterBody_NoSetter()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -308,17 +307,17 @@ return _myProperty;
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"public int MyProperty
+            await Assert.That(src).IsEqualTo(@"public int MyProperty
 {
     get
     {
         return _myProperty;
     }
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void WithSetterBody_NoGetter()
+        [Test]
+        public async Task WithSetterBody_NoGetter()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -330,17 +329,17 @@ _myProperty = value;
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"public int MyProperty
+            await Assert.That(src).IsEqualTo(@"public int MyProperty
 {
     set
     {
         _myProperty = value;
     }
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void WithFieldname_GetAndSetFallback()
+        [Test]
+        public async Task WithFieldname_GetAndSetFallback()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -351,7 +350,7 @@ _myProperty = value;
 
             var src = propertyInfo.ToString(false);
 
-            Assert.AreEqual(@"public int MyProperty
+            await Assert.That(src).IsEqualTo(@"public int MyProperty
 {
     get
     {
@@ -364,11 +363,11 @@ _myProperty = value;
             this._theField = value;
         }
     }
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void AutoImplemented_GetAndSetFallback_AfterResettingFieldname()
+        [Test]
+        public async Task AutoImplemented_GetAndSetFallback_AfterResettingFieldname()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -380,11 +379,11 @@ _myProperty = value;
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"public int MyProperty { get; set; }", src);
+            await Assert.That(src).IsEqualTo(@"public int MyProperty { get; set; }");
         }
 
-        [TestMethod]
-        public void WithBody_Indented()
+        [Test]
+        public async Task WithBody_Indented()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -393,13 +392,13 @@ return _myProperty;
 ");
 
             var fieldName = propertyInfo.FieldName;
-            Assert.IsFalse(string.IsNullOrWhiteSpace(fieldName));
+            await Assert.That(string.IsNullOrWhiteSpace(fieldName)).IsFalse();
 
             var sb = new System.Text.StringBuilder();
             propertyInfo.ToString(sb, 1, Language.CSharp, false);
             var src = sb.ToString();
 
-            Assert.AreEqual($@"    public int MyProperty
+            await Assert.That(src).IsEqualTo($@"    public int MyProperty
     {{
         get
         {{
@@ -412,11 +411,11 @@ return _myProperty;
                 this.{fieldName} = value;
             }}
         }}
-    }}", src);
+    }}");
         }
 
-        [TestMethod]
-        public void WithoutBody_Indented()
+        [Test]
+        public async Task WithoutBody_Indented()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -424,11 +423,11 @@ return _myProperty;
             propertyInfo.ToString(sb, 2, Language.CSharp);
             var src = sb.ToString();
 
-            Assert.AreEqual(@"        public int MyProperty { get; set; }", src);
+            await Assert.That(src).IsEqualTo(@"        public int MyProperty { get; set; }");
         }
 
-        [TestMethod]
-        public void AutoImplemented_WithFieldName()
+        [Test]
+        public async Task AutoImplemented_WithFieldName()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -436,7 +435,7 @@ return _myProperty;
 
             var src = propertyInfo.ToString(false);
 
-            Assert.AreEqual(@"public int MyProperty
+            await Assert.That(src).IsEqualTo(@"public int MyProperty
 {
     get
     {
@@ -449,11 +448,11 @@ return _myProperty;
             this._myField = value;
         }
     }
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void WithXmlDoc_Summary()
+        [Test]
+        public async Task WithXmlDoc_Summary()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -461,14 +460,14 @@ return _myProperty;
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(src).IsEqualTo(@"/// <summary>
 /// This is an important property
 /// </summary>
-public int MyProperty { get; set; }", src);
+public int MyProperty { get; set; }");
         }
 
-        [TestMethod]
-        public void WithXmlDoc_AdditionalLines()
+        [Test]
+        public async Task WithXmlDoc_AdditionalLines()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -476,15 +475,15 @@ public int MyProperty { get; set; }", src);
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(src).IsEqualTo(@"/// <summary>
 /// MyProperty
 /// </summary>
 /// <example>8</example>
-public int MyProperty { get; set; }", src);
+public int MyProperty { get; set; }");
         }
 
-        [TestMethod]
-        public void WithXmlDoc_InheritDoc()
+        [Test]
+        public async Task WithXmlDoc_InheritDoc()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -492,16 +491,16 @@ public int MyProperty { get; set; }", src);
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"/// <inheritdoc />
-public int MyProperty { get; set; }", src);
+            await Assert.That(src).IsEqualTo(@"/// <inheritdoc />
+public int MyProperty { get; set; }");
         }
 
-        [TestMethod]
-        [DataRow(true, true, true, DisplayName = "Body = true, Auto = true, Expected = true")]
-        [DataRow(true, false, true, DisplayName = "Body = true, Auto = false, Expected = true")]
-        [DataRow(false, true, true, DisplayName = "Body = false, Auto = true, Expected = true")]
-        [DataRow(false, false, false, DisplayName = "Body = false, Auto = false, Expected = false")]
-        public void HasGetter_CorrectStatus(bool hasBody, bool hasAuto, bool expected)
+        [Test]
+        [Arguments(true, true, true, DisplayName = "Body = true, Auto = true, Expected = true")]
+        [Arguments(true, false, true, DisplayName = "Body = true, Auto = false, Expected = true")]
+        [Arguments(false, true, true, DisplayName = "Body = false, Auto = true, Expected = true")]
+        [Arguments(false, false, false, DisplayName = "Body = false, Auto = false, Expected = false")]
+        public async Task HasGetter_CorrectStatus(bool hasBody, bool hasAuto, bool expected)
         {
             var propertyInfo = new PropertyInfo("int", "Name");
 
@@ -510,15 +509,15 @@ public int MyProperty { get; set; }", src);
             if (hasBody)
                 propertyInfo.GetterBody.Add("test");
 
-            Assert.AreEqual(expected, propertyInfo.HasGetter);
+            await Assert.That(propertyInfo.HasGetter).IsEqualTo(expected);
         }
 
-        [TestMethod]
-        [DataRow(true, true, true, DisplayName = "Body = true, Auto = true, Expected = true")]
-        [DataRow(true, false, true, DisplayName = "Body = true, Auto = false, Expected = true")]
-        [DataRow(false, true, true, DisplayName = "Body = false, Auto = true, Expected = true")]
-        [DataRow(false, false, false, DisplayName = "Body = false, Auto = false, Expected = false")]
-        public void HasSetter_CorrectStatus(bool hasBody, bool hasAuto, bool expected)
+        [Test]
+        [Arguments(true, true, true, DisplayName = "Body = true, Auto = true, Expected = true")]
+        [Arguments(true, false, true, DisplayName = "Body = true, Auto = false, Expected = true")]
+        [Arguments(false, true, true, DisplayName = "Body = false, Auto = true, Expected = true")]
+        [Arguments(false, false, false, DisplayName = "Body = false, Auto = false, Expected = false")]
+        public async Task HasSetter_CorrectStatus(bool hasBody, bool hasAuto, bool expected)
         {
             var propertyInfo = new PropertyInfo("int", "Name");
 
@@ -527,11 +526,11 @@ public int MyProperty { get; set; }", src);
             if (hasBody)
                 propertyInfo.SetterBody.Add("test");
 
-            Assert.AreEqual(expected, propertyInfo.HasSetter);
+            await Assert.That(propertyInfo.HasSetter).IsEqualTo(expected);
         }
 
-        [TestMethod]
-        public void Reset_GetterBody()
+        [Test]
+        public async Task Reset_GetterBody()
         {
             var propertyInfo = new PropertyInfo("type", "name");
 
@@ -539,15 +538,15 @@ public int MyProperty { get; set; }", src);
 
             propertyInfo.GetterBody.Add("body");
 
-            Assert.IsTrue(propertyInfo.HasGetter);
+            await Assert.That(propertyInfo.HasGetter).IsTrue();
 
             propertyInfo.HasGetter = false;
 
-            Assert.IsFalse(propertyInfo.HasGetter);
+            await Assert.That(propertyInfo.HasGetter).IsFalse();
         }
 
-        [TestMethod]
-        public void Reset_SetterBody()
+        [Test]
+        public async Task Reset_SetterBody()
         {
             var propertyInfo = new PropertyInfo("type", "name");
 
@@ -555,24 +554,24 @@ public int MyProperty { get; set; }", src);
 
             propertyInfo.SetterBody.Add("body");
 
-            Assert.IsTrue(propertyInfo.HasSetter);
+            await Assert.That(propertyInfo.HasSetter).IsTrue();
 
             propertyInfo.HasSetter = false;
 
-            Assert.IsFalse(propertyInfo.HasSetter);
+            await Assert.That(propertyInfo.HasSetter).IsFalse();
         }
 
-        [TestMethod]
-        public void AdditionalField_StringBuilderNullReturnsFalse()
+        [Test]
+        public async Task AdditionalField_StringBuilderNullReturnsFalse()
         {
             var propertyInfo = new PropertyInfo("int", "SomeProperty");
 
             var wasAppended = propertyInfo.AppendFieldIfNecessary(null!, 2, Language.CSharp, new List<FieldInfo>() { new FieldInfo("int", "_someField") });
 
-            Assert.IsFalse(wasAppended);
+            await Assert.That(wasAppended).IsFalse();
         }
 
-        [TestMethod]
+        [Test]
         public void AdditionalField_VisualBasicNotImplementedYet()
         {
             var propertyInfo = new PropertyInfo("int", "SomeProperty");
@@ -582,10 +581,10 @@ public int MyProperty { get; set; }", src);
             Assert.ThrowsExactly<NotImplementedException>(() => propertyInfo.AppendFieldIfNecessary(sb, 2, Language.VisualBasic, new List<FieldInfo>() { new FieldInfo("int", "_someField") }));
         }
 
-        [TestMethod]
-        [DataRow(false, DisplayName = "AccessGetterAndSetterProperty = false")]
-        [DataRow(true, DisplayName = "AccessGetterAndSetterProperty = true")]
-        public void AdditionalField_NoFieldForAutoProp(bool accessGetterAndSetterProperty)
+        [Test]
+        [Arguments(false, DisplayName = "AccessGetterAndSetterProperty = false")]
+        [Arguments(true, DisplayName = "AccessGetterAndSetterProperty = true")]
+        public async Task AdditionalField_NoFieldForAutoProp(bool accessGetterAndSetterProperty)
         {
             var propertyInfo = new PropertyInfo("int", "SomeProperty");
 
@@ -594,8 +593,8 @@ public int MyProperty { get; set; }", src);
                 var gbdy = propertyInfo.GetterBody;
                 var sbdy = propertyInfo.SetterBody;
 
-                Assert.IsNotNull(gbdy);
-                Assert.IsNotNull(sbdy);
+                await Assert.That(gbdy).IsNotNull();
+                await Assert.That(sbdy).IsNotNull();
             }
 
             var sb = new System.Text.StringBuilder();
@@ -604,12 +603,12 @@ public int MyProperty { get; set; }", src);
 
             var src = sb.ToString();
 
-            Assert.IsFalse(wasAppended);
-            Assert.AreEqual("", src);
+            await Assert.That(wasAppended).IsFalse();
+            await Assert.That(src).IsEqualTo("");
         }
 
-        [TestMethod]
-        public void AdditionalField_NoGetterAndNoSetterFallback()
+        [Test]
+        public async Task AdditionalField_NoGetterAndNoSetterFallback()
         {
             var propertyInfo = new PropertyInfo("int", "SomeProperty");
 
@@ -623,21 +622,21 @@ public int MyProperty { get; set; }", src);
 
             var src = sb.ToString();
 
-            Assert.IsTrue(wasAppended);
-            Assert.AreEqual("        private int _myField;", src);
+            await Assert.That(wasAppended).IsTrue();
+            await Assert.That(src).IsEqualTo("        private int _myField;");
         }
 
-        [TestMethod]
-        [DataRow(false, false, true, false, false, false, DisplayName = "AutoGetter = false, AutoSetter = false, GetterBody = true, SetterBody = false, FieldName = false, GeneratesProperty = false")]
-        [DataRow(false, false, false, true, false, false, DisplayName = "AutoGetter = false, AutoSetter = false, GetterBody = false, SetterBody = true, FieldName = false, GeneratesProperty = false")]
-        [DataRow(false, false, false, false, true, true, DisplayName = "AutoGetter = false, AutoSetter = false, GetterBody = false, SetterBody = false, FieldName = true, GeneratesProperty = true")]
-        [DataRow(true, false, true, false, false, false, DisplayName = "AutoGetter = true, AutoSetter = false, GetterBody = true, SetterBody = false, FieldName = false, GeneratesProperty = false")]
-        [DataRow(true, false, false, true, false, true, DisplayName = "AutoGetter = true, AutoSetter = false, GetterBody = false, SetterBody = true, FieldName = false, GeneratesProperty = true")]
-        [DataRow(true, false, false, false, true, true, DisplayName = "AutoGetter = true, AutoSetter = false, GetterBody = false, SetterBody = false, FieldName = true, GeneratesProperty = true")]
-        [DataRow(false, true, true, false, false, true, DisplayName = "AutoGetter = false, AutoSetter = true, GetterBody = true, SetterBody = false, FieldName = false, GeneratesProperty = true")]
-        [DataRow(false, true, false, true, false, false, DisplayName = "AutoGetter = false, AutoSetter = true, GetterBody = false, SetterBody = true, FieldName = false, GeneratesProperty = false")]
-        [DataRow(false, true, false, false, true, true, DisplayName = "AutoGetter = false, AutoSetter = true, GetterBody = false, SetterBody = false, FieldName = true, GeneratesProperty = true")]
-        public void AdditionalField_ForExtendedProperty(bool withAutoGetter, bool withAutoSetter, bool withGetterBody, bool withSetterBody, bool withFieldName, bool generatesProperty)
+        [Test]
+        [Arguments(false, false, true, false, false, false, DisplayName = "AutoGetter = false, AutoSetter = false, GetterBody = true, SetterBody = false, FieldName = false, GeneratesProperty = false")]
+        [Arguments(false, false, false, true, false, false, DisplayName = "AutoGetter = false, AutoSetter = false, GetterBody = false, SetterBody = true, FieldName = false, GeneratesProperty = false")]
+        [Arguments(false, false, false, false, true, true, DisplayName = "AutoGetter = false, AutoSetter = false, GetterBody = false, SetterBody = false, FieldName = true, GeneratesProperty = true")]
+        [Arguments(true, false, true, false, false, false, DisplayName = "AutoGetter = true, AutoSetter = false, GetterBody = true, SetterBody = false, FieldName = false, GeneratesProperty = false")]
+        [Arguments(true, false, false, true, false, true, DisplayName = "AutoGetter = true, AutoSetter = false, GetterBody = false, SetterBody = true, FieldName = false, GeneratesProperty = true")]
+        [Arguments(true, false, false, false, true, true, DisplayName = "AutoGetter = true, AutoSetter = false, GetterBody = false, SetterBody = false, FieldName = true, GeneratesProperty = true")]
+        [Arguments(false, true, true, false, false, true, DisplayName = "AutoGetter = false, AutoSetter = true, GetterBody = true, SetterBody = false, FieldName = false, GeneratesProperty = true")]
+        [Arguments(false, true, false, true, false, false, DisplayName = "AutoGetter = false, AutoSetter = true, GetterBody = false, SetterBody = true, FieldName = false, GeneratesProperty = false")]
+        [Arguments(false, true, false, false, true, true, DisplayName = "AutoGetter = false, AutoSetter = true, GetterBody = false, SetterBody = false, FieldName = true, GeneratesProperty = true")]
+        public async Task AdditionalField_ForExtendedProperty(bool withAutoGetter, bool withAutoSetter, bool withGetterBody, bool withSetterBody, bool withFieldName, bool generatesProperty)
         {
             var propertyInfo = new PropertyInfo("int", "SomeProperty");
 
@@ -659,16 +658,16 @@ public int MyProperty { get; set; }", src);
 
             var src = sb.ToString();
 
-            Assert.AreEqual(generatesProperty, wasAppended);
+            await Assert.That(wasAppended).IsEqualTo(generatesProperty);
 
             if (generatesProperty)
             {
-                Assert.AreEqual($"        private int {propertyInfo.FieldName};", src);
+                await Assert.That(src).IsEqualTo($"        private int {propertyInfo.FieldName};");
             }
         }
 
-        [TestMethod]
-        public void AdditionalField_ListOfFieldsNull()
+        [Test]
+        public async Task AdditionalField_ListOfFieldsNull()
         {
             var propertyInfo = new PropertyInfo("int", "SomeProperty");
 
@@ -680,12 +679,12 @@ public int MyProperty { get; set; }", src);
 
             var src = sb.ToString();
 
-            Assert.IsTrue(wasAppended);
-            Assert.AreEqual("        private int _someField;", src);
+            await Assert.That(wasAppended).IsTrue();
+            await Assert.That(src).IsEqualTo("        private int _someField;");
         }
 
-        [TestMethod]
-        public void AdditionalField_FieldNotInListOfFields()
+        [Test]
+        public async Task AdditionalField_FieldNotInListOfFields()
         {
             var propertyInfo = new PropertyInfo("int", "SomeProperty");
 
@@ -697,12 +696,12 @@ public int MyProperty { get; set; }", src);
 
             var src = sb.ToString();
 
-            Assert.IsTrue(wasAppended);
-            Assert.AreEqual("        private int _someField;", src);
+            await Assert.That(wasAppended).IsTrue();
+            await Assert.That(src).IsEqualTo("        private int _someField;");
         }
 
-        [TestMethod]
-        public void AdditionalField_FieldAlreadyInListOfFields()
+        [Test]
+        public async Task AdditionalField_FieldAlreadyInListOfFields()
         {
             var propertyInfo = new PropertyInfo("int", "SomeProperty");
 
@@ -714,12 +713,12 @@ public int MyProperty { get; set; }", src);
 
             var src = sb.ToString();
 
-            Assert.IsFalse(wasAppended);
-            Assert.AreEqual(string.Empty, src);
+            await Assert.That(wasAppended).IsFalse();
+            await Assert.That(src).IsEqualTo(string.Empty);
         }
 
-        [TestMethod]
-        public void AdditionalField_WithIntialValue()
+        [Test]
+        public async Task AdditionalField_WithIntialValue()
         {
             var propertyInfo = new PropertyInfo("int", "SomeProperty");
 
@@ -732,19 +731,19 @@ public int MyProperty { get; set; }", src);
 
             var src = sb.ToString();
 
-            Assert.IsTrue(wasAppended);
-            Assert.AreEqual(@"        private int _someField = 9;", src);
+            await Assert.That(wasAppended).IsTrue();
+            await Assert.That(src).IsEqualTo(@"        private int _someField = 9;");
         }
 
-        [TestMethod]
-        public void IncludeBackingField()
+        [Test]
+        public async Task IncludeBackingField()
         {
             var propertyInfo = new PropertyInfo("int", "PropertyName");
             propertyInfo.FieldName = "_fieldForPropertyName";
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"private int _fieldForPropertyName;
+            await Assert.That(src).IsEqualTo(@"private int _fieldForPropertyName;
 public int PropertyName
 {
     get
@@ -758,11 +757,11 @@ public int PropertyName
             this._fieldForPropertyName = value;
         }
     }
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void IsRequired()
+        [Test]
+        public async Task IsRequired()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -770,11 +769,11 @@ public int PropertyName
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"public required int MyProperty { get; set; }", src);
+            await Assert.That(src).IsEqualTo(@"public required int MyProperty { get; set; }");
         }
 
-        [TestMethod]
-        public void IncludeAttributes()
+        [Test]
+        public async Task IncludeAttributes()
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
@@ -787,9 +786,9 @@ public int PropertyName
 
             var src = propertyInfo.ToString();
 
-            Assert.AreEqual(@"[MyAttribute1]
+            await Assert.That(src).IsEqualTo(@"[MyAttribute1]
 [MyAttribute2(typeof(string), param2: typeof(int))]
-public int MyProperty { get; set; }", src);
+public int MyProperty { get; set; }");
         }
     }
 }

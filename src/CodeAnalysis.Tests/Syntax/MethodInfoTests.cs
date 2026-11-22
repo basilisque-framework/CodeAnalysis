@@ -17,96 +17,95 @@ using Basilisque.CodeAnalysis.Syntax;
 
 namespace Basilisque.CodeAnalysis.Tests.Syntax
 {
-    [TestClass]
     public class MethodInfoTests
     {
-        [TestMethod]
-        public void ConstructorInitializesParameters()
+        [Test]
+        public async Task ConstructorInitializesParameters()
         {
             var methodInfo = new MethodInfo(AccessModifier.Public, "string", "MyMethod1");
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"public string MyMethod1()
+            await Assert.That(src).IsEqualTo(@"public string MyMethod1()
 {
-}", src);
+}");
         }
 
-        [TestMethod]
-        [DataRow(null, "MyMethod1Async", "async ", DisplayName = "returnType = null, method = async")]
-        [DataRow("", "MyMethod1Async", "async ", DisplayName = "returnType = \"\", method = async")]
-        [DataRow("  ", "MyMethod1Async", "async ", DisplayName = "returnType = \"  \", method = async")]
-        [DataRow("void", "MyMethod1Async", "async ", DisplayName = "returnType = void method = async")]
-        [DataRow("Task", "MyMethod1Async", "async ", DisplayName = "returnType = Task, method = async")]
-        [DataRow("Task<string>", "MyMethod1Async", "async ", DisplayName = "returnType = Task<string>, method = async")]
-        [DataRow("System.Threading.Tasks.Task", "MyMethod1Async", "async ", DisplayName = "returnType = System.Threading.Tasks.Task, method = async")]
-        [DataRow("System.Threading.Tasks.Task<string>", "MyMethod1Async", "async ", DisplayName = "returnType = System.Threading.Tasks.Task<string>, method = async")]
-        [DataRow("string", "MyMethod1Async", "", DisplayName = "returnType = string, method = async")]
-        [DataRow("Task", "MyMethod1", "", DisplayName = "returnType = Task, method = sync")]
-        public void Constructor_DoesInitializeAsync(string returnType, string methodName, string isAsyncResult)
+        [Test]
+        [Arguments(null, "MyMethod1Async", "async ", DisplayName = "returnType = null, method = async")]
+        [Arguments("", "MyMethod1Async", "async ", DisplayName = "returnType = \"\", method = async")]
+        [Arguments("  ", "MyMethod1Async", "async ", DisplayName = "returnType = \"  \", method = async")]
+        [Arguments("void", "MyMethod1Async", "async ", DisplayName = "returnType = void method = async")]
+        [Arguments("Task", "MyMethod1Async", "async ", DisplayName = "returnType = Task, method = async")]
+        [Arguments("Task<string>", "MyMethod1Async", "async ", DisplayName = "returnType = Task<string>, method = async")]
+        [Arguments("System.Threading.Tasks.Task", "MyMethod1Async", "async ", DisplayName = "returnType = System.Threading.Tasks.Task, method = async")]
+        [Arguments("System.Threading.Tasks.Task<string>", "MyMethod1Async", "async ", DisplayName = "returnType = System.Threading.Tasks.Task<string>, method = async")]
+        [Arguments("string", "MyMethod1Async", "", DisplayName = "returnType = string, method = async")]
+        [Arguments("Task", "MyMethod1", "", DisplayName = "returnType = Task, method = sync")]
+        public async Task Constructor_DoesInitializeAsync(string? returnType, string methodName, string isAsyncResult)
         {
-            var methodInfo = new MethodInfo(AccessModifier.Public, returnType, methodName);
+            var methodInfo = new MethodInfo(AccessModifier.Public, returnType!, methodName);
 
             var src = methodInfo.ToString();
 
             if (string.IsNullOrWhiteSpace(returnType))
                 returnType = "void";
 
-            Assert.AreEqual(@$"public {isAsyncResult}{returnType} {methodName}()
+            await Assert.That(src).IsEqualTo(@$"public {isAsyncResult}{returnType} {methodName}()
 {{
-}}", src);
+}}");
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "method name = null")]
-        [DataRow("", DisplayName = "method name = empty")]
-        [DataRow("  ", DisplayName = "method name = whitespace")]
-        public void Constructor_EmptyMethodNameThrows(string methodName)
+        [Test]
+        [Arguments(null, DisplayName = "method name = null")]
+        [Arguments("", DisplayName = "method name = empty")]
+        [Arguments("  ", DisplayName = "method name = whitespace")]
+        public void Constructor_EmptyMethodNameThrows(string? methodName)
         {
             Assert.ThrowsExactly<ArgumentNullException>(() =>
             {
-                var methodInfo = new MethodInfo(AccessModifier.Public, "void", methodName);
+                var methodInfo = new MethodInfo(AccessModifier.Public, "void", methodName!);
             });
         }
 
-        [TestMethod]
-        public void MethodName_CanBeChanged()
+        [Test]
+        public async Task MethodName_CanBeChanged()
         {
             var methodInfo = new MethodInfo(AccessModifier.PrivateProtected, "string", "ConstructorMethodName");
 
-            Assert.AreEqual("ConstructorMethodName", methodInfo.Name);
+            await Assert.That(methodInfo.Name).IsEqualTo("ConstructorMethodName");
 
             var src = methodInfo.ToString();
-            Assert.AreEqual(@"private protected string ConstructorMethodName()
+            await Assert.That(src).IsEqualTo(@"private protected string ConstructorMethodName()
 {
-}", src);
+}");
 
             methodInfo.Name = "ChangedMethodName";
 
-            Assert.AreEqual("ChangedMethodName", methodInfo.Name);
+            await Assert.That(methodInfo.Name).IsEqualTo("ChangedMethodName");
 
             src = methodInfo.ToString();
-            Assert.AreEqual(@"private protected string ChangedMethodName()
+            await Assert.That(src).IsEqualTo(@"private protected string ChangedMethodName()
 {
-}", src);
+}");
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "method name = null")]
-        [DataRow("", DisplayName = "method name = empty")]
-        [DataRow("  ", DisplayName = "method name = whitespace")]
-        public void MethodName_ThrowsWhenSetToNull(string methodName)
+        [Test]
+        [Arguments(null, DisplayName = "method name = null")]
+        [Arguments("", DisplayName = "method name = empty")]
+        [Arguments("  ", DisplayName = "method name = whitespace")]
+        public void MethodName_ThrowsWhenSetToNull(string? methodName)
         {
             var methodInfo = new MethodInfo(AccessModifier.Public, "void", "OriginalMethodName");
 
             Assert.ThrowsExactly<ArgumentNullException>(() =>
             {
-                methodInfo.Name = methodName;
+                methodInfo.Name = methodName!;
             });
         }
 
-        [TestMethod]
-        public void MethodsCanBeStatic()
+        [Test]
+        public async Task MethodsCanBeStatic()
         {
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
 
@@ -114,13 +113,13 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"private static int MyMethod()
+            await Assert.That(src).IsEqualTo(@"private static int MyMethod()
 {
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void MethodsCanOverrideBaseMethods()
+        [Test]
+        public async Task MethodsCanOverrideBaseMethods()
         {
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
 
@@ -128,13 +127,13 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"private override int MyMethod()
+            await Assert.That(src).IsEqualTo(@"private override int MyMethod()
 {
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void BodyGetsIndented()
+        [Test]
+        public async Task BodyGetsIndented()
         {
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
 
@@ -145,15 +144,15 @@ if (true)
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"private int MyMethod()
+            await Assert.That(src).IsEqualTo(@"private int MyMethod()
 {
     if (true)
         doSomething();
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void WithXmlDoc_Summary()
+        [Test]
+        public async Task WithXmlDoc_Summary()
         {
             var methodInfo = new MethodInfo(AccessModifier.Public, "string", "MyMethod1");
 
@@ -162,17 +161,17 @@ Line 2";
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(src).IsEqualTo(@"/// <summary>
 /// This is the summary for the method
 /// Line 2
 /// </summary>
 public string MyMethod1()
 {
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void WithXmlDoc_AdditionalLines()
+        [Test]
+        public async Task WithXmlDoc_AdditionalLines()
         {
             var methodInfo = new MethodInfo(AccessModifier.Public, "string", "MyMethod1");
 
@@ -181,19 +180,19 @@ public string MyMethod1()
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(src).IsEqualTo(@"/// <summary>
 /// MyMethod1
 /// </summary>
 /// <example>This is the first line</example>
 /// <someTag>This is the second line</someTag>
 public string MyMethod1()
 {
-}", src);
+}");
         }
 
 
-        [TestMethod]
-        public void WithXmlDoc_Generic()
+        [Test]
+        public async Task WithXmlDoc_Generic()
         {
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
 
@@ -202,19 +201,19 @@ public string MyMethod1()
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(src).IsEqualTo(@"/// <summary>
 /// MyMethod
 /// </summary>
 /// <typeparam name=""T1"">This is my generic parameter</typeparam>
 /// <typeparam name=""T2""></typeparam>
 private int MyMethod<T1, T2>()
 {
-}", src);
+}");
         }
 
 
-        [TestMethod]
-        public void WithXmlDoc_FullDoc()
+        [Test]
+        public async Task WithXmlDoc_FullDoc()
         {
             var methodInfo = new MethodInfo(AccessModifier.Public, "string", "MyMethod1");
 
@@ -229,7 +228,7 @@ Line 2";
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(src).IsEqualTo(@"/// <summary>
 /// This is the summary for the method
 /// Line 2
 /// </summary>
@@ -238,11 +237,11 @@ Line 2";
 /// <someTag>This is the second line</someTag>
 public string MyMethod1<T1>()
 {
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void WithXmlDoc_InheritDoc()
+        [Test]
+        public async Task WithXmlDoc_InheritDoc()
         {
             var methodInfo = new MethodInfo(AccessModifier.Public, "string", "MyMethod1");
 
@@ -250,14 +249,14 @@ public string MyMethod1<T1>()
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"/// <inheritdoc />
+            await Assert.That(src).IsEqualTo(@"/// <inheritdoc />
 public string MyMethod1()
 {
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void With1GenericType_NoConstraints()
+        [Test]
+        public async Task With1GenericType_NoConstraints()
         {
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
 
@@ -265,13 +264,13 @@ public string MyMethod1()
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"private int MyMethod<T1>()
+            await Assert.That(src).IsEqualTo(@"private int MyMethod<T1>()
 {
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void With1GenericType_WithConstraints()
+        [Test]
+        public async Task With1GenericType_WithConstraints()
         {
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
 
@@ -279,14 +278,14 @@ public string MyMethod1()
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"private int MyMethod<T1>()
+            await Assert.That(src).IsEqualTo(@"private int MyMethod<T1>()
     where T1 : ISomeInterface
 {
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void With3GenericType_NoConstraints()
+        [Test]
+        public async Task With3GenericType_NoConstraints()
         {
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
 
@@ -296,13 +295,13 @@ public string MyMethod1()
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"private int MyMethod<T1, T2, T3>()
+            await Assert.That(src).IsEqualTo(@"private int MyMethod<T1, T2, T3>()
 {
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void With5GenericType_With3Constraints()
+        [Test]
+        public async Task With5GenericType_With3Constraints()
         {
             var methodInfo = new MethodInfo(AccessModifier.Private, "int", "MyMethod");
 
@@ -315,45 +314,45 @@ public string MyMethod1()
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"private int MyMethod<A1, A2, A3, A4, A5, A6>()
+            await Assert.That(src).IsEqualTo(@"private int MyMethod<A1, A2, A3, A4, A5, A6>()
     where A1 : ISomeInterface
     where A2 : ISomeOtherInterface
     where A3 : ISomeInterface, ISomeOtherInterface
 {
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void Partial_IsInitializedByConstructor_IsPartial()
+        [Test]
+        public async Task Partial_IsInitializedByConstructor_IsPartial()
         {
             var methodInfo = new MethodInfo(true, "MyMethod");
 
-            Assert.IsTrue(methodInfo.IsPartial);
-            Assert.AreEqual("void", methodInfo.ReturnType);
-            Assert.AreEqual(AccessModifier.Private, methodInfo.AccessModifier);
+            await Assert.That(methodInfo.IsPartial).IsTrue();
+            await Assert.That(methodInfo.ReturnType).IsEqualTo("void");
+            await Assert.That(methodInfo.AccessModifier).IsEqualTo(AccessModifier.Private);
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"partial void MyMethod();", src);
+            await Assert.That(src).IsEqualTo(@"partial void MyMethod();");
         }
 
-        [TestMethod]
-        public void Partial_IsInitializedByConstructor_IsNotPartial()
+        [Test]
+        public async Task Partial_IsInitializedByConstructor_IsNotPartial()
         {
             var methodInfo = new MethodInfo(false, "MyMethod");
 
-            Assert.IsFalse(methodInfo.IsPartial);
-            Assert.AreEqual("void", methodInfo.ReturnType);
-            Assert.AreEqual(AccessModifier.Private, methodInfo.AccessModifier);
+            await Assert.That(methodInfo.IsPartial).IsFalse();
+            await Assert.That(methodInfo.ReturnType).IsEqualTo("void");
+            await Assert.That(methodInfo.AccessModifier).IsEqualTo(AccessModifier.Private);
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"private void MyMethod()
+            await Assert.That(src).IsEqualTo(@"private void MyMethod()
 {
-}", src);
+}");
         }
 
-        [TestMethod]
+        [Test]
         public void Partial_CannotChangeReturnType()
         {
             var methodInfo = new MethodInfo(true, "MyMethod");
@@ -361,7 +360,7 @@ public string MyMethod1()
             Assert.ThrowsExactly<ArgumentException>(() => methodInfo.ReturnType = "string");
         }
 
-        [TestMethod]
+        [Test]
         public void Partial_CannotChangeAccessModifier()
         {
             var methodInfo = new MethodInfo(true, "MyMethod");
@@ -369,8 +368,8 @@ public string MyMethod1()
             Assert.ThrowsExactly<ArgumentException>(() => methodInfo.AccessModifier = AccessModifier.Public);
         }
 
-        [TestMethod]
-        public void Partial_GenericWithoutBody()
+        [Test]
+        public async Task Partial_GenericWithoutBody()
         {
             var methodInfo = new MethodInfo(true, "MyMethod");
 
@@ -378,16 +377,16 @@ public string MyMethod1()
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(src).IsEqualTo(@"/// <summary>
 /// MyMethod
 /// </summary>
 /// <typeparam name=""T1"">T1 is cool</typeparam>
 partial void MyMethod<T1>()
-    where T1 : ISomeInterface;", src);
+    where T1 : ISomeInterface;");
         }
 
-        [TestMethod]
-        public void Partial_GenericWithBody()
+        [Test]
+        public async Task Partial_GenericWithBody()
         {
             var methodInfo = new MethodInfo(true, "MyMethod");
 
@@ -401,7 +400,7 @@ throw new NotImplementedException();
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(src).IsEqualTo(@"/// <summary>
 /// MyMethod
 /// </summary>
 /// <typeparam name=""T1"">T1 is cool</typeparam>
@@ -411,11 +410,11 @@ partial void MyMethod<T1>()
     if (true == false)
         ;
     throw new NotImplementedException();
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void With1Parameter()
+        [Test]
+        public async Task With1Parameter()
         {
             var methodInfo = new MethodInfo(true, "MyMethod");
 
@@ -423,11 +422,11 @@ partial void MyMethod<T1>()
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"partial void MyMethod(int myPar);", src);
+            await Assert.That(src).IsEqualTo(@"partial void MyMethod(int myPar);");
         }
 
-        [TestMethod]
-        public void With3Parameters()
+        [Test]
+        public async Task With3Parameters()
         {
             var methodInfo = new MethodInfo(AccessModifier.Public, "void", "MyMethod");
 
@@ -437,13 +436,13 @@ partial void MyMethod<T1>()
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"public void MyMethod(int myPar, string myPar2 = """", ref string myPar3)
+            await Assert.That(src).IsEqualTo(@"public void MyMethod(int myPar, string myPar2 = """", ref string myPar3)
 {
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void IsExtensionMethod()
+        [Test]
+        public async Task IsExtensionMethod()
         {
             var methodInfo = new MethodInfo(AccessModifier.Public, "void", "MyMethod");
 
@@ -453,9 +452,9 @@ partial void MyMethod<T1>()
 
             var src = methodInfo.ToString();
 
-            Assert.AreEqual(@"public static void MyMethod(this int myPar)
+            await Assert.That(src).IsEqualTo(@"public static void MyMethod(this int myPar)
 {
-}", src);
+}");
         }
     }
 }

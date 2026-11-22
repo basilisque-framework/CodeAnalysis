@@ -17,130 +17,129 @@ using Basilisque.CodeAnalysis.Syntax;
 
 namespace Basilisque.CodeAnalysis.Tests.Syntax
 {
-    [TestClass]
     public class FieldInfoTests
     {
-        [TestMethod]
-        [DataRow(null, DisplayName = "Type = null")]
-        [DataRow("", DisplayName = "Type = \"\"")]
-        [DataRow("   ", DisplayName = "Type = \"   \"")]
-        public void EmptyType_ThrowsException(string type)
+        [Test]
+        [Arguments(null, DisplayName = "Type = null")]
+        [Arguments("", DisplayName = "Type = \"\"")]
+        [Arguments("   ", DisplayName = "Type = \"   \"")]
+        public void EmptyType_ThrowsException(string? type)
         {
-            Assert.ThrowsExactly<ArgumentNullException>(() => new FieldInfo(type, "name"));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new FieldInfo(type!, "name"));
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "Name = null")]
-        [DataRow("", DisplayName = "Name = \"\"")]
-        [DataRow("   ", DisplayName = "Name = \"   \"")]
-        public void EmptyName_ThrowsException(string name)
+        [Test]
+        [Arguments(null, DisplayName = "Name = null")]
+        [Arguments("", DisplayName = "Name = \"\"")]
+        [Arguments("   ", DisplayName = "Name = \"   \"")]
+        public void EmptyName_ThrowsException(string? name)
         {
-            Assert.ThrowsExactly<ArgumentNullException>(() => new FieldInfo("type", name));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new FieldInfo("type", name!));
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "Type = null")]
-        [DataRow("", DisplayName = "Type = \"\"")]
-        [DataRow("   ", DisplayName = "Type = \"   \"")]
-        public void EmptyTypeProperty_ThrowsException(string type)
+        [Test]
+        [Arguments(null, DisplayName = "Type = null")]
+        [Arguments("", DisplayName = "Type = \"\"")]
+        [Arguments("   ", DisplayName = "Type = \"   \"")]
+        public void EmptyTypeProperty_ThrowsException(string? type)
         {
             var fieldInfo = new FieldInfo("type", "name");
 
-            Assert.ThrowsExactly<ArgumentNullException>(() => fieldInfo.Type = type);
+            Assert.ThrowsExactly<ArgumentNullException>(() => fieldInfo.Type = type!);
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "Type = null")]
-        [DataRow("", DisplayName = "Type = \"\"")]
-        [DataRow("   ", DisplayName = "Type = \"   \"")]
-        public void EmptyNameProperty_ThrowsException(string name)
+        [Test]
+        [Arguments(null, DisplayName = "Type = null")]
+        [Arguments("", DisplayName = "Type = \"\"")]
+        [Arguments("   ", DisplayName = "Type = \"   \"")]
+        public void EmptyNameProperty_ThrowsException(string? name)
         {
             var fieldInfo = new FieldInfo("type", "name");
 
-            Assert.ThrowsExactly<ArgumentNullException>(() => fieldInfo.Name = name);
+            Assert.ThrowsExactly<ArgumentNullException>(() => fieldInfo.Name = name!);
         }
 
-        [TestMethod]
-        public void CanChangeType()
+        [Test]
+        public async Task CanChangeType()
         {
             var fieldInfo = new FieldInfo("type", "name");
 
-            Assert.AreEqual("type", fieldInfo.Type);
+            await Assert.That(fieldInfo.Type).IsEqualTo("type");
 
             fieldInfo.Type = "type2";
 
-            Assert.AreEqual("type2", fieldInfo.Type);
+            await Assert.That(fieldInfo.Type).IsEqualTo("type2");
         }
 
-        [TestMethod]
-        public void CanChangeName()
+        [Test]
+        public async Task CanChangeName()
         {
             var fieldInfo = new FieldInfo("type", "name");
 
-            Assert.AreEqual("name", fieldInfo.Name);
+            await Assert.That(fieldInfo.Name).IsEqualTo("name");
 
             fieldInfo.Name = "name2";
 
-            Assert.AreEqual("name2", fieldInfo.Name);
+            await Assert.That(fieldInfo.Name).IsEqualTo("name2");
         }
 
-        [TestMethod]
-        public void WithoutInitialValue()
+        [Test]
+        public async Task WithoutInitialValue()
         {
             var fieldInfo = new FieldInfo("int", "_myField");
 
             var src = fieldInfo.ToString();
 
-            Assert.AreEqual(@"private int _myField;", src);
+            await Assert.That(src).IsEqualTo(@"private int _myField;");
         }
 
-        [TestMethod]
-        public void WithInitialValue()
+        [Test]
+        public async Task WithInitialValue()
         {
             var fieldInfo = new FieldInfo("int", "_myField", "8");
 
             var src = fieldInfo.ToString();
 
-            Assert.AreEqual(@"private int _myField = 8;", src);
+            await Assert.That(src).IsEqualTo(@"private int _myField = 8;");
         }
 
-        [TestMethod]
-        [DataRow("test", "test", DisplayName = "InitialValue = no parenthesis")]
-        [DataRow("te\"st", "te\\\"st", DisplayName = "InitialValue = contains parenthesis")]
-        [DataRow("\"test", "\\\"test", DisplayName = "InitialValue = leading parenthesis")]
-        [DataRow("test\"", "test\\\"", DisplayName = "InitialValue = trailing parenthesis")]
-        [DataRow("@\"test", "@\\\"test", DisplayName = "InitialValue = starts with @")]
-        [DataRow("$\"test", "$\\\"test", DisplayName = "InitialValue = starts with $")]
-        [DataRow("$@\"test", "$@\\\"test", DisplayName = "InitialValue = starts with $@")]
-        [DataRow("@$\"test", "@$\\\"test", DisplayName = "InitialValue = starts with @$")]
-        public void WithInitialValue_StringAutoParenthesis(string initialValue, string expected)
+        [Test]
+        [Arguments("test", "test", DisplayName = "InitialValue = no parenthesis")]
+        [Arguments("te\"st", "te\\\"st", DisplayName = "InitialValue = contains parenthesis")]
+        [Arguments("\"test", "\\\"test", DisplayName = "InitialValue = leading parenthesis")]
+        [Arguments("test\"", "test\\\"", DisplayName = "InitialValue = trailing parenthesis")]
+        [Arguments("@\"test", "@\\\"test", DisplayName = "InitialValue = starts with @")]
+        [Arguments("$\"test", "$\\\"test", DisplayName = "InitialValue = starts with $")]
+        [Arguments("$@\"test", "$@\\\"test", DisplayName = "InitialValue = starts with $@")]
+        [Arguments("@$\"test", "@$\\\"test", DisplayName = "InitialValue = starts with @$")]
+        public async Task WithInitialValue_StringAutoParenthesis(string initialValue, string expected)
         {
             var fieldInfo = new FieldInfo("string", "_myField", initialValue);
 
             var src = fieldInfo.ToString();
 
-            Assert.AreEqual($@"private string _myField = ""{expected}"";", src);
+            await Assert.That(src).IsEqualTo($@"private string _myField = ""{expected}"";");
         }
 
-        [TestMethod]
-        [DataRow("\"test\"", DisplayName = "InitialValue = no additional parenthesis")]
-        [DataRow("\"te\"\"st\"", DisplayName = "InitialValue = contains double parenthesis")]
-        [DataRow("\"te\"st\"", DisplayName = "InitialValue = contains single parenthesis")]
-        [DataRow("@\"test\"", DisplayName = "InitialValue = starts with @")]
-        [DataRow("$\"test\"", DisplayName = "InitialValue = starts with $")]
-        [DataRow("$@\"test\"", DisplayName = "InitialValue = starts with $@")]
-        [DataRow("@$\"test\"", DisplayName = "InitialValue = starts with @$")]
-        public void WithInitialValue_StringManualParenthesis(string initialValue)
+        [Test]
+        [Arguments("\"test\"", DisplayName = "InitialValue = no additional parenthesis")]
+        [Arguments("\"te\"\"st\"", DisplayName = "InitialValue = contains double parenthesis")]
+        [Arguments("\"te\"st\"", DisplayName = "InitialValue = contains single parenthesis")]
+        [Arguments("@\"test\"", DisplayName = "InitialValue = starts with @")]
+        [Arguments("$\"test\"", DisplayName = "InitialValue = starts with $")]
+        [Arguments("$@\"test\"", DisplayName = "InitialValue = starts with $@")]
+        [Arguments("@$\"test\"", DisplayName = "InitialValue = starts with @$")]
+        public async Task WithInitialValue_StringManualParenthesis(string initialValue)
         {
             var fieldInfo = new FieldInfo("string", "_myField", initialValue);
 
             var src = fieldInfo.ToString();
 
-            Assert.AreEqual($@"private string _myField = {initialValue};", src);
+            await Assert.That(src).IsEqualTo($@"private string _myField = {initialValue};");
         }
 
-        [TestMethod]
-        public void WithAccessModifierInternal()
+        [Test]
+        public async Task WithAccessModifierInternal()
         {
             var fieldInfo = new FieldInfo("int", "_myField", "8");
 
@@ -148,11 +147,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = fieldInfo.ToString();
 
-            Assert.AreEqual(@"internal int _myField = 8;", src);
+            await Assert.That(src).IsEqualTo(@"internal int _myField = 8;");
         }
 
-        [TestMethod]
-        public void WithXmlDoc_Summary()
+        [Test]
+        public async Task WithXmlDoc_Summary()
         {
             var fieldInfo = new FieldInfo("int", "_myField", "8");
 
@@ -160,14 +159,14 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = fieldInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(src).IsEqualTo(@"/// <summary>
 /// This is my special summary
 /// </summary>
-private int _myField = 8;", src);
+private int _myField = 8;");
         }
 
-        [TestMethod]
-        public void WithXmlDoc_AdditionalLines()
+        [Test]
+        public async Task WithXmlDoc_AdditionalLines()
         {
             var fieldInfo = new FieldInfo("int", "_myField", "8");
 
@@ -175,11 +174,11 @@ private int _myField = 8;", src);
 
             var src = fieldInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(src).IsEqualTo(@"/// <summary>
 /// _myField
 /// </summary>
 /// <myTag>This is my tag</myTag>
-private int _myField = 8;", src);
+private int _myField = 8;");
         }
     }
 }

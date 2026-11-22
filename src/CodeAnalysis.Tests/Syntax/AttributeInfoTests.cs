@@ -2,37 +2,36 @@
 
 namespace Basilisque.CodeAnalysis.Tests.Syntax;
 
-[TestClass]
 public class AttributeInfoTests
 {
-    [TestMethod]
-    [DataRow(null, DisplayName = "Name: null")]
-    [DataRow("", DisplayName = "Name: ''")]
-    [DataRow("  ", DisplayName = "Name: '  '")]
-    public void InvalidName_ThrowsArgumentNullException(string name)
+    [Test]
+    [Arguments(null, DisplayName = "Name: null")]
+    [Arguments("", DisplayName = "Name: ''")]
+    [Arguments("  ", DisplayName = "Name: '  '")]
+    public void InvalidName_ThrowsArgumentNullException(string? name)
     {
         Assert.ThrowsExactly<ArgumentNullException>(() =>
         {
-            _ = new AttributeInfo(name);
+            _ = new AttributeInfo(name!);
         });
     }
 
-    [TestMethod]
-    [DataRow("MyAttribute")]
-    [DataRow("Name.Space.MyAttribute")]
-    [DataRow("Name.Space.MyAttribute()")]
-    [DataRow("Name.Space.MyAttribute(\"MyParam1\")")]
-    public void NoParameters_GeneratesCorrectString(string name)
+    [Test]
+    [Arguments("MyAttribute")]
+    [Arguments("Name.Space.MyAttribute")]
+    [Arguments("Name.Space.MyAttribute()")]
+    [Arguments("Name.Space.MyAttribute(\"MyParam1\")")]
+    public async Task NoParameters_GeneratesCorrectString(string name)
     {
         var attributeInfo = new AttributeInfo(name);
 
         var expected = $"[{name}]";
 
-        Assert.AreEqual(expected, attributeInfo.ToString(Language.CSharp));
+        await Assert.That(attributeInfo.ToString(Language.CSharp)).IsEqualTo(expected);
     }
 
-    [TestMethod]
-    public void With_1_ConstructorParameter_And_0_NamedParameters()
+    [Test]
+    public async Task With_1_ConstructorParameter_And_0_NamedParameters()
     {
         var attributeInfo = new AttributeInfo("MyAttribute");
 
@@ -40,11 +39,11 @@ public class AttributeInfoTests
 
         var expected = $"[MyAttribute(typeof(string))]";
 
-        Assert.AreEqual(expected, attributeInfo.ToString(Language.CSharp));
+        await Assert.That(attributeInfo.ToString(Language.CSharp)).IsEqualTo(expected);
     }
 
-    [TestMethod]
-    public void With_2_ConstructorParameters_And_0_NamedParameters()
+    [Test]
+    public async Task With_2_ConstructorParameters_And_0_NamedParameters()
     {
         var attributeInfo = new AttributeInfo("MyAttribute");
 
@@ -53,11 +52,11 @@ public class AttributeInfoTests
 
         var expected = $"[MyAttribute(typeof(string), \"MyString\")]";
 
-        Assert.AreEqual(expected, attributeInfo.ToString(Language.CSharp));
+        await Assert.That(attributeInfo.ToString(Language.CSharp)).IsEqualTo(expected);
     }
 
-    [TestMethod]
-    public void With_2_Named_ConstructorParameters_And_0_NamedParameters()
+    [Test]
+    public async Task With_2_Named_ConstructorParameters_And_0_NamedParameters()
     {
         var attributeInfo = new AttributeInfo("MyAttribute");
 
@@ -66,11 +65,11 @@ public class AttributeInfoTests
 
         var expected = $"[MyAttribute(typeof(string), myParam2: \"MyString\")]";
 
-        Assert.AreEqual(expected, attributeInfo.ToString(Language.CSharp));
+        await Assert.That(attributeInfo.ToString(Language.CSharp)).IsEqualTo(expected);
     }
 
-    [TestMethod]
-    public void With_2_Named_ConstructorParameters_And_2_NamedParameters()
+    [Test]
+    public async Task With_2_Named_ConstructorParameters_And_2_NamedParameters()
     {
         var attributeInfo = new AttributeInfo("MyAttribute");
 
@@ -81,11 +80,11 @@ public class AttributeInfoTests
 
         var expected = $"[MyAttribute(typeof(string), myParam2: \"MyString\", MyNamed1 = \"Value1\", MyNamed2 = 8)]";
 
-        Assert.AreEqual(expected, attributeInfo.ToString(Language.CSharp));
+        await Assert.That(attributeInfo.ToString(Language.CSharp)).IsEqualTo(expected);
     }
 
-    [TestMethod]
-    public void With_0_ConstructorParameters_And_2_NamedParameters()
+    [Test]
+    public async Task With_0_ConstructorParameters_And_2_NamedParameters()
     {
         var attributeInfo = new AttributeInfo("MyAttribute");
 
@@ -94,6 +93,6 @@ public class AttributeInfoTests
 
         var expected = $"[MyAttribute(MyNamed1 = \"Value1\", MyNamed2 = 8)]";
 
-        Assert.AreEqual(expected, attributeInfo.ToString(Language.CSharp));
+        await Assert.That(attributeInfo.ToString(Language.CSharp)).IsEqualTo(expected);
     }
 }

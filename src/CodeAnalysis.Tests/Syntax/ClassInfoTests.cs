@@ -17,7 +17,6 @@ using Basilisque.CodeAnalysis.Syntax;
 
 namespace Basilisque.CodeAnalysis.Tests.Syntax
 {
-    [TestClass]
     public class ClassInfoTests
     {
         private const string C_CODEGENERATION_ATTRIBUTE_STRING = @"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""<GeneratorName>"", ""<GeneratorVersion>"")]
@@ -36,23 +35,23 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
                 .Replace("<GeneratorVersion>", execAssemblyName.Version?.ToString() ?? "1.0.0.0");
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "null")]
-        [DataRow("", DisplayName = "empty string")]
-        [DataRow("   ", DisplayName = "whitespace")]
-        public void EmptyClassName_Throws(string className)
+        [Test]
+        [Arguments(null, DisplayName = "null")]
+        [Arguments("", DisplayName = "empty string")]
+        [Arguments("   ", DisplayName = "whitespace")]
+        public void EmptyClassName_Throws(string? className)
         {
-            Assert.ThrowsExactly<ArgumentNullException>(() => new ClassInfo(className, AccessModifier.ProtectedInternal));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new ClassInfo(className!, AccessModifier.ProtectedInternal));
 
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
-            Assert.ThrowsExactly<ArgumentNullException>(() => classInfo.ClassName = className);
+            Assert.ThrowsExactly<ArgumentNullException>(() => classInfo.ClassName = className!);
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "codeGenAttr: <default>")]
-        [DataRow(true, DisplayName = "codeGenAttr: true")]
-        [DataRow(false, DisplayName = "codeGenAttr: false")]
-        public void EmptyClass_CorrectString(bool? codeGenAttrEnabled)
+        [Test]
+        [Arguments(null, DisplayName = "codeGenAttr: <default>")]
+        [Arguments(true, DisplayName = "codeGenAttr: true")]
+        [Arguments(false, DisplayName = "codeGenAttr: false")]
+        public async Task EmptyClass_CorrectString(bool? codeGenAttrEnabled)
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.ProtectedInternal);
             if (codeGenAttrEnabled.HasValue)
@@ -62,17 +61,17 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             string codeGenAttrStr = codeGenAttrEnabled.GetValueOrDefault(true) ? _codeGenerationAttributeString : string.Empty;
 
-            Assert.AreEqual(codeGenAttrStr + @"protected internal class TestClass1
+            await Assert.That(classStr).IsEqualTo(codeGenAttrStr + @"protected internal class TestClass1
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        [DataRow(false, 1, "I1")]
-        [DataRow(false, 2, "I1, I2")]
-        [DataRow(true, 1, "MyBaseClass1, I1")]
-        [DataRow(true, 3, "MyBaseClass1, I1, I2, I3")]
-        public void BaseClassAndInterfaces_CorrectString(bool withBaseClass, int interfaceCnt, string resultPart)
+        [Test]
+        [Arguments(false, 1, "I1")]
+        [Arguments(false, 2, "I1, I2")]
+        [Arguments(true, 1, "MyBaseClass1, I1")]
+        [Arguments(true, 3, "MyBaseClass1, I1, I2, I3")]
+        public async Task BaseClassAndInterfaces_CorrectString(bool withBaseClass, int interfaceCnt, string resultPart)
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -85,32 +84,32 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private class TestClass1 : " + resultPart + @"
+            await Assert.That(classStr).IsEqualTo(@"private class TestClass1 : " + resultPart + @"
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "null")]
-        [DataRow("", DisplayName = "empty string")]
-        [DataRow("   ", DisplayName = "whitespace")]
-        public void EmptyInterfaceName_IsIgnored(string interfaceName)
+        [Test]
+        [Arguments(null, DisplayName = "null")]
+        [Arguments("", DisplayName = "empty string")]
+        [Arguments("   ", DisplayName = "whitespace")]
+        public async Task EmptyInterfaceName_IsIgnored(string? interfaceName)
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
             classInfo.ImplementedInterfaces.Add("I1");
-            classInfo.ImplementedInterfaces.Add(interfaceName);
+            classInfo.ImplementedInterfaces.Add(interfaceName!);
             classInfo.ImplementedInterfaces.Add("I2");
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private class TestClass1 : I1, I2
+            await Assert.That(classStr).IsEqualTo(@"private class TestClass1 : I1, I2
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void With1GenericType_NoConstraints_NoBaseClass()
+        [Test]
+        public async Task With1GenericType_NoConstraints_NoBaseClass()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -118,13 +117,13 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private class TestClass1<T1>
+            await Assert.That(classStr).IsEqualTo(@"private class TestClass1<T1>
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void With4GenericTypes_NoConstraints_NoBaseClass()
+        [Test]
+        public async Task With4GenericTypes_NoConstraints_NoBaseClass()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -135,13 +134,13 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private class TestClass1<T1, T2, T3, T4>
+            await Assert.That(classStr).IsEqualTo(@"private class TestClass1<T1, T2, T3, T4>
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void With1GenericType_NoConstraints_WithBaseClass()
+        [Test]
+        public async Task With1GenericType_NoConstraints_WithBaseClass()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -150,13 +149,13 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private class TestClass1<T1> : MyBaseClass1
+            await Assert.That(classStr).IsEqualTo(@"private class TestClass1<T1> : MyBaseClass1
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void With3GenericTypes_NoConstraints_WithBaseClass()
+        [Test]
+        public async Task With3GenericTypes_NoConstraints_WithBaseClass()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -167,13 +166,13 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private class TestClass1<T1, T2, T3> : MyBaseClass1
+            await Assert.That(classStr).IsEqualTo(@"private class TestClass1<T1, T2, T3> : MyBaseClass1
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void With1GenericType_WithConstraints_NoBaseClass()
+        [Test]
+        public async Task With1GenericType_WithConstraints_NoBaseClass()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -181,14 +180,14 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private class TestClass1<T1>
+            await Assert.That(classStr).IsEqualTo(@"private class TestClass1<T1>
     where T1 : class, new()
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void With3GenericTypes_WithConstraints_NoBaseClass()
+        [Test]
+        public async Task With3GenericTypes_WithConstraints_NoBaseClass()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -198,14 +197,14 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private class TestClass1<T1, T2, T3>
+            await Assert.That(classStr).IsEqualTo(@"private class TestClass1<T1, T2, T3>
     where T2 : class
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void With1GenericType_WithConstraints_WithBaseClass()
+        [Test]
+        public async Task With1GenericType_WithConstraints_WithBaseClass()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -214,14 +213,14 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private class TestClass1<T1> : MyBaseClass1
+            await Assert.That(classStr).IsEqualTo(@"private class TestClass1<T1> : MyBaseClass1
     where T1 : class, new()
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void With5GenericTypes_WithConstraints_WithBaseClass()
+        [Test]
+        public async Task With5GenericTypes_WithConstraints_WithBaseClass()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -234,90 +233,90 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private class TestClass1<T1, T2, T3, T4, T5> : MyBaseClass1
+            await Assert.That(classStr).IsEqualTo(@"private class TestClass1<T1, T2, T3, T4, T5> : MyBaseClass1
     where T2 : class, new()
     where T3 : enum
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void BaseClass_CanBeChanged()
+        [Test]
+        public async Task BaseClass_CanBeChanged()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Internal);
             classInfo.AddGeneratedCodeAttributes = false;
             classInfo.BaseClass = "MyBaseClass1";
             classInfo.BaseClass = "MyBaseClass2";
 
-            Assert.AreEqual("MyBaseClass2", classInfo.BaseClass);
+            await Assert.That(classInfo.BaseClass).IsEqualTo("MyBaseClass2");
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"internal class TestClass1 : MyBaseClass2
+            await Assert.That(classStr).IsEqualTo(@"internal class TestClass1 : MyBaseClass2
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "null")]
-        [DataRow("", DisplayName = "empty string")]
-        [DataRow("   ", DisplayName = "whitespace")]
-        public void BaseClass_ResetToNull(string baseClassValue)
+        [Test]
+        [Arguments(null, DisplayName = "null")]
+        [Arguments("", DisplayName = "empty string")]
+        [Arguments("   ", DisplayName = "whitespace")]
+        public async Task BaseClass_ResetToNull(string? baseClassValue)
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Internal);
             classInfo.AddGeneratedCodeAttributes = false;
             classInfo.BaseClass = "MyBaseClass1";
             classInfo.BaseClass = baseClassValue;
 
-            Assert.AreEqual(null, classInfo.BaseClass);
+            await Assert.That(classInfo.BaseClass).IsNull();
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"internal class TestClass1
+            await Assert.That(classStr).IsEqualTo(@"internal class TestClass1
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void ClassName_CanBeChanged()
+        [Test]
+        public async Task ClassName_CanBeChanged()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Internal);
             classInfo.AddGeneratedCodeAttributes = false;
             classInfo.ClassName = "ChangedTestClassName";
 
-            Assert.AreEqual("ChangedTestClassName", classInfo.ClassName);
+            await Assert.That(classInfo.ClassName).IsEqualTo("ChangedTestClassName");
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"internal class ChangedTestClassName
+            await Assert.That(classStr).IsEqualTo(@"internal class ChangedTestClassName
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void GeneratedCodeToolName_Property_CorrectValue()
+        [Test]
+        public async Task GeneratedCodeToolName_Property_CorrectValue()
         {
             var classInfo = new ClassInfo("MyClass1", AccessModifier.Public, "MyToolName1", "MyToolVersion1");
 
-            Assert.AreEqual("MyToolName1", classInfo.GeneratedCodeToolName);
+            await Assert.That(classInfo.GeneratedCodeToolName).IsEqualTo("MyToolName1");
 
             classInfo.GeneratedCodeToolName = "MyToolName2";
-            Assert.AreEqual("MyToolName2", classInfo.GeneratedCodeToolName);
+            await Assert.That(classInfo.GeneratedCodeToolName).IsEqualTo("MyToolName2");
         }
 
-        [TestMethod]
-        public void GeneratedCodeToolVersion_Property_CorrectValue()
+        [Test]
+        public async Task GeneratedCodeToolVersion_Property_CorrectValue()
         {
             var classInfo = new ClassInfo("MyClass1", AccessModifier.Public, "MyToolName1", "MyToolVersion1");
 
-            Assert.AreEqual("MyToolVersion1", classInfo.GeneratedCodeToolVersion);
+            await Assert.That(classInfo.GeneratedCodeToolVersion).IsEqualTo("MyToolVersion1");
 
             classInfo.GeneratedCodeToolVersion = "MyToolVersion2";
-            Assert.AreEqual("MyToolVersion2", classInfo.GeneratedCodeToolVersion);
+            await Assert.That(classInfo.GeneratedCodeToolVersion).IsEqualTo("MyToolVersion2");
         }
 
-        [TestMethod]
-        public void PartialClass_CorrectString()
+        [Test]
+        public async Task PartialClass_CorrectString()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.PrivateProtected);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -325,13 +324,13 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private protected partial class TestClass1
+            await Assert.That(classStr).IsEqualTo(@"private protected partial class TestClass1
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void SealedClass_CorrectString()
+        [Test]
+        public async Task SealedClass_CorrectString()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.PrivateProtected);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -339,13 +338,13 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private protected sealed class TestClass1
+            await Assert.That(classStr).IsEqualTo(@"private protected sealed class TestClass1
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void StaticClass_CorrectString()
+        [Test]
+        public async Task StaticClass_CorrectString()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.PrivateProtected);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -353,13 +352,13 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"private protected static class TestClass1
+            await Assert.That(classStr).IsEqualTo(@"private protected static class TestClass1
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void WithXmlDoc_Summary()
+        [Test]
+        public async Task WithXmlDoc_Summary()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -369,17 +368,17 @@ Line 2";
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(classStr).IsEqualTo(@"/// <summary>
 /// This is the summary
 /// Line 2
 /// </summary>
 private class TestClass1
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void WithXmlDoc_Generics()
+        [Test]
+        public async Task WithXmlDoc_Generics()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -389,18 +388,18 @@ private class TestClass1
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(classStr).IsEqualTo(@"/// <summary>
 /// TestClass1
 /// </summary>
 /// <typeparam name=""T1"">T1 is cool</typeparam>
 /// <typeparam name=""T2""></typeparam>
 private class TestClass1<T1, T2>
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void WithXmlDoc_AdditionalLines()
+        [Test]
+        public async Task WithXmlDoc_AdditionalLines()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -410,18 +409,18 @@ private class TestClass1<T1, T2>
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(classStr).IsEqualTo(@"/// <summary>
 /// TestClass1
 /// </summary>
 /// <example>This is the first line</example>
 /// <someTag>This is the second line</someTag>
 private class TestClass1
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void WithXmlDoc_FullDoc()
+        [Test]
+        public async Task WithXmlDoc_FullDoc()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -437,7 +436,7 @@ Line 2";
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"/// <summary>
+            await Assert.That(classStr).IsEqualTo(@"/// <summary>
 /// This is the summary
 /// Line 2
 /// </summary>
@@ -447,11 +446,11 @@ Line 2";
 /// <someTag>This is the second line</someTag>
 private class TestClass1<T1, T2>
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void WithXmlDoc_InheritDoc()
+        [Test]
+        public async Task WithXmlDoc_InheritDoc()
         {
             var classInfo = new ClassInfo("TestClass1", AccessModifier.Private);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -460,14 +459,14 @@ private class TestClass1<T1, T2>
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"/// <inheritdoc />
+            await Assert.That(classStr).IsEqualTo(@"/// <inheritdoc />
 private class TestClass1
 {
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void WithOneMethod()
+        [Test]
+        public async Task WithOneMethod()
         {
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -479,7 +478,7 @@ private class TestClass1
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"public class MyClass
+            await Assert.That(classStr).IsEqualTo(@"public class MyClass
 {
     /// <summary>
     /// This is a public method
@@ -487,11 +486,11 @@ private class TestClass1
     public void MyPublicMethod()
     {
     }
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void WithTwoMethods()
+        [Test]
+        public async Task WithTwoMethods()
         {
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -517,7 +516,7 @@ throw new NotImplementedException();
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"public class MyClass
+            await Assert.That(classStr).IsEqualTo(@"public class MyClass
 {
     /// <summary>
     /// This is a public method
@@ -536,29 +535,29 @@ throw new NotImplementedException();
         
         throw new NotImplementedException();
     }
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void AccessAllChildProperties_ButLeaveThemEmpty()
+        [Test]
+        public async Task AccessAllChildProperties_ButLeaveThemEmpty()
         {
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
             classInfo.AddGeneratedCodeAttributes = false;
 
-            Assert.IsNotNull(classInfo.Fields);
-            Assert.IsNotNull(classInfo.Properties);
-            Assert.IsNotNull(classInfo.Methods);
-            Assert.IsNotNull(classInfo.AdditionalCodeLines);
-            Assert.IsNotNull(classInfo.XmlDocAdditionalLines);
+            await Assert.That(classInfo.Fields).IsNotNull();
+            await Assert.That(classInfo.Properties).IsNotNull();
+            await Assert.That(classInfo.Methods).IsNotNull();
+            await Assert.That(classInfo.AdditionalCodeLines).IsNotNull();
+            await Assert.That(classInfo.XmlDocAdditionalLines).IsNotNull();
 
             var src = classInfo.ToString();
-            Assert.AreEqual(@"public class MyClass
+            await Assert.That(src).IsEqualTo(@"public class MyClass
 {
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void With1AdditionalCodeLine()
+        [Test]
+        public async Task With1AdditionalCodeLine()
         {
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -574,7 +573,7 @@ public int TestProp { get; }
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"public class MyClass
+            await Assert.That(classStr).IsEqualTo(@"public class MyClass
 {
     /// <summary>
     /// This is a public method
@@ -584,11 +583,11 @@ public int TestProp { get; }
     }
     
     public int TestProp { get; }
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void With2AdditionalCodeLines()
+        [Test]
+        public async Task With2AdditionalCodeLines()
         {
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -606,7 +605,7 @@ This is some line that doesn't compile but I don't care what is added in here...
 
             var classStr = classInfo.ToString();
 
-            Assert.AreEqual(@"public class MyClass
+            await Assert.That(classStr).IsEqualTo(@"public class MyClass
 {
     /// <summary>
     /// This is a public method
@@ -618,11 +617,11 @@ This is some line that doesn't compile but I don't care what is added in here...
     public int TestProp { get; }
     
     This is some line that doesn't compile but I don't care what is added in here...
-}", classStr);
+}");
         }
 
-        [TestMethod]
-        public void With2Fields()
+        [Test]
+        public async Task With2Fields()
         {
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -632,15 +631,15 @@ This is some line that doesn't compile but I don't care what is added in here...
 
             var src = classInfo.ToString();
 
-            Assert.AreEqual(@"public class MyClass
+            await Assert.That(src).IsEqualTo(@"public class MyClass
 {
     private double _someField;
     private int _myField;
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void With1Property()
+        [Test]
+        public async Task With1Property()
         {
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -649,14 +648,14 @@ This is some line that doesn't compile but I don't care what is added in here...
 
             var src = classInfo.ToString();
 
-            Assert.AreEqual(@"public class MyClass
+            await Assert.That(src).IsEqualTo(@"public class MyClass
 {
     public int MyProp { get; set; }
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void With2Properties()
+        [Test]
+        public async Task With2Properties()
         {
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -666,16 +665,16 @@ This is some line that doesn't compile but I don't care what is added in here...
 
             var src = classInfo.ToString();
 
-            Assert.AreEqual(@"public class MyClass
+            await Assert.That(src).IsEqualTo(@"public class MyClass
 {
     public int MyProp { get; set; }
     
     public int MyProp2 { get; set; }
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void With2Properties_WithAdditionalFieldsAndMethods()
+        [Test]
+        public async Task With2Properties_WithAdditionalFieldsAndMethods()
         {
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -689,7 +688,7 @@ This is some line that doesn't compile but I don't care what is added in here...
 
             var src = classInfo.ToString();
 
-            Assert.AreEqual(@"public class MyClass
+            await Assert.That(src).IsEqualTo(@"public class MyClass
 {
     private int _someOtherField;
     private int _myField;
@@ -728,11 +727,11 @@ This is some line that doesn't compile but I don't care what is added in here...
     public bool CanDoSomething()
     {
     }
-}", src);
+}");
         }
 
-        [TestMethod]
-        public void With1Property_With2Attributes()
+        [Test]
+        public async Task With1Property_With2Attributes()
         {
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
             classInfo.AddGeneratedCodeAttributes = false;
@@ -750,12 +749,12 @@ This is some line that doesn't compile but I don't care what is added in here...
 
             var src = classInfo.ToString();
 
-            Assert.AreEqual(@"public class MyClass
+            await Assert.That(src).IsEqualTo(@"public class MyClass
 {
     [MyAttribute1]
     [MyAttribute2(typeof(string), param2: typeof(int))]
     public int MyProp { get; set; }
-}", src);
+}");
         }
     }
 }

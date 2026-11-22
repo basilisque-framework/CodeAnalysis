@@ -17,51 +17,50 @@ using Basilisque.CodeAnalysis.Syntax;
 
 namespace Basilisque.CodeAnalysis.Tests.Syntax
 {
-    [TestClass]
     public class ParameterInfoTests
     {
-        [TestMethod]
-        public void OrdinaryParameter()
+        [Test]
+        public async Task OrdinaryParameter()
         {
             var parameterInfo = new ParameterInfo(ParameterKind.Ordinary, "string", "myParameter");
 
             var src = parameterInfo.ToString();
 
-            Assert.AreEqual(@"string myParameter", src);
+            await Assert.That(src).IsEqualTo(@"string myParameter");
         }
 
-        [TestMethod]
-        public void OutParameter()
+        [Test]
+        public async Task OutParameter()
         {
             var parameterInfo = new ParameterInfo(ParameterKind.Out, "string", "myParameter");
 
             var src = parameterInfo.ToString();
 
-            Assert.AreEqual(@"out string myParameter", src);
+            await Assert.That(src).IsEqualTo(@"out string myParameter");
         }
 
-        [TestMethod]
-        public void RefParameter()
+        [Test]
+        public async Task RefParameter()
         {
             var parameterInfo = new ParameterInfo(ParameterKind.Ref, "int", "myIntParameter");
 
             var src = parameterInfo.ToString();
 
-            Assert.AreEqual(@"ref int myIntParameter", src);
+            await Assert.That(src).IsEqualTo(@"ref int myIntParameter");
         }
 
-        [TestMethod]
-        public void ParamsParameter()
+        [Test]
+        public async Task ParamsParameter()
         {
             var parameterInfo = new ParameterInfo(ParameterKind.Params, "int[]", "myIntParameters");
 
             var src = parameterInfo.ToString();
 
-            Assert.AreEqual(@"params int[] myIntParameters", src);
+            await Assert.That(src).IsEqualTo(@"params int[] myIntParameters");
         }
 
-        [TestMethod]
-        public void WithDefaultValue()
+        [Test]
+        public async Task WithDefaultValue()
         {
             var parameterInfo = new ParameterInfo(ParameterKind.Params, "int", "myIntParameter");
 
@@ -69,18 +68,18 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = parameterInfo.ToString();
 
-            Assert.AreEqual(@"params int myIntParameter = 8", src);
+            await Assert.That(src).IsEqualTo(@"params int myIntParameter = 8");
         }
 
-        [TestMethod]
-        [DataRow("test", "\"test\"", DisplayName = "no parenthesis")]
-        [DataRow("\"test", "\"\\\"test\"", DisplayName = "no parenthesis end")]
-        [DataRow("@\"test", "\"@\\\"test\"", DisplayName = "no parenthesis end 2")]
-        [DataRow("test\"", "\"test\\\"\"", DisplayName = "no parenthesis start")]
-        [DataRow("\"test\"", "\"test\"", DisplayName = "with parenthesis")]
-        [DataRow("\"te\"st\"", "\"te\"st\"", DisplayName = "with parenthesis -> no replacement")]
-        [DataRow("te\"st", "\"te\\\"st\"", DisplayName = "without parenthesis -> replacement")]
-        public void WithDefaultValue_StringParenthesis(string defaultValue, string expectedResult)
+        [Test]
+        [Arguments("test", "\"test\"", DisplayName = "no parenthesis")]
+        [Arguments("\"test", "\"\\\"test\"", DisplayName = "no parenthesis end")]
+        [Arguments("@\"test", "\"@\\\"test\"", DisplayName = "no parenthesis end 2")]
+        [Arguments("test\"", "\"test\\\"\"", DisplayName = "no parenthesis start")]
+        [Arguments("\"test\"", "\"test\"", DisplayName = "with parenthesis")]
+        [Arguments("\"te\"st\"", "\"te\"st\"", DisplayName = "with parenthesis -> no replacement")]
+        [Arguments("te\"st", "\"te\\\"st\"", DisplayName = "without parenthesis -> replacement")]
+        public async Task WithDefaultValue_StringParenthesis(string defaultValue, string expectedResult)
         {
             var parameterInfo = new ParameterInfo(ParameterKind.Ordinary, "string", "myParameter");
 
@@ -88,11 +87,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = parameterInfo.ToString();
 
-            Assert.AreEqual($"string myParameter = {expectedResult}", src);
+            await Assert.That(src).IsEqualTo($"string myParameter = {expectedResult}");
         }
 
-        [TestMethod]
-        public void WithDefaultValue_StringParamWithEmptyString()
+        [Test]
+        public async Task WithDefaultValue_StringParamWithEmptyString()
         {
             var parameterInfo = new ParameterInfo(ParameterKind.Ordinary, "System.String", "myParameter");
 
@@ -100,11 +99,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = parameterInfo.ToString();
 
-            Assert.AreEqual($"System.String myParameter = \"\"", src);
+            await Assert.That(src).IsEqualTo($"System.String myParameter = \"\"");
         }
 
-        [TestMethod]
-        public void WithDefaultValue_NonStringParamWithEmptyString()
+        [Test]
+        public async Task WithDefaultValue_NonStringParamWithEmptyString()
         {
             var parameterInfo = new ParameterInfo(ParameterKind.Ordinary, "bool", "myParameter");
 
@@ -112,49 +111,49 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = parameterInfo.ToString();
 
-            Assert.AreEqual($"bool myParameter", src);
+            await Assert.That(src).IsEqualTo($"bool myParameter");
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "Name = null")]
-        [DataRow("", DisplayName = "Name = \"\"")]
-        [DataRow("   ", DisplayName = "Name = \"   \"")]
-        public void EmptyName_ThrowsException(string name)
+        [Test]
+        [Arguments(null, DisplayName = "Name = null")]
+        [Arguments("", DisplayName = "Name = \"\"")]
+        [Arguments("   ", DisplayName = "Name = \"   \"")]
+        public void EmptyName_ThrowsException(string? name)
         {
-            Assert.ThrowsExactly<ArgumentNullException>(() => new ParameterInfo(ParameterKind.Ordinary, "type", name));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new ParameterInfo(ParameterKind.Ordinary, "type", name!));
         }
 
-        [TestMethod]
-        [DataRow(null, DisplayName = "Type = null")]
-        [DataRow("", DisplayName = "Type = \"\"")]
-        [DataRow("   ", DisplayName = "Type = \"   \"")]
-        public void EmptyType_ThrowsException(string type)
+        [Test]
+        [Arguments(null, DisplayName = "Type = null")]
+        [Arguments("", DisplayName = "Type = \"\"")]
+        [Arguments("   ", DisplayName = "Type = \"   \"")]
+        public void EmptyType_ThrowsException(string? type)
         {
-            Assert.ThrowsExactly<ArgumentNullException>(() => new ParameterInfo(ParameterKind.Ordinary, type, "name"));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new ParameterInfo(ParameterKind.Ordinary, type!, "name"));
         }
 
-        [TestMethod]
-        public void CanChangeName()
+        [Test]
+        public async Task CanChangeName()
         {
             var parameterInfo = new ParameterInfo(ParameterKind.Ordinary, "bool", "myParameter");
 
-            Assert.AreEqual("myParameter", parameterInfo.Name);
+            await Assert.That(parameterInfo.Name).IsEqualTo("myParameter");
 
             parameterInfo.Name = "myParameter2";
 
-            Assert.AreEqual("myParameter2", parameterInfo.Name);
+            await Assert.That(parameterInfo.Name).IsEqualTo("myParameter2");
         }
 
-        [TestMethod]
-        public void CanChangeType()
+        [Test]
+        public async Task CanChangeType()
         {
             var parameterInfo = new ParameterInfo(ParameterKind.Ordinary, "bool", "myParameter");
 
-            Assert.AreEqual("bool", parameterInfo.Type);
+            await Assert.That(parameterInfo.Type).IsEqualTo("bool");
 
             parameterInfo.Type = "bool2";
 
-            Assert.AreEqual("bool2", parameterInfo.Type);
+            await Assert.That(parameterInfo.Type).IsEqualTo("bool2");
         }
     }
 }

@@ -17,21 +17,20 @@ using Basilisque.CodeAnalysis.Syntax;
 
 namespace Basilisque.CodeAnalysis.Tests.Syntax
 {
-    [TestClass]
     public class CodeLinesTests
     {
-        [TestMethod]
-        public void InitializedEmpty()
+        [Test]
+        public async Task InitializedEmpty()
         {
             CodeLines codeLines = new CodeLines();
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual(string.Empty, src);
+            await Assert.That(src).IsEqualTo(string.Empty);
         }
 
-        [TestMethod]
-        public void Append_NullToEmptyCodeLinesIsANoOp()
+        [Test]
+        public async Task Append_NullToEmptyCodeLinesIsANoOp()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -39,11 +38,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual(string.Empty, src);
+            await Assert.That(src).IsEqualTo(string.Empty);
         }
 
-        [TestMethod]
-        public void Append_NullToFilledCodeLinesIsANoOp()
+        [Test]
+        public async Task Append_NullToFilledCodeLinesIsANoOp()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -53,11 +52,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual("Test", src);
+            await Assert.That(src).IsEqualTo("Test");
         }
 
-        [TestMethod]
-        public void Append_SingleWhitespaceLine()
+        [Test]
+        public async Task Append_SingleWhitespaceLine()
         {
             const string C_WHITESPACE = "   ";
 
@@ -67,11 +66,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual(C_WHITESPACE, src);
+            await Assert.That(src).IsEqualTo(C_WHITESPACE);
         }
 
-        [TestMethod]
-        public void Append_SingleLine()
+        [Test]
+        public async Task Append_SingleLine()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -79,11 +78,11 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual("MyLine", src);
+            await Assert.That(src).IsEqualTo("MyLine");
         }
 
-        [TestMethod]
-        public void Append_MultipleLinesWithOneCall()
+        [Test]
+        public async Task Append_MultipleLinesWithOneCall()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -92,12 +91,12 @@ MySecondLine");
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual(@"MyLine
-MySecondLine", src);
+            await Assert.That(src).IsEqualTo(@"MyLine
+MySecondLine");
         }
 
-        [TestMethod]
-        public void Append_MultipleLinesWithMultipleCalls()
+        [Test]
+        public async Task Append_MultipleLinesWithMultipleCalls()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -113,16 +112,16 @@ MyFifthLine");
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual(@"MyLine
+            await Assert.That(src).IsEqualTo(@"MyLine
 MySecondLine
   MyThirdLine
 
  MyFourthLine 
-MyFifthLine", src);
+MyFifthLine");
         }
 
-        [TestMethod]
-        public void Append_RemovesEmptyFirstLine()
+        [Test]
+        public async Task Append_RemovesEmptyFirstLine()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -135,13 +134,13 @@ MyThirdLine");
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual(@"MyFirstLine
+            await Assert.That(src).IsEqualTo(@"MyFirstLine
 MySecondLine
-MyThirdLine", src);
+MyThirdLine");
         }
 
-        [TestMethod]
-        public void Append_RemovesEmptyLastLine()
+        [Test]
+        public async Task Append_RemovesEmptyLastLine()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -154,13 +153,13 @@ MySecondLine
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual(@"MyFirstLine
+            await Assert.That(src).IsEqualTo(@"MyFirstLine
 MySecondLine
-MyThirdLine", src);
+MyThirdLine");
         }
 
-        [TestMethod]
-        public void Append_RemovesEmptyFirstAndLastLine()
+        [Test]
+        public async Task Append_RemovesEmptyFirstAndLastLine()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -175,13 +174,13 @@ MyThirdLine
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual(@"    MyFirstLine
+            await Assert.That(src).IsEqualTo(@"    MyFirstLine
     MySecondLine
-MyThirdLine", src);
+MyThirdLine");
         }
 
-        [TestMethod]
-        public void Append_PreservesFirstAndLastLineWithWhitespace()
+        [Test]
+        public async Task Append_PreservesFirstAndLastLineWithWhitespace()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -196,17 +195,13 @@ MyThirdLine
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual(@" 
-    MyFirstLine
-    MySecondLine
- 
- 
-MyThirdLine
- ", src);
+            var expected = string.Join(Environment.NewLine,
+                " ", "    MyFirstLine", "    MySecondLine", " ", " ", "MyThirdLine", " ");
+            await Assert.That(src).IsEqualTo(expected);
         }
 
-        [TestMethod]
-        public void Append_RemovesEmptyFirstAndLastLineButPreservesMultipleEmptyLines()
+        [Test]
+        public async Task Append_RemovesEmptyFirstAndLastLineButPreservesMultipleEmptyLines()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -226,18 +221,18 @@ MyThirdLine
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual(@"
+            await Assert.That(src).IsEqualTo(@"
 
     MyFirstLine
     MySecondLine
 
 MyThirdLine
 
-", src);
+");
         }
 
-        [TestMethod]
-        public void CanEnumerateAsCodeLinesObject()
+        [Test]
+        public async Task CanEnumerateAsCodeLinesObject()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -250,11 +245,11 @@ Line2");
                 cnt++;
             }
 
-            Assert.AreEqual(2, cnt);
+            await Assert.That(cnt).IsEqualTo(2);
         }
 
-        [TestMethod]
-        public void CanEnumerateCorrectly()
+        [Test]
+        public async Task CanEnumerateCorrectly()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -267,10 +262,10 @@ Line2");
                 switch (i)
                 {
                     case 0:
-                        Assert.AreEqual("Line1", line);
+                        await Assert.That(line).IsEqualTo("Line1");
                         break;
                     case 1:
-                        Assert.AreEqual(" Line2", line);
+                        await Assert.That(line).IsEqualTo(" Line2");
                         break;
                     default:
                         Assert.Fail($"CodeLines should contain only 2 lines, but it contains at least '{i}' lines.");
@@ -280,11 +275,11 @@ Line2");
                 i++;
             }
 
-            Assert.AreEqual(2, i);
+            await Assert.That(i).IsEqualTo(2);
         }
 
-        [TestMethod]
-        public void CanEnumerateAsIEnumerableInterface()
+        [Test]
+        public async Task CanEnumerateAsIEnumerableInterface()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -299,11 +294,11 @@ Line3");
             {
                 cnt++;
             }
-            Assert.AreEqual(3, cnt);
+            await Assert.That(cnt).IsEqualTo(3);
         }
 
-        [TestMethod]
-        public void ToString_Indentation2Levels()
+        [Test]
+        public async Task ToString_Indentation2Levels()
         {
             var codeLines = new CodeLines();
 
@@ -320,14 +315,14 @@ if (i > 0)
 
             var src = sb.ToString();
 
-            Assert.AreEqual(@"        if (i > 0)
+            await Assert.That(src).IsEqualTo(@"        if (i > 0)
         {
             i--;
-        }", src);
+        }");
         }
 
-        [TestMethod]
-        public void Index_CanGetLinesByIndex()
+        [Test]
+        public async Task Index_CanGetLinesByIndex()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -335,13 +330,13 @@ if (i > 0)
 Line2
 MyLine3");
 
-            Assert.AreEqual("Line1", codeLines[0]);
-            Assert.AreEqual("Line2", codeLines[1]);
-            Assert.AreEqual("MyLine3", codeLines[2]);
+            await Assert.That(codeLines[0]).IsEqualTo("Line1");
+            await Assert.That(codeLines[1]).IsEqualTo("Line2");
+            await Assert.That(codeLines[2]).IsEqualTo("MyLine3");
         }
 
-        [TestMethod]
-        public void Index_CanSetSingleLineByIndex()
+        [Test]
+        public async Task Index_CanSetSingleLineByIndex()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -355,13 +350,13 @@ MyLine3
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual(@"Line1
+            await Assert.That(src).IsEqualTo(@"Line1
     AlternativeLine;
-MyLine3", src);
+MyLine3");
         }
 
-        [TestMethod]
-        public void Index_CanSetMultipleLinesByIndex()
+        [Test]
+        public async Task Index_CanSetMultipleLinesByIndex()
         {
             CodeLines codeLines = new CodeLines();
 
@@ -377,14 +372,14 @@ AltLin3";
 
             var src = codeLines.ToString();
 
-            Assert.AreEqual(@"Line1
+            await Assert.That(src).IsEqualTo(@"Line1
     AlternativeLine;
      AltLin2
 AltLin3
-MyLine3", src);
+MyLine3");
         }
 
-        [TestMethod]
+        [Test]
         public void Index_SetToNullThrowsException()
         {
             CodeLines codeLines = new CodeLines();

@@ -131,10 +131,11 @@ Now you can write [your first Unit Test](https://github.com/basilisque-framework
 
 `Basilisque.CodeAnalysis` and `Basilisque.CodeAnalysis.TestSupport` continue to
 target .NET Standard 2.0. The repository's tests and benchmarks target .NET 10
-and .NET 11. Install the .NET 11 SDK and the .NET 10 runtime to run both test targets:
+and .NET 11. The tests use TUnit on Microsoft.Testing.Platform.
+Install the .NET 11 SDK and the .NET 10 runtime to run both test targets:
 
 ```powershell
-dotnet test --solution src/Basilisque.CodeAnalysis.sln
+dotnet test --solution src/Basilisque.CodeAnalysis.slnx
 ```
 
 ## License
