@@ -72,7 +72,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual(@"params int myIntParameter = 8", src);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("test", "\"test\"", DisplayName = "no parenthesis")]
         [DataRow("\"test", "\"\\\"test\"", DisplayName = "no parenthesis end")]
         [DataRow("@\"test", "\"@\\\"test\"", DisplayName = "no parenthesis end 2")]
@@ -115,22 +115,22 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual($"bool myParameter", src);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "Name = null")]
         [DataRow("", DisplayName = "Name = \"\"")]
         [DataRow("   ", DisplayName = "Name = \"   \"")]
         public void EmptyName_ThrowsException(string name)
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new ParameterInfo(ParameterKind.Ordinary, "type", name));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new ParameterInfo(ParameterKind.Ordinary, "type", name));
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "Type = null")]
         [DataRow("", DisplayName = "Type = \"\"")]
         [DataRow("   ", DisplayName = "Type = \"   \"")]
         public void EmptyType_ThrowsException(string type)
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new ParameterInfo(ParameterKind.Ordinary, type, "name"));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new ParameterInfo(ParameterKind.Ordinary, type, "name"));
         }
 
         [TestMethod]

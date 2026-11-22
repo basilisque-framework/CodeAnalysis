@@ -20,25 +20,25 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
     [TestClass]
     public class FieldInfoTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "Type = null")]
         [DataRow("", DisplayName = "Type = \"\"")]
         [DataRow("   ", DisplayName = "Type = \"   \"")]
         public void EmptyType_ThrowsException(string type)
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new FieldInfo(type, "name"));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new FieldInfo(type, "name"));
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "Name = null")]
         [DataRow("", DisplayName = "Name = \"\"")]
         [DataRow("   ", DisplayName = "Name = \"   \"")]
         public void EmptyName_ThrowsException(string name)
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new FieldInfo("type", name));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new FieldInfo("type", name));
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "Type = null")]
         [DataRow("", DisplayName = "Type = \"\"")]
         [DataRow("   ", DisplayName = "Type = \"   \"")]
@@ -46,10 +46,10 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             var fieldInfo = new FieldInfo("type", "name");
 
-            Assert.ThrowsException<ArgumentNullException>(() => fieldInfo.Type = type);
+            Assert.ThrowsExactly<ArgumentNullException>(() => fieldInfo.Type = type);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "Type = null")]
         [DataRow("", DisplayName = "Type = \"\"")]
         [DataRow("   ", DisplayName = "Type = \"   \"")]
@@ -57,7 +57,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             var fieldInfo = new FieldInfo("type", "name");
 
-            Assert.ThrowsException<ArgumentNullException>(() => fieldInfo.Name = name);
+            Assert.ThrowsExactly<ArgumentNullException>(() => fieldInfo.Name = name);
         }
 
         [TestMethod]
@@ -104,7 +104,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual(@"private int _myField = 8;", src);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("test", "test", DisplayName = "InitialValue = no parenthesis")]
         [DataRow("te\"st", "te\\\"st", DisplayName = "InitialValue = contains parenthesis")]
         [DataRow("\"test", "\\\"test", DisplayName = "InitialValue = leading parenthesis")]
@@ -122,7 +122,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual($@"private string _myField = ""{expected}"";", src);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("\"test\"", DisplayName = "InitialValue = no additional parenthesis")]
         [DataRow("\"te\"\"st\"", DisplayName = "InitialValue = contains double parenthesis")]
         [DataRow("\"te\"st\"", DisplayName = "InitialValue = contains single parenthesis")]

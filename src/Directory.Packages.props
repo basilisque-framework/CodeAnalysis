@@ -20,24 +20,26 @@
   </PropertyGroup>
   <!-- define NuGet package versions -->
   <ItemGroup>
-    <PackageVersion Include="BenchmarkDotNet" Version="0.14.0" />
-    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="BenchmarkDotNet" Version="0.15.8" />
+    <PackageVersion Include="GitVersion.MsBuild" Version="7.0.1" />
+    <!-- Keep the compiler API baseline for the published libraries. -->
     <PackageVersion Include="Microsoft.CodeAnalysis" Version="4.5.0" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
-    <PackageVersion Include="Microsoft.CodeAnalysis" Version="4.9.2" Condition="'$(TargetFramework)' == 'net8.0'" />
-    <PackageVersion Include="Microsoft.CodeAnalysis" Version="4.14.0" Condition="'$(TargetFramework)' == 'net9.0'" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="4.14.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.5.0" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" Condition="'$(TargetFramework)' == 'net8.0'" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" Condition="'$(TargetFramework)' == 'net9.0'" />
-    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing" Version="1.1.2" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-    <PackageVersion Include="MSTest.TestAdapter" Version="3.8.3" />
-    <PackageVersion Include="MSTest.TestFramework" Version="3.8.3" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" Condition="'$(TargetFramework)' == 'net10.0'" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.12.0" Condition="'$(TargetFramework)' == 'net11.0'" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="5.12.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing" Version="1.1.4" />
+    <PackageVersion Include="MSTest" Version="4.5.3" />
   </ItemGroup>
   <!-- import common NuGet packages -->
   <ItemGroup>
-    <GlobalPackageReference Include="Basilisque.CommonFrameworkBuild" Version="1.0.0">
+    <GlobalPackageReference Include="Basilisque.CommonFrameworkBuild" Version="2.0.0-Preview00013">
       <PrivateAssets>all</PrivateAssets>
     </GlobalPackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="GitVersion.MsBuild" PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

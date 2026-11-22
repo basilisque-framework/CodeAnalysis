@@ -20,22 +20,22 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
     [TestClass]
     public class PropertyInfoTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "Name = null")]
         [DataRow("", DisplayName = "Name = \"\"")]
         [DataRow("  ", DisplayName = "Name = \"  \"")]
         public void Constructor_EmptyNameThrows(string name)
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new PropertyInfo("int", name));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new PropertyInfo("int", name));
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "Type = null")]
         [DataRow("", DisplayName = "Type = \"\"")]
         [DataRow("  ", DisplayName = "Type = \"  \"")]
         public void Constructor_EmptyTypeThrows(string type)
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new PropertyInfo(type, "name"));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new PropertyInfo(type, "name"));
         }
 
         [TestMethod]
@@ -72,7 +72,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual(@"public int MyOtherProperty { get; set; }", src);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "Name = null")]
         [DataRow("", DisplayName = "Name = \"\"")]
         [DataRow("  ", DisplayName = "Name = \"  \"")]
@@ -80,7 +80,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
-            Assert.ThrowsException<ArgumentNullException>(() => propertyInfo.Name = emptyName);
+            Assert.ThrowsExactly<ArgumentNullException>(() => propertyInfo.Name = emptyName);
         }
 
         [TestMethod]
@@ -99,7 +99,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual(@"public string MyProperty { get; set; }", src);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "Type = null")]
         [DataRow("", DisplayName = "Type = \"\"")]
         [DataRow("  ", DisplayName = "Type = \"  \"")]
@@ -107,7 +107,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             var propertyInfo = new PropertyInfo("int", "MyProperty");
 
-            Assert.ThrowsException<ArgumentNullException>(() => propertyInfo.Type = emptyType);
+            Assert.ThrowsExactly<ArgumentNullException>(() => propertyInfo.Type = emptyType);
         }
 
         [TestMethod]
@@ -134,7 +134,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual(@"public int MyProperty { get; set; }", src);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("test", "test", DisplayName = "InitialValue = no parenthesis")]
         [DataRow("te\"st", "te\\\"st", DisplayName = "InitialValue = contains parenthesis")]
         [DataRow("\"test", "\\\"test", DisplayName = "InitialValue = leading parenthesis")]
@@ -154,7 +154,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual($@"public string MyProperty {{ get; set; }} = ""{expected}"";", src);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("\"test\"", DisplayName = "InitialValue = no additional parenthesis")]
         [DataRow("\"te\"\"st\"", DisplayName = "InitialValue = contains double parenthesis")]
         [DataRow("\"te\"st\"", DisplayName = "InitialValue = contains single parenthesis")]
@@ -496,7 +496,7 @@ public int MyProperty { get; set; }", src);
 public int MyProperty { get; set; }", src);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(true, true, true, DisplayName = "Body = true, Auto = true, Expected = true")]
         [DataRow(true, false, true, DisplayName = "Body = true, Auto = false, Expected = true")]
         [DataRow(false, true, true, DisplayName = "Body = false, Auto = true, Expected = true")]
@@ -513,7 +513,7 @@ public int MyProperty { get; set; }", src);
             Assert.AreEqual(expected, propertyInfo.HasGetter);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(true, true, true, DisplayName = "Body = true, Auto = true, Expected = true")]
         [DataRow(true, false, true, DisplayName = "Body = true, Auto = false, Expected = true")]
         [DataRow(false, true, true, DisplayName = "Body = false, Auto = true, Expected = true")]
@@ -579,10 +579,10 @@ public int MyProperty { get; set; }", src);
 
             var sb = new System.Text.StringBuilder();
 
-            Assert.ThrowsException<NotImplementedException>(() => propertyInfo.AppendFieldIfNecessary(sb, 2, Language.VisualBasic, new List<FieldInfo>() { new FieldInfo("int", "_someField") }));
+            Assert.ThrowsExactly<NotImplementedException>(() => propertyInfo.AppendFieldIfNecessary(sb, 2, Language.VisualBasic, new List<FieldInfo>() { new FieldInfo("int", "_someField") }));
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(false, DisplayName = "AccessGetterAndSetterProperty = false")]
         [DataRow(true, DisplayName = "AccessGetterAndSetterProperty = true")]
         public void AdditionalField_NoFieldForAutoProp(bool accessGetterAndSetterProperty)
@@ -627,7 +627,7 @@ public int MyProperty { get; set; }", src);
             Assert.AreEqual("        private int _myField;", src);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(false, false, true, false, false, false, DisplayName = "AutoGetter = false, AutoSetter = false, GetterBody = true, SetterBody = false, FieldName = false, GeneratesProperty = false")]
         [DataRow(false, false, false, true, false, false, DisplayName = "AutoGetter = false, AutoSetter = false, GetterBody = false, SetterBody = true, FieldName = false, GeneratesProperty = false")]
         [DataRow(false, false, false, false, true, true, DisplayName = "AutoGetter = false, AutoSetter = false, GetterBody = false, SetterBody = false, FieldName = true, GeneratesProperty = true")]

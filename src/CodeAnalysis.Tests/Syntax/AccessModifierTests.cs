@@ -21,7 +21,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
     [TestClass]
     public class AccessModifierTests
     {
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(AccessModifier.Public, "public")]
         [DataRow(AccessModifier.Internal, "internal")]
         [DataRow(AccessModifier.Protected, "protected")]
@@ -292,7 +292,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual(AccessModifier.Public, result);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(AccessModifier.Private, Accessibility.Private)]
         [DataRow(AccessModifier.PrivateProtected, Accessibility.ProtectedAndInternal)]
         [DataRow(AccessModifier.Protected, Accessibility.Protected)]
@@ -306,7 +306,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual(target, result);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(Accessibility.Private, AccessModifier.Private)]
         [DataRow(Accessibility.ProtectedAndInternal, AccessModifier.PrivateProtected)]
         [DataRow(Accessibility.Protected, AccessModifier.Protected)]
@@ -329,7 +329,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             });
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(AccessModifier.Protected)]
         [DataRow(AccessModifier.PrivateProtected)]
         public void ToAccessibility_WithDefault_ReturnsCorrectValue(AccessModifier defaultValue)
@@ -343,7 +343,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
 
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(AccessModifier.Private, Accessibility.Private)]
         [DataRow(AccessModifier.PrivateProtected, Accessibility.ProtectedAndInternal)]
         [DataRow(AccessModifier.Protected, Accessibility.Protected)]
@@ -357,7 +357,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual(target, result);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(Accessibility.Private, AccessModifier.Private)]
         [DataRow(Accessibility.ProtectedAndInternal, AccessModifier.PrivateProtected)]
         [DataRow(Accessibility.Protected, AccessModifier.Protected)]

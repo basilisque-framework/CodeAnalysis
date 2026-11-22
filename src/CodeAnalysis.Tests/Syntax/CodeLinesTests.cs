@@ -394,7 +394,7 @@ Line1
 Line2
 MyLine3
 ");
-            Assert.ThrowsException<ArgumentNullException>(() =>
+            Assert.ThrowsExactly<ArgumentNullException>(() =>
             {
                 codeLines[2] = null!;
             });

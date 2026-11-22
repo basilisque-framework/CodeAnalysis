@@ -28,7 +28,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.IsNull(result);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "null")]
         [DataRow("", DisplayName = "empty string")]
         public void EmptySource_ReturnsNull(string? s)
@@ -38,7 +38,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.IsNull(result);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("  ", "__", DisplayName = "2 spaces")]
         [DataRow("    ", "____", DisplayName = "4 spaces")]
         [DataRow("	 ", "__", DisplayName = "1 tab & 1 space")]
@@ -49,7 +49,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual(expectedResult, result);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("Name.With.Dots", "Name_With_Dots", DisplayName = "Dots are replaced (in contrast to ToValidNamespace())")]
         [DataRow("1MyClass", "_1MyClass", DisplayName = "Letter at start should be prefixed")]
         [DataRow("%1MyClass", "_1MyClass", DisplayName = "Invalid start should replace first character")]

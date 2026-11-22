@@ -66,7 +66,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
                 .Replace("<GeneratorVersion>", execAssemblyName.Version?.ToString() ?? "1.0.0.0");
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, true, DisplayName = "ns: null - codeGenAttr: true")]
         [DataRow(null, false, DisplayName = "ns: null - codeGenAttr: false")]
         [DataRow("", true, DisplayName = "ns: empty string - codeGenAttr: true")]
@@ -83,7 +83,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual(string.Empty, str);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(true, DisplayName = "nullable context enabled")]
         [DataRow(false, DisplayName = "nullable context disabled")]
         public void NoNamespace_NoClass_IsEmpty_WithNullableContext(bool enableNullableContext)
@@ -96,7 +96,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual(string.Empty, str);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, null, DisplayName = "ns: null - codeGenAttr: <default>")]
         [DataRow(null, true, DisplayName = "ns: null - codeGenAttr: true")]
         [DataRow(null, false, DisplayName = "ns: null - codeGenAttr: false")]
@@ -128,7 +128,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 }", str);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "nullable context <default> (enabled)")]
         [DataRow(true, DisplayName = "nullable context enabled")]
         [DataRow(false, DisplayName = "nullable context disabled")]
@@ -223,7 +223,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual(codeGenAttrStr + @"namespace MyNamespace1;", str);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "nullable context <default> (enabled)")]
         [DataRow(true, DisplayName = "nullable context enabled")]
         [DataRow(false, DisplayName = "nullable context disabled")]
@@ -366,16 +366,16 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 }", str);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "null")]
         [DataRow("", DisplayName = "empty string")]
         [DataRow("   ", DisplayName = "whitespace")]
         public void EmptyCompliationName_Throws(string compilationName)
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new CompilationInfo(compilationName, null));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new CompilationInfo(compilationName, null));
 
             var compilationInfo = new CompilationInfo("Name1", "Namespace1");
-            Assert.ThrowsException<ArgumentNullException>(() => compilationInfo.CompilationName = null!);
+            Assert.ThrowsExactly<ArgumentNullException>(() => compilationInfo.CompilationName = null!);
         }
 
         [TestMethod]
@@ -430,7 +430,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             var compilationInfo = new CompilationInfo("MyInfo4711", "MyNS1");
 
-            Assert.ThrowsException<ArgumentNullException>(() => compilationInfo.ToString(null!, 0, Language.CSharp));
+            Assert.ThrowsExactly<ArgumentNullException>(() => compilationInfo.ToString(null!, 0, Language.CSharp));
         }
 
         [TestMethod]
@@ -440,7 +440,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 
             var sb = new System.Text.StringBuilder();
 
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => compilationInfo.ToString(sb, -1, Language.CSharp));
+            Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => compilationInfo.ToString(sb, -1, Language.CSharp));
         }
 
         [TestMethod]
@@ -496,7 +496,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 }", str);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("MyCompilation1", "MyCompilation1.g.cs", Language.CSharp, DisplayName = "name without extension")]
         [DataRow("MyCompilation1.g", "MyCompilation1.g.cs", Language.CSharp, DisplayName = "name with .g extension")]
         [DataRow("MyCompilation1.g.cs", "MyCompilation1.g.cs", Language.CSharp, DisplayName = "name with .g.cs extension")]
@@ -534,7 +534,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             var compilationInfo = new CompilationInfo("MyCompilation1", "MyNamespace1");
 
-            Assert.ThrowsException<NotSupportedException>(() => compilationInfo.ToString(Language.VisualBasic));
+            Assert.ThrowsExactly<NotSupportedException>(() => compilationInfo.ToString(Language.VisualBasic));
         }
 
         [TestMethod]

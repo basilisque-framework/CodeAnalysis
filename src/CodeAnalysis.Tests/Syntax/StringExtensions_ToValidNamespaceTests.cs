@@ -39,7 +39,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.IsNull(result);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "null")]
         [DataRow("", DisplayName = "empty string")]
         public void EmptySource_ReturnsNull(string? s)
@@ -49,7 +49,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.IsNull(result);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("  ", "__", DisplayName = "2 spaces")]
         [DataRow("    ", "____", DisplayName = "4 spaces")]
         [DataRow("	 ", "__", DisplayName = "1 tab & 1 space")]
@@ -60,7 +60,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
             Assert.AreEqual(expectedResult, result);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow("Valid.Name.Space", "Valid.Name.Space", DisplayName = "Valid namespace is returned unchanged")]
         [DataRow("1Basilisque.CodeAnalysis.Benchmarks.Syntax", "_1Basilisque.CodeAnalysis.Benchmarks.Syntax", DisplayName = "Letter at start should be prefixed")]
         [DataRow("%1Basilisque.CodeAnalysis.Benchmarks.Syntax", "_1Basilisque.CodeAnalysis.Benchmarks.Syntax", DisplayName = "Invalid start should replace first character")]

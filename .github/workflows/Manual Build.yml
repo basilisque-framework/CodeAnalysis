@@ -33,9 +33,15 @@ on:
 
 jobs:
   call-build:
-    uses: basilisque-framework/CommonBuild/.github/workflows/Common-Build.yml@release/v1.0
+    uses: basilisque-framework/CommonBuild-GitHubActions/.github/workflows/Common-Build.yml@v1.0
     with:
       basBuildType: ${{ inputs.basBuildTypeChoice }}
+      projectOrSolution: 'src/Basilisque.CodeAnalysis.sln'
+      dotNetVersion: |
+        10.0.x
+        11.0.x
+      runDotnetPack: true
+      versioningProjectName: 'CodeAnalysis'
       sonarProjectKey: 'basilisque-framework_CodeAnalysis'
       sonarOrganization: 'basilisque-framework'
     secrets: inherit

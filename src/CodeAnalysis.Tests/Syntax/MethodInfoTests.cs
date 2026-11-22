@@ -32,7 +32,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 }", src);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, "MyMethod1Async", "async ", DisplayName = "returnType = null, method = async")]
         [DataRow("", "MyMethod1Async", "async ", DisplayName = "returnType = \"\", method = async")]
         [DataRow("  ", "MyMethod1Async", "async ", DisplayName = "returnType = \"  \", method = async")]
@@ -57,13 +57,13 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 }}", src);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "method name = null")]
         [DataRow("", DisplayName = "method name = empty")]
         [DataRow("  ", DisplayName = "method name = whitespace")]
         public void Constructor_EmptyMethodNameThrows(string methodName)
         {
-            Assert.ThrowsException<ArgumentNullException>(() =>
+            Assert.ThrowsExactly<ArgumentNullException>(() =>
             {
                 var methodInfo = new MethodInfo(AccessModifier.Public, "void", methodName);
             });
@@ -91,7 +91,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 }", src);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "method name = null")]
         [DataRow("", DisplayName = "method name = empty")]
         [DataRow("  ", DisplayName = "method name = whitespace")]
@@ -99,7 +99,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
         {
             var methodInfo = new MethodInfo(AccessModifier.Public, "void", "OriginalMethodName");
 
-            Assert.ThrowsException<ArgumentNullException>(() =>
+            Assert.ThrowsExactly<ArgumentNullException>(() =>
             {
                 methodInfo.Name = methodName;
             });
@@ -358,7 +358,7 @@ public string MyMethod1()
         {
             var methodInfo = new MethodInfo(true, "MyMethod");
 
-            Assert.ThrowsException<ArgumentException>(() => methodInfo.ReturnType = "string");
+            Assert.ThrowsExactly<ArgumentException>(() => methodInfo.ReturnType = "string");
         }
 
         [TestMethod]
@@ -366,7 +366,7 @@ public string MyMethod1()
         {
             var methodInfo = new MethodInfo(true, "MyMethod");
 
-            Assert.ThrowsException<ArgumentException>(() => methodInfo.AccessModifier = AccessModifier.Public);
+            Assert.ThrowsExactly<ArgumentException>(() => methodInfo.AccessModifier = AccessModifier.Public);
         }
 
         [TestMethod]

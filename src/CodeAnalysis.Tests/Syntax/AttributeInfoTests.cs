@@ -5,7 +5,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax;
 [TestClass]
 public class AttributeInfoTests
 {
-    [DataTestMethod]
+    [TestMethod]
     [DataRow(null, DisplayName = "Name: null")]
     [DataRow("", DisplayName = "Name: ''")]
     [DataRow("  ", DisplayName = "Name: '  '")]
@@ -17,7 +17,7 @@ public class AttributeInfoTests
         });
     }
 
-    [DataTestMethod]
+    [TestMethod]
     [DataRow("MyAttribute")]
     [DataRow("Name.Space.MyAttribute")]
     [DataRow("Name.Space.MyAttribute()")]

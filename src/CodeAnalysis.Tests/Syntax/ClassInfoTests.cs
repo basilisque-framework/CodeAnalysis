@@ -36,16 +36,16 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
                 .Replace("<GeneratorVersion>", execAssemblyName.Version?.ToString() ?? "1.0.0.0");
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "null")]
         [DataRow("", DisplayName = "empty string")]
         [DataRow("   ", DisplayName = "whitespace")]
         public void EmptyClassName_Throws(string className)
         {
-            Assert.ThrowsException<ArgumentNullException>(() => new ClassInfo(className, AccessModifier.ProtectedInternal));
+            Assert.ThrowsExactly<ArgumentNullException>(() => new ClassInfo(className, AccessModifier.ProtectedInternal));
 
             var classInfo = new ClassInfo("MyClass", AccessModifier.Public);
-            Assert.ThrowsException<ArgumentNullException>(() => classInfo.ClassName = className);
+            Assert.ThrowsExactly<ArgumentNullException>(() => classInfo.ClassName = className);
         }
 
         [TestMethod]
@@ -67,7 +67,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 }", classStr);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(false, 1, "I1")]
         [DataRow(false, 2, "I1, I2")]
         [DataRow(true, 1, "MyBaseClass1, I1")]
@@ -90,7 +90,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 }", classStr);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "null")]
         [DataRow("", DisplayName = "empty string")]
         [DataRow("   ", DisplayName = "whitespace")]
@@ -258,7 +258,7 @@ namespace Basilisque.CodeAnalysis.Tests.Syntax
 }", classStr);
         }
 
-        [DataTestMethod]
+        [TestMethod]
         [DataRow(null, DisplayName = "null")]
         [DataRow("", DisplayName = "empty string")]
         [DataRow("   ", DisplayName = "whitespace")]
