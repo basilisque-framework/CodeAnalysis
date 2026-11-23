@@ -15,61 +15,60 @@
 */
 using Basilisque.CodeAnalysis.Syntax;
 
-namespace Basilisque.CodeAnalysis.Tests.Syntax
+namespace Basilisque.CodeAnalysis.Tests.Syntax;
+
+public class StringExtensions_ToValidNamespaceTests
 {
-    public class StringExtensions_ToValidNamespaceTests
+    protected virtual string? ToValidNamespace(string? source)
+        => StringExtensions.ToValidNamespace(source);
+
+    [Test]
+    public async Task Ensure_CanBeCalledAsExtensionMethod()
     {
-        protected virtual string? ToValidNamespace(string? source)
-            => StringExtensions.ToValidNamespace(source);
+        var result = "".ToValidNamespace();
 
-        [Test]
-        public async Task Ensure_CanBeCalledAsExtensionMethod()
-        {
-            var result = "".ToValidNamespace();
+        await Assert.That(result).IsNull();
+    }
 
-            await Assert.That(result).IsNull();
-        }
+    [Test]
+    [Arguments(null, DisplayName = "null")]
+    [Arguments("", DisplayName = "empty string")]
+    public async Task EmptySource_ReturnsNull(string? s)
+    {
+        var result = ToValidNamespace(s);
 
-        [Test]
-        [Arguments(null, DisplayName = "null")]
-        [Arguments("", DisplayName = "empty string")]
-        public async Task EmptySource_ReturnsNull(string? s)
-        {
-            var result = ToValidNamespace(s);
+        await Assert.That(result).IsNull();
+    }
 
-            await Assert.That(result).IsNull();
-        }
+    [Test]
+    [Arguments("  ", "__", DisplayName = "2 spaces")]
+    [Arguments("    ", "____", DisplayName = "4 spaces")]
+    [Arguments("	 ", "__", DisplayName = "1 tab & 1 space")]
+    public async Task Whitepace_ReturnsUnderscores(string? s, string expectedResult)
+    {
+        var result = ToValidNamespace(s);
 
-        [Test]
-        [Arguments("  ", "__", DisplayName = "2 spaces")]
-        [Arguments("    ", "____", DisplayName = "4 spaces")]
-        [Arguments("	 ", "__", DisplayName = "1 tab & 1 space")]
-        public async Task Whitepace_ReturnsUnderscores(string? s, string expectedResult)
-        {
-            var result = ToValidNamespace(s);
+        await Assert.That(result).IsEqualTo(expectedResult);
+    }
 
-            await Assert.That(result).IsEqualTo(expectedResult);
-        }
+    [Test]
+    [Arguments("Valid.Name.Space", "Valid.Name.Space", DisplayName = "Valid namespace is returned unchanged")]
+    [Arguments("1Basilisque.CodeAnalysis.Benchmarks.Syntax", "_1Basilisque.CodeAnalysis.Benchmarks.Syntax", DisplayName = "Letter at start should be prefixed")]
+    [Arguments("%1Basilisque.CodeAnalysis.Benchmarks.Syntax", "_1Basilisque.CodeAnalysis.Benchmarks.Syntax", DisplayName = "Invalid start should replace first character")]
+    [Arguments("nsContaining.namespace.keyword", "nsContaining.@namespace.keyword", DisplayName = "Keyword in the middle is prefixed with @")]
+    [Arguments("namespace.key.word", "@namespace.key.word", DisplayName = "Keyword at the start is prefixed with @")]
+    [Arguments("namespace.class.whatever", "@namespace.@class.whatever", DisplayName = "Multiple keywords are prefixed with @")]
+    [Arguments("_starting.with.underscore", "_starting.with.underscore", DisplayName = "starting with underscore is valid")]
+    [Arguments("-starting.with.dash", "_starting.with.dash", DisplayName = "starting with dash gets replaced")]
+    [Arguments("NoDots", "NoDots", DisplayName = "namespace without dots")]
+    [Arguments("1NoDots", "_1NoDots", DisplayName = "invalid namespace without dots")]
+    [Arguments("class", "@class", DisplayName = "single reserved keyword 'class'")]
+    [Arguments("namespace", "@namespace", DisplayName = "single reserved keyword 'namespace'")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Name of method provides relevant test context")]
+    public async Task SourceString_ReturnsCorrectNamespace(string? s, string expectedResult)
+    {
+        var result = ToValidNamespace(s);
 
-        [Test]
-        [Arguments("Valid.Name.Space", "Valid.Name.Space", DisplayName = "Valid namespace is returned unchanged")]
-        [Arguments("1Basilisque.CodeAnalysis.Benchmarks.Syntax", "_1Basilisque.CodeAnalysis.Benchmarks.Syntax", DisplayName = "Letter at start should be prefixed")]
-        [Arguments("%1Basilisque.CodeAnalysis.Benchmarks.Syntax", "_1Basilisque.CodeAnalysis.Benchmarks.Syntax", DisplayName = "Invalid start should replace first character")]
-        [Arguments("nsContaining.namespace.keyword", "nsContaining.@namespace.keyword", DisplayName = "Keyword in the middle is prefixed with @")]
-        [Arguments("namespace.key.word", "@namespace.key.word", DisplayName = "Keyword at the start is prefixed with @")]
-        [Arguments("namespace.class.whatever", "@namespace.@class.whatever", DisplayName = "Multiple keywords are prefixed with @")]
-        [Arguments("_starting.with.underscore", "_starting.with.underscore", DisplayName = "starting with underscore is valid")]
-        [Arguments("-starting.with.dash", "_starting.with.dash", DisplayName = "starting with dash gets replaced")]
-        [Arguments("NoDots", "NoDots", DisplayName = "namespace without dots")]
-        [Arguments("1NoDots", "_1NoDots", DisplayName = "invalid namespace without dots")]
-        [Arguments("class", "@class", DisplayName = "single reserved keyword 'class'")]
-        [Arguments("namespace", "@namespace", DisplayName = "single reserved keyword 'namespace'")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S4144:Methods should not have identical implementations", Justification = "Name of method provides relevant test context")]
-        public async Task SourceString_ReturnsCorrectNamespace(string? s, string expectedResult)
-        {
-            var result = ToValidNamespace(s);
-
-            await Assert.That(result).IsEqualTo(expectedResult);
-        }
+        await Assert.That(result).IsEqualTo(expectedResult);
     }
 }

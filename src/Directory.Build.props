@@ -14,35 +14,35 @@
    limitations under the License.
 -->
 <Project>
-	<!-- set BAS_CB_ProjType_CodeAnalysis to true -->
-	<PropertyGroup Condition="'$(MSBuildProjectName)' == 'CodeAnalysis'">
-		<BAS_CB_ProjType_CodeAnalysis>true</BAS_CB_ProjType_CodeAnalysis>
-		<BAS_CB_Set_IncludeBuildOutput>false</BAS_CB_Set_IncludeBuildOutput>
-		<BAS_CB_CodeAnalysis_PackCS>false</BAS_CB_CodeAnalysis_PackCS>
-	</PropertyGroup>
-	
-	<!-- general build properties -->
-	<PropertyGroup>
-		<UseArtifactsOutput>true</UseArtifactsOutput>
-		<TargetFramework Condition="$(MSBuildProjectName.EndsWith('.Benchmarks')) != 'true' AND $(MSBuildProjectName.EndsWith('.Tests')) != 'true'">netstandard2.0</TargetFramework>
-	</PropertyGroup>
-	
-	<!-- NuGet package properties and project info -->
-	<PropertyGroup>
-		<BAS_CB_Copyright_BeginYear>2022</BAS_CB_Copyright_BeginYear>
-		<PackageProjectUrl>https://github.com/basilisque-framework/CodeAnalysis</PackageProjectUrl>
-		<PackageTags>CodeAnalysis CSharp CodeGeneration Compiler Compilation Syntax</PackageTags>
-		<!--<PackageIconUrl>http://www.url.de/nuget_icon.png</PackageIconUrl>-->
-		<PackageReadmeFile>docs\README.md</PackageReadmeFile>
-	</PropertyGroup>
+  <!-- set BAS_CB_ProjType_CodeAnalysis to true -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'CodeAnalysis'">
+    <BAS_CB_ProjType_CodeAnalysis>true</BAS_CB_ProjType_CodeAnalysis>
+    <BAS_CB_Set_IncludeBuildOutput>false</BAS_CB_Set_IncludeBuildOutput>
+    <BAS_CB_CodeAnalysis_PackCS>false</BAS_CB_CodeAnalysis_PackCS>
+  </PropertyGroup>
 
-	<!-- Pack README -->
-	<ItemGroup>
-		<None Include="..\..\README.md" Pack="true" PackagePath="docs"/>
-	</ItemGroup>
+  <!-- general build properties -->
+  <PropertyGroup>
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+    <TargetFramework Condition="$(MSBuildProjectName.EndsWith('.Benchmarks')) != 'true' AND $(MSBuildProjectName.EndsWith('.Tests')) != 'true'">netstandard2.0</TargetFramework>
+  </PropertyGroup>
 
-	<!-- global usings -->
-	<ItemGroup>
-		<Using Include="Microsoft.CodeAnalysis" />
-	</ItemGroup>
+  <!-- NuGet package properties and project info -->
+  <PropertyGroup>
+    <BAS_CB_Copyright_BeginYear>2022</BAS_CB_Copyright_BeginYear>
+    <PackageProjectUrl>https://github.com/basilisque-framework/CodeAnalysis</PackageProjectUrl>
+    <PackageTags>CodeAnalysis CSharp CodeGeneration Compiler Compilation Syntax</PackageTags>
+    <!--<PackageIconUrl>http://www.url.de/nuget_icon.png</PackageIconUrl>-->
+    <PackageReadmeFile>docs\README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <!-- Pack README -->
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="docs"/>
+  </ItemGroup>
+
+  <!-- global usings -->
+  <ItemGroup>
+    <Using Include="Microsoft.CodeAnalysis" />
+  </ItemGroup>
 </Project>

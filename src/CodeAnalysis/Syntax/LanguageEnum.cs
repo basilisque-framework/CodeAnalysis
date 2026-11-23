@@ -13,20 +13,19 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-namespace Basilisque.CodeAnalysis.Syntax
+namespace Basilisque.CodeAnalysis.Syntax;
+
+/// <summary>
+/// A list of programming languages
+/// </summary>
+public enum Language
 {
     /// <summary>
-    /// A list of programming languages
+    /// C#
     /// </summary>
-    public enum Language
-    {
-        /// <summary>
-        /// C#
-        /// </summary>
-        CSharp,
-        /// <summary>
-        /// Visual Basic.NET
-        /// </summary>
-        VisualBasic
-    }
+    CSharp,
+    /// <summary>
+    /// Visual Basic.NET
+    /// </summary>
+    VisualBasic
 }

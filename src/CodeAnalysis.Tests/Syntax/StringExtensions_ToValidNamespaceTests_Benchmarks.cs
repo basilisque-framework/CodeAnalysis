@@ -13,29 +13,28 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-namespace Basilisque.CodeAnalysis.Tests.Syntax
+namespace Basilisque.CodeAnalysis.Tests.Syntax;
+
+// Ensure, that the benchmark implementations also fulfill all requirements.
+// Otherwise the performance comparison wouldn't be fair/valid.
+
+[InheritsTests]
+public class StringExtensions_ToValidNamespaceTests_Basic_Implementation : StringExtensions_ToValidNamespaceTests
 {
-    // Ensure, that the benchmark implementations also fulfill all requirements.
-    // Otherwise the performance comparison wouldn't be fair/valid.
+    protected override string? ToValidNamespace(string? source)
+        => Benchmarks.Syntax.StringExtensionTestMethods.ToValidIdentifier_BasicImplementationStringBuilder(source, Benchmarks.Syntax.ToValidIdentifierBenchmarks.GetIsIdentifierPartCharacterFunc());
+}
 
-    [InheritsTests]
-    public class StringExtensions_ToValidNamespaceTests_Basic_Implementation : StringExtensions_ToValidNamespaceTests
-    {
-        protected override string? ToValidNamespace(string? source)
-            => Benchmarks.Syntax.StringExtensionTestMethods.ToValidIdentifier_BasicImplementationStringBuilder(source, Benchmarks.Syntax.ToValidIdentifierBenchmarks.GetIsIdentifierPartCharacterFunc());
-    }
+[InheritsTests]
+public class StringExtensions_ToValidToValidNamespaceTests_WithCharArray : StringExtensions_ToValidNamespaceTests
+{
+    protected override string? ToValidNamespace(string? source)
+        => Benchmarks.Syntax.StringExtensionTestMethods.ToValidIdentifier_WithCharArray(source, Benchmarks.Syntax.ToValidIdentifierBenchmarks.GetIsIdentifierPartCharacterFunc());
+}
 
-    [InheritsTests]
-    public class StringExtensions_ToValidToValidNamespaceTests_WithCharArray : StringExtensions_ToValidNamespaceTests
-    {
-        protected override string? ToValidNamespace(string? source)
-            => Benchmarks.Syntax.StringExtensionTestMethods.ToValidIdentifier_WithCharArray(source, Benchmarks.Syntax.ToValidIdentifierBenchmarks.GetIsIdentifierPartCharacterFunc());
-    }
-
-    [InheritsTests]
-    public class StringExtensions_ToValidToValidNamespaceTests_MinimizedAPICalls : StringExtensions_ToValidNamespaceTests
-    {
-        protected override string? ToValidNamespace(string? source)
-            => Benchmarks.Syntax.StringExtensionTestMethods.ToValidIdentifier_WithoutIsValidIdentifierCall(source, Benchmarks.Syntax.ToValidIdentifierBenchmarks.GetIsIdentifierPartCharacterFunc());
-    }
+[InheritsTests]
+public class StringExtensions_ToValidToValidNamespaceTests_MinimizedAPICalls : StringExtensions_ToValidNamespaceTests
+{
+    protected override string? ToValidNamespace(string? source)
+        => Benchmarks.Syntax.StringExtensionTestMethods.ToValidIdentifier_WithoutIsValidIdentifierCall(source, Benchmarks.Syntax.ToValidIdentifierBenchmarks.GetIsIdentifierPartCharacterFunc());
 }

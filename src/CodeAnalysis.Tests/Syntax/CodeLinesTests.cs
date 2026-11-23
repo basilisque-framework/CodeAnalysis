@@ -15,213 +15,196 @@
 */
 using Basilisque.CodeAnalysis.Syntax;
 
-namespace Basilisque.CodeAnalysis.Tests.Syntax
+namespace Basilisque.CodeAnalysis.Tests.Syntax;
+
+public class CodeLinesTests
 {
-    public class CodeLinesTests
+    [Test]
+    public async Task InitializedEmpty()
     {
-        [Test]
-        public async Task InitializedEmpty()
-        {
-            CodeLines codeLines = new CodeLines();
+        CodeLines codeLines = [];
 
-            var src = codeLines.ToString();
+        var src = codeLines.ToString();
 
-            await Assert.That(src).IsEqualTo(string.Empty);
-        }
+        await Assert.That(src).IsEqualTo(string.Empty);
+    }
 
-        [Test]
-        public async Task Append_NullToEmptyCodeLinesIsANoOp()
-        {
-            CodeLines codeLines = new CodeLines();
+    [Test]
+    public async Task Append_NullToEmptyCodeLinesIsANoOp()
+    {
+        CodeLines codeLines = [null!];
 
-            codeLines.Add(null!);
+        var src = codeLines.ToString();
 
-            var src = codeLines.ToString();
+        await Assert.That(src).IsEqualTo(string.Empty);
+    }
 
-            await Assert.That(src).IsEqualTo(string.Empty);
-        }
+    [Test]
+    public async Task Append_NullToFilledCodeLinesIsANoOp()
+    {
+        CodeLines codeLines = ["Test", null!];
 
-        [Test]
-        public async Task Append_NullToFilledCodeLinesIsANoOp()
-        {
-            CodeLines codeLines = new CodeLines();
+        var src = codeLines.ToString();
 
-            codeLines.Add("Test");
+        await Assert.That(src).IsEqualTo("Test");
+    }
 
-            codeLines.Add(null!);
+    [Test]
+    public async Task Append_SingleWhitespaceLine()
+    {
+        const string C_WHITESPACE = "   ";
 
-            var src = codeLines.ToString();
+        CodeLines codeLines = [C_WHITESPACE];
 
-            await Assert.That(src).IsEqualTo("Test");
-        }
+        var src = codeLines.ToString();
 
-        [Test]
-        public async Task Append_SingleWhitespaceLine()
-        {
-            const string C_WHITESPACE = "   ";
+        await Assert.That(src).IsEqualTo(C_WHITESPACE);
+    }
 
-            CodeLines codeLines = new CodeLines();
+    [Test]
+    public async Task Append_SingleLine()
+    {
+        CodeLines codeLines = ["MyLine"];
 
-            codeLines.Add(C_WHITESPACE);
+        var src = codeLines.ToString();
 
-            var src = codeLines.ToString();
+        await Assert.That(src).IsEqualTo("MyLine");
+    }
 
-            await Assert.That(src).IsEqualTo(C_WHITESPACE);
-        }
+    [Test]
+    public async Task Append_MultipleLinesWithOneCall()
+    {
+        CodeLines codeLines =
+        [
+            @"MyLine
+MySecondLine",
+        ];
 
-        [Test]
-        public async Task Append_SingleLine()
-        {
-            CodeLines codeLines = new CodeLines();
+        var src = codeLines.ToString();
 
-            codeLines.Add("MyLine");
-
-            var src = codeLines.ToString();
-
-            await Assert.That(src).IsEqualTo("MyLine");
-        }
-
-        [Test]
-        public async Task Append_MultipleLinesWithOneCall()
-        {
-            CodeLines codeLines = new CodeLines();
-
-            codeLines.Add(@"MyLine
+        await Assert.That(src).IsEqualTo(@"MyLine
 MySecondLine");
+    }
 
-            var src = codeLines.ToString();
+    [Test]
+    public async Task Append_MultipleLinesWithMultipleCalls()
+    {
+        CodeLines codeLines =
+        [
+            @"MyLine
+MySecondLine",
+            "  MyThirdLine",
+            "",
+            " MyFourthLine " + Environment.NewLine + "MyFifthLine",
+        ];
 
-            await Assert.That(src).IsEqualTo(@"MyLine
-MySecondLine");
-        }
+        var src = codeLines.ToString();
 
-        [Test]
-        public async Task Append_MultipleLinesWithMultipleCalls()
-        {
-            CodeLines codeLines = new CodeLines();
-
-            codeLines.Add(@"MyLine
-MySecondLine");
-
-            codeLines.Add("  MyThirdLine");
-
-            codeLines.Add("");
-
-            codeLines.Add(@" MyFourthLine 
-MyFifthLine");
-
-            var src = codeLines.ToString();
-
-            await Assert.That(src).IsEqualTo(@"MyLine
+        await Assert.That(src).IsEqualTo(@"MyLine
 MySecondLine
   MyThirdLine
 
- MyFourthLine 
+" + " MyFourthLine " + @"
 MyFifthLine");
-        }
+    }
 
-        [Test]
-        public async Task Append_RemovesEmptyFirstLine()
-        {
-            CodeLines codeLines = new CodeLines();
-
-            codeLines.Add(@"
+    [Test]
+    public async Task Append_RemovesEmptyFirstLine()
+    {
+        CodeLines codeLines =
+        [
+            @"
 MyFirstLine
-MySecondLine");
+MySecondLine",
+            @"
+MyThirdLine",
+        ];
 
-            codeLines.Add(@"
-MyThirdLine");
+        var src = codeLines.ToString();
 
-            var src = codeLines.ToString();
-
-            await Assert.That(src).IsEqualTo(@"MyFirstLine
+        await Assert.That(src).IsEqualTo(@"MyFirstLine
 MySecondLine
 MyThirdLine");
-        }
+    }
 
-        [Test]
-        public async Task Append_RemovesEmptyLastLine()
-        {
-            CodeLines codeLines = new CodeLines();
-
-            codeLines.Add(@"MyFirstLine
+    [Test]
+    public async Task Append_RemovesEmptyLastLine()
+    {
+        CodeLines codeLines =
+        [
+            @"MyFirstLine
 MySecondLine
-");
+",
+            @"MyThirdLine
+",
+        ];
 
-            codeLines.Add(@"MyThirdLine
-");
+        var src = codeLines.ToString();
 
-            var src = codeLines.ToString();
-
-            await Assert.That(src).IsEqualTo(@"MyFirstLine
+        await Assert.That(src).IsEqualTo(@"MyFirstLine
 MySecondLine
 MyThirdLine");
-        }
+    }
 
-        [Test]
-        public async Task Append_RemovesEmptyFirstAndLastLine()
-        {
-            CodeLines codeLines = new CodeLines();
-
-            codeLines.Add(@"
+    [Test]
+    public async Task Append_RemovesEmptyFirstAndLastLine()
+    {
+        CodeLines codeLines =
+        [
+            @"
     MyFirstLine
     MySecondLine
-");
-
-            codeLines.Add(@"
+",
+            @"
 MyThirdLine
-");
+",
+        ];
 
-            var src = codeLines.ToString();
+        var src = codeLines.ToString();
 
-            await Assert.That(src).IsEqualTo(@"    MyFirstLine
+        await Assert.That(src).IsEqualTo(@"    MyFirstLine
     MySecondLine
 MyThirdLine");
-        }
+    }
 
-        [Test]
-        public async Task Append_PreservesFirstAndLastLineWithWhitespace()
-        {
-            CodeLines codeLines = new CodeLines();
+    [Test]
+    public async Task Append_PreservesFirstAndLastLineWithWhitespace()
+    {
+        CodeLines codeLines =
+        [
+            string.Join(Environment.NewLine, " ", "    MyFirstLine", "    MySecondLine", " "),
+            string.Join(Environment.NewLine, " ", "MyThirdLine", " "),
+        ];
 
-            codeLines.Add(@" 
-    MyFirstLine
-    MySecondLine
- ");
+        var src = codeLines.ToString();
 
-            codeLines.Add(@" 
-MyThirdLine
- ");
+        var expected = string.Join(Environment.NewLine,
+            " ", "    MyFirstLine", "    MySecondLine", " ", " ", "MyThirdLine", " ");
+        await Assert.That(src).IsEqualTo(expected);
+    }
 
-            var src = codeLines.ToString();
-
-            var expected = string.Join(Environment.NewLine,
-                " ", "    MyFirstLine", "    MySecondLine", " ", " ", "MyThirdLine", " ");
-            await Assert.That(src).IsEqualTo(expected);
-        }
-
-        [Test]
-        public async Task Append_RemovesEmptyFirstAndLastLineButPreservesMultipleEmptyLines()
-        {
-            CodeLines codeLines = new CodeLines();
-
-            codeLines.Add(@"
+    [Test]
+    public async Task Append_RemovesEmptyFirstAndLastLineButPreservesMultipleEmptyLines()
+    {
+        CodeLines codeLines =
+        [
+            @"
 
 
     MyFirstLine
     MySecondLine
 
-");
-
-            codeLines.Add(@"
+",
+            @"
 MyThirdLine
 
 
-");
+",
+        ];
 
-            var src = codeLines.ToString();
+        var src = codeLines.ToString();
 
-            await Assert.That(src).IsEqualTo(@"
+        await Assert.That(src).IsEqualTo(@"
 
     MyFirstLine
     MySecondLine
@@ -229,170 +212,177 @@ MyThirdLine
 MyThirdLine
 
 ");
+    }
+
+    [Test]
+    public async Task CanEnumerateAsCodeLinesObject()
+    {
+        CodeLines codeLines =
+        [
+            @"Line1
+Line2",
+        ];
+
+        var cnt = 0;
+        foreach (var line in codeLines)
+        {
+            cnt++;
         }
 
-        [Test]
-        public async Task CanEnumerateAsCodeLinesObject()
+        await Assert.That(cnt).IsEqualTo(2);
+    }
+
+    [Test]
+    public async Task CanEnumerateCorrectly()
+    {
+        CodeLines codeLines =
+        [
+            @"Line1
+ Line2",
+        ];
+
+        var i = 0;
+        foreach (var line in codeLines)
         {
-            CodeLines codeLines = new CodeLines();
-
-            codeLines.Add(@"Line1
-Line2");
-
-            var cnt = 0;
-            foreach (var line in codeLines)
+            switch (i)
             {
-                cnt++;
+                case 0:
+                    await Assert.That(line).IsEqualTo("Line1");
+                    break;
+                case 1:
+                    await Assert.That(line).IsEqualTo(" Line2");
+                    break;
+                default:
+                    Assert.Fail($"CodeLines should contain only 2 lines, but it contains at least '{i}' lines.");
+                    break;
             }
 
-            await Assert.That(cnt).IsEqualTo(2);
+            i++;
         }
 
-        [Test]
-        public async Task CanEnumerateCorrectly()
-        {
-            CodeLines codeLines = new CodeLines();
+        await Assert.That(i).IsEqualTo(2);
+    }
 
-            codeLines.Add(@"Line1
- Line2");
-
-            var i = 0;
-            foreach (var line in codeLines)
-            {
-                switch (i)
-                {
-                    case 0:
-                        await Assert.That(line).IsEqualTo("Line1");
-                        break;
-                    case 1:
-                        await Assert.That(line).IsEqualTo(" Line2");
-                        break;
-                    default:
-                        Assert.Fail($"CodeLines should contain only 2 lines, but it contains at least '{i}' lines.");
-                        break;
-                }
-
-                i++;
-            }
-
-            await Assert.That(i).IsEqualTo(2);
-        }
-
-        [Test]
-        public async Task CanEnumerateAsIEnumerableInterface()
-        {
-            CodeLines codeLines = new CodeLines();
-
-            codeLines.Add(@"Line1
+    [Test]
+    public async Task CanEnumerateAsIEnumerableInterface()
+    {
+        CodeLines codeLines =
+        [
+            @"Line1
 Line2
-Line3");
+Line3",
+        ];
 
-            System.Collections.IEnumerable codeLinesAsEnumerable = codeLines;
+        System.Collections.IEnumerable codeLinesAsEnumerable = codeLines;
 
-            var cnt = 0;
-            foreach (var line in codeLinesAsEnumerable)
-            {
-                cnt++;
-            }
-            await Assert.That(cnt).IsEqualTo(3);
-        }
-
-        [Test]
-        public async Task ToString_Indentation2Levels()
+        var cnt = 0;
+        foreach (var line in codeLinesAsEnumerable)
         {
-            var codeLines = new CodeLines();
+            cnt++;
+        }
+        await Assert.That(cnt).IsEqualTo(3);
+    }
 
-            codeLines.Add(@"
+    [Test]
+    public async Task ToString_Indentation2Levels()
+    {
+        var codeLines = new CodeLines
+        {
+            @"
 if (i > 0)
 {
     i--;
 }
-");
+"
+        };
 
-            System.Text.StringBuilder sb = new();
+        System.Text.StringBuilder sb = new();
 
-            codeLines.ToString(sb, 2, Language.CSharp);
+        codeLines.ToString(sb, 2, Language.CSharp);
 
-            var src = sb.ToString();
+        var src = sb.ToString();
 
-            await Assert.That(src).IsEqualTo(@"        if (i > 0)
+        await Assert.That(src).IsEqualTo(@"        if (i > 0)
         {
             i--;
         }");
-        }
+    }
 
-        [Test]
-        public async Task Index_CanGetLinesByIndex()
-        {
-            CodeLines codeLines = new CodeLines();
-
-            codeLines.Add(@"Line1
+    [Test]
+    public async Task Index_CanGetLinesByIndex()
+    {
+        CodeLines codeLines =
+        [
+            @"Line1
 Line2
-MyLine3");
+MyLine3",
+        ];
 
-            await Assert.That(codeLines[0]).IsEqualTo("Line1");
-            await Assert.That(codeLines[1]).IsEqualTo("Line2");
-            await Assert.That(codeLines[2]).IsEqualTo("MyLine3");
-        }
+        await Assert.That(codeLines[0]).IsEqualTo("Line1");
+        await Assert.That(codeLines[1]).IsEqualTo("Line2");
+        await Assert.That(codeLines[2]).IsEqualTo("MyLine3");
+    }
 
-        [Test]
-        public async Task Index_CanSetSingleLineByIndex()
-        {
-            CodeLines codeLines = new CodeLines();
-
-            codeLines.Add(@"
+    [Test]
+    public async Task Index_CanSetSingleLineByIndex()
+    {
+        CodeLines codeLines =
+        [
+            @"
 Line1
 Line2
 MyLine3
-");
+",
+        ];
 
-            codeLines[1] = "    AlternativeLine;";
+        codeLines[1] = "    AlternativeLine;";
 
-            var src = codeLines.ToString();
+        var src = codeLines.ToString();
 
-            await Assert.That(src).IsEqualTo(@"Line1
+        await Assert.That(src).IsEqualTo(@"Line1
     AlternativeLine;
 MyLine3");
-        }
+    }
 
-        [Test]
-        public async Task Index_CanSetMultipleLinesByIndex()
-        {
-            CodeLines codeLines = new CodeLines();
-
-            codeLines.Add(@"
+    [Test]
+    public async Task Index_CanSetMultipleLinesByIndex()
+    {
+        CodeLines codeLines =
+        [
+            @"
 Line1
 Line2
 MyLine3
-");
+",
+        ];
 
-            codeLines[1] = @"    AlternativeLine;
+        codeLines[1] = @"    AlternativeLine;
      AltLin2
 AltLin3";
 
-            var src = codeLines.ToString();
+        var src = codeLines.ToString();
 
-            await Assert.That(src).IsEqualTo(@"Line1
+        await Assert.That(src).IsEqualTo(@"Line1
     AlternativeLine;
      AltLin2
 AltLin3
 MyLine3");
-        }
+    }
 
-        [Test]
-        public void Index_SetToNullThrowsException()
-        {
-            CodeLines codeLines = new CodeLines();
-
-            codeLines.Add(@"
+    [Test]
+    public void Index_SetToNullThrowsException()
+    {
+        CodeLines codeLines =
+        [
+            @"
 Line1
 Line2
 MyLine3
-");
-            Assert.ThrowsExactly<ArgumentNullException>(() =>
-            {
-                codeLines[2] = null!;
-            });
-        }
+",
+        ];
+        _ = Assert.ThrowsExactly<ArgumentNullException>(() =>
+        {
+            codeLines[2] = null!;
+        });
     }
 }

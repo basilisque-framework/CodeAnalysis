@@ -48,8 +48,7 @@ public class AttributeInfo : SyntaxNode
     {
         get
         {
-            if (_constructorParameters is null)
-                _constructorParameters = new List<AttributeConstructorParameter>();
+            _constructorParameters ??= [];
 
             return _constructorParameters;
         }
@@ -62,8 +61,7 @@ public class AttributeInfo : SyntaxNode
     {
         get
         {
-            if (_namedParameters is null)
-                _namedParameters = new List<AttributeNamedParameter>();
+            _namedParameters ??= [];
 
             return _namedParameters;
         }

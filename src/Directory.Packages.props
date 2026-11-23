@@ -33,7 +33,7 @@
   </ItemGroup>
   <!-- import common NuGet packages -->
   <ItemGroup>
-    <GlobalPackageReference Include="Basilisque.CommonFrameworkBuild" Version="2.0.0-Preview00013">
+    <GlobalPackageReference Include="Basilisque.CommonFrameworkBuild" Version="2.0.0-RC00015">
       <PrivateAssets>all</PrivateAssets>
     </GlobalPackageReference>
   </ItemGroup>

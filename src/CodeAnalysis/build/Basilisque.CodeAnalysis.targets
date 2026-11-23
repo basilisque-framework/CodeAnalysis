@@ -14,53 +14,53 @@
    limitations under the License.
 -->
 <Project>
-	<!-- Pack the Basilisque.CodeAnalysis dependency alongside the generator assembly -->
-	<ItemGroup Condition="'$(BAS_CA_Dependency_PackCS)' == 'true'">
-		<None Include="$(MSBuildThisFileDirectory)..\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-	</ItemGroup>
-	<!--<ItemGroup Condition="$(BAS_CA_Dependency_PackVB)">
-		<None Include="$(MSBuildThisFileDirectory)..\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/vb" Visible="false" />
-	</ItemGroup>-->
+  <!-- Pack the Basilisque.CodeAnalysis dependency alongside the generator assembly -->
+  <ItemGroup Condition="'$(BAS_CA_Dependency_PackCS)' == 'true'">
+    <None Include="$(MSBuildThisFileDirectory)..\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+  <!--<ItemGroup Condition="$(BAS_CA_Dependency_PackVB)">
+    <None Include="$(MSBuildThisFileDirectory)..\lib\netstandard2.0\*.dll" Pack="true" PackagePath="analyzers/dotnet/vb" Visible="false" />
+  </ItemGroup>-->
 
 
-	<PropertyGroup>
-		<!-- do not pack an analyzer project as normal lib dependency... -->
-		<IncludeBuildOutput Condition="'$(BAS_CA_Set_IncludeBuildOutput)' == 'true'">false</IncludeBuildOutput>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(BAS_CA_Assembly_PackCS)' == 'true'">
-		<TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);BAS_CA_GetAnalyzerPackageFiles</TargetsForTfmSpecificContentInPackage>
-	</PropertyGroup>
-	<Target Name="BAS_CA_GetAnalyzerPackageFiles"
-			DependsOnTargets="GetTargetPath"
-			Condition="'$(BAS_CA_Assembly_PackCS)' == 'true'">
-		<!-- GetTargetPath allows versioning targets to finalize the assembly name and SDK output path. -->
-		<MakeDir Directories="$(IntermediateOutputPath)Basilisque.CodeAnalysis" Condition="'$(IncludeBuildOutput)' == 'false'" />
-		<WriteLinesToFile File="$(IntermediateOutputPath)Basilisque.CodeAnalysis/_._" Lines="" Overwrite="true" WriteOnlyWhenDifferent="true" Condition="'$(IncludeBuildOutput)' == 'false'" />
-		<ItemGroup>
-			<TfmSpecificPackageFile Include="$(TargetPath)" PackagePath="analyzers/dotnet/cs" />
-			<TfmSpecificPackageFile Include="$(IntermediateOutputPath)Basilisque.CodeAnalysis/_._" PackagePath="lib/$(TargetFramework)" Condition="'$(IncludeBuildOutput)' == 'false'" />
-			<FileWrites Include="$(IntermediateOutputPath)Basilisque.CodeAnalysis/_._" Condition="'$(IncludeBuildOutput)' == 'false'" />
-		</ItemGroup>
-	</Target>
-	<!--<ItemGroup Condition="$(BAS_CA_Assembly_PackVB)">
-		--><!-- ... pack it in the analyzer directory instead (for VB) --><!--
-		<None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/vb" Visible="false" />
-	</ItemGroup>-->
+  <PropertyGroup>
+    <!-- do not pack an analyzer project as normal lib dependency... -->
+    <IncludeBuildOutput Condition="'$(BAS_CA_Set_IncludeBuildOutput)' == 'true'">false</IncludeBuildOutput>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(BAS_CA_Assembly_PackCS)' == 'true'">
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);BAS_CA_GetAnalyzerPackageFiles</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+  <Target Name="BAS_CA_GetAnalyzerPackageFiles"
+      DependsOnTargets="GetTargetPath"
+      Condition="'$(BAS_CA_Assembly_PackCS)' == 'true'">
+    <!-- GetTargetPath allows versioning targets to finalize the assembly name and SDK output path. -->
+    <MakeDir Directories="$(IntermediateOutputPath)Basilisque.CodeAnalysis" Condition="'$(IncludeBuildOutput)' == 'false'" />
+    <WriteLinesToFile File="$(IntermediateOutputPath)Basilisque.CodeAnalysis/_._" Lines="" Overwrite="true" WriteOnlyWhenDifferent="true" Condition="'$(IncludeBuildOutput)' == 'false'" />
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(TargetPath)" PackagePath="analyzers/dotnet/cs" />
+      <TfmSpecificPackageFile Include="$(IntermediateOutputPath)Basilisque.CodeAnalysis/_._" PackagePath="lib/$(TargetFramework)" Condition="'$(IncludeBuildOutput)' == 'false'" />
+      <FileWrites Include="$(IntermediateOutputPath)Basilisque.CodeAnalysis/_._" Condition="'$(IncludeBuildOutput)' == 'false'" />
+    </ItemGroup>
+  </Target>
+  <!--<ItemGroup Condition="$(BAS_CA_Assembly_PackVB)">
+    --><!-- ... pack it in the analyzer directory instead (for VB) --><!--
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/vb" Visible="false" />
+  </ItemGroup>-->
 
-	<!-- pack the props/targets files  -->
-	<ItemGroup Condition="'$(BAS_CA_Pack_TargetProject_MSBuild_Files)' == 'true'">
-		<None Include="$(MSBuildThisFileDirectory)../targetProjectBuild/**" Pack="true" PackagePath="build"/>
-	</ItemGroup>
+  <!-- pack the props/targets files  -->
+  <ItemGroup Condition="'$(BAS_CA_Pack_TargetProject_MSBuild_Files)' == 'true'">
+    <None Include="$(MSBuildThisFileDirectory)../targetProjectBuild/**" Pack="true" PackagePath="build"/>
+  </ItemGroup>
 
 
-	<!-- BEGIN WORKAROUND https://github.com/dotnet/roslyn/issues/52017 -->
-	<PropertyGroup>
-		<GetTargetPathDependsOn>$(GetTargetPathDependsOn);BAS_CA_GetDependencyTargetPaths</GetTargetPathDependsOn>
-	</PropertyGroup>
-	<Target Name="BAS_CA_GetDependencyTargetPaths">
-		<ItemGroup>
-			<TargetPathWithTargetPlatformMoniker Include="$(MSBuildThisFileDirectory)..\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
-		</ItemGroup>
-	</Target>
-	<!-- END WORKAROUND https://github.com/dotnet/roslyn/issues/52017 -->
+  <!-- BEGIN WORKAROUND https://github.com/dotnet/roslyn/issues/52017 -->
+  <PropertyGroup>
+    <GetTargetPathDependsOn>$(GetTargetPathDependsOn);BAS_CA_GetDependencyTargetPaths</GetTargetPathDependsOn>
+  </PropertyGroup>
+  <Target Name="BAS_CA_GetDependencyTargetPaths">
+    <ItemGroup>
+      <TargetPathWithTargetPlatformMoniker Include="$(MSBuildThisFileDirectory)..\lib\netstandard2.0\*.dll" IncludeRuntimeDependency="false" />
+    </ItemGroup>
+  </Target>
+  <!-- END WORKAROUND https://github.com/dotnet/roslyn/issues/52017 -->
 </Project>

@@ -1,4 +1,4 @@
-﻿<!--
+<!--
    Copyright 2023-2024 Alexander Stärk
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,16 +14,16 @@
    limitations under the License.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
-	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
-		<PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include="build/**" Pack="true" PackagePath="build" />
-		<None Include="targetProjectBuild/**" Pack="true" PackagePath="targetProjectBuild" />
-	</ItemGroup>
+  <ItemGroup>
+    <None Include="build/**" Pack="true" PackagePath="build" />
+    <None Include="targetProjectBuild/**" Pack="true" PackagePath="targetProjectBuild" />
+  </ItemGroup>
 </Project>
