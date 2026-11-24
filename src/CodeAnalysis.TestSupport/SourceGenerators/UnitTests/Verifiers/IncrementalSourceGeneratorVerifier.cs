@@ -17,7 +17,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
 using System.Collections.Immutable;
-using System.Reflection;
 
 namespace Basilisque.CodeAnalysis.TestSupport.SourceGenerators.UnitTests.Verifiers;
 
@@ -80,39 +79,6 @@ public class IncrementalSourceGeneratorVerifier<TSourceGenerator, TVerifier> : M
     public IncrementalSourceGeneratorVerifier()
     {
         CompilerDiagnostics = CompilerDiagnostics.Warnings;
-    }
-
-    /// <summary>
-    /// Workaround for https://github.com/dotnet/roslyn-sdk/pull/1204 in V1.1.2 until the fix is released in an official version.
-    /// After this is released, this code can be removed. The method GetAnalyzerOptions should do this job then.
-    /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "This is a workaround for an issue in dotnet: https://github.com/dotnet/roslyn-sdk/pull/1204")]
-    protected override Project ApplyCompilationOptions(Project project)
-    {
-        var result = base.ApplyCompilationOptions(project);
-
-        if (_globalOptions is null)
-            return result;
-
-        var testStateProperty = typeof(Project).GetProperty("State", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-        if (testStateProperty is null)
-            return result;
-
-        var testState = testStateProperty.GetValue(result);
-        if (testState is null)
-            return result;
-
-        var analyzerOptionsField = testState.GetType().GetField("_lazyAnalyzerOptions", BindingFlags.Instance | BindingFlags.NonPublic);
-        if (analyzerOptionsField is null)
-            return result;
-
-        var baseOptions = base.GetAnalyzerOptions(project);
-
-        var analyzerOptions = new AnalyzerOptions(ImmutableArray<AdditionalText>.Empty, new Diagnostics.ConfigOptionsProvider(baseOptions.AnalyzerConfigOptionsProvider, _globalOptions));
-
-        analyzerOptionsField.SetValue(testState, analyzerOptions);
-
-        return result;
     }
 
     /// <summary>
